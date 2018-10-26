@@ -156,20 +156,6 @@ class Home extends CI_Controller {
         }
 	}
 
-    function matches($para1="",$para2="")
-	{	
-		if ($para1=="") {
-            $page_data['title'] = "Listing Page || ".$this->system_title;
-            $page_data['top'] = "matches.php";
-            $page_data['page'] = "matches";
-            $page_data['bottom'] = "matches.php";
-            $page_data['nav_dropdown'] = "matches";
-            $page_data['home_search'] = "false";
-            recache();
-            $this->load->view('front/index', $page_data);
-        }
-    }
-    
     function member_profile($para1="",$para2="")
     {
         if ($this->member_permission() == FALSE) {
@@ -525,259 +511,7 @@ class Home extends CI_Controller {
                     $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
                 }
                 
-            }        
-        }elseif ($para2 == "matches") {
-            $config_base_url = base_url().'home/ajax_member_list/search/';
-            $all_result = array();
-            if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
-                $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
-            }
-            elseif ($this->member_permission() == TRUE) {
-                $member_id = $this->session->userdata('member_id');
-                //For Ignored Members
-                $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
-                $ignored_ids = json_decode($ignored_ids, true);
-                $ignored_by_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored_by');
-                $ignored_by_ids = json_decode($ignored_by_ids, true);
-                if (empty($ignored_by_ids)) {
-                    array_push($ignored_by_ids, 0);
-                }
-                if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
-                    //$this->db->last_query($all_id);
-                }
-                else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
-                }
-                
-            }
-            foreach ($all_id as $row) {
-                $all_result[] = $row->member_id;
-            }
-
-            $gender   = '1';
-            $member_profile_id   = $this->input->post('member_id');
-            
-            $partner_expectation = $this->Crud_model->get_type_name_by_id('member', $member_id, 'partner_expectation');
-            $partner_expectation_data = json_decode($partner_expectation, true);
-
-            $marital_status = $partner_expectation_data['partner_marital_status'];
-            $religion = $partner_expectation_data['partner_religion'];
-            $caste    = $partner_expectation_data['partner_caste'];
-            $sub_caste= $partner_expectation_data['partner_sub_caste'];
-            $language = $partner_expectation_data['partner_language'];
-            $country  = $partner_expectation_data['prefered_country'];
-            $state    = $partner_expectation_data['prefered_state'];
-            $city     = $partner_expectation_data['prefered_city'];
-            $profession = $partner_expectation_data['profession'];
-                        
-            $aged_from = $partner_expectation_data['partner_min_age'] - 1;
-            if (!empty($aged_from)) {
-                $from_year = date('Y') - $aged_from;
-                $from_date = $from_year."-01-01";
-                $sql_aged_from = strtotime($from_date);   
-            }
-
-            $aged_to = $partner_expectation_data['partner_max_age'];
-            if (!empty($aged_to)) {
-                $to_year = date('Y') - $aged_to;
-                $to_date = $to_year."-01-01";
-                $sql_aged_to = strtotime($to_date);
-            }
-
-            $min_height = $partner_expectation_data['partner_min_height'];
-            $max_height = $partner_expectation_data['partner_max_height'];
-            $search_member_type = 'all';
-
-           // print_R($partner_expectation_data);exit;
-
-            $by_gender = array();
-            $by_member_profile_id = array();
-            $by_marital_status = array();
-            $by_religion = array();
-            $by_caste = array();
-            $by_sub_caste = array();
-            $by_language = array();
-            $by_country = array();
-            $by_state = array();
-            $by_city = array();
-            $by_profession = array();
-            $by_age = array();
-            $by_height = array();
-            $by_member_type = array();
-
-            $all_array = array();
-
-            if (isset($gender) && $gender != "") {
-                $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender))->result();
-                foreach ($by_genders as $by_genders) {
-                    $by_gender[] = $by_genders->member_id;
-                }
-            } else {
-                $by_gender = $all_result;
-            }
-
-            if (isset($member_profile_id) && $member_profile_id != "") {
-                $by_member_profile_ids = $this->db->select('member_id')->get_where('member', array('member_profile_id' => $member_profile_id))->result();
-                foreach ($by_member_profile_ids as $by_member_profile_ids) {
-                    $by_member_profile_id[] = $by_member_profile_ids->member_id;
-                }
-            } else {
-                $by_member_profile_id = $all_result;
-            }
-
-            if (isset($profession) && $profession != "") {
-                $this->db->select('member_id')->like('education_and_career','"occupation":"'.$profession.'"','both');
-                $by_professions = $this->db->get('member')->result();
-                foreach ($by_professions as $by_professions) {
-                    $by_profession[] = $by_professions->member_id;
-                }
-            } else {
-                $by_profession = $all_result;
-            }
-
-            if (isset($marital_status) && $marital_status != "") {
-                $this->db->select('member_id')->like('education_and_career','"marital_status":"'.$marital_status.'"','both');
-                $by_marital_statuss = $this->db->get('member')->result();
-                foreach ($by_marital_statuss as $by_marital_statuss) {
-                    $by_marital_status[] = $by_marital_statuss->member_id;
-                }
-            } else {
-                $by_marital_status = $all_result;
-            }
-
-            if (isset($profession) && $profession != "") {
-                $this->db->select('member_id')->like('basic_info','"occupation":"'.$profession.'"','both');
-                $by_professions = $this->db->get('member')->result();
-                foreach ($by_professions as $by_professions) {
-                    $by_profession[] = $by_professions->member_id;
-                }
-            } else {
-                $by_profession = $all_result;
-            }
-
-            if (isset($religion) && $religion != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"religion":"'.$religion.'"','both');
-                $by_religions = $this->db->get('member')->result();
-                foreach ($by_religions as $by_religions) {
-                    $by_religion[] = $by_religions->member_id;
-                }
-            } else {
-                $by_religion = $all_result;
-            }
-
-            if (isset($caste) && $caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"caste":"'.$caste.'"','both');
-                $by_castes = $this->db->get('member')->result();
-                foreach ($by_castes as $by_castes) {
-                    $by_caste[] = $by_castes->member_id;
-                }
-            } else {
-                $by_caste = $all_result;
-            }
-            if (isset($sub_caste) && $sub_caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"sub_caste":"'.$sub_caste.'"','both');
-                $by_sub_castes = $this->db->get('member')->result();
-                foreach ($by_sub_castes as $by_sub_castes) {
-                    $by_sub_caste[] = $by_sub_castes->member_id;
-                }
-            } else {
-                $by_sub_caste = $all_result;
-            }
-
-            if (isset($language) && $language != "") {
-                $this->db->select('member_id')->like('language','"mother_tongue":"'.$language.'"','both');
-                $by_languages = $this->db->get('member')->result();
-                foreach ($by_languages as $by_languages) {
-                    $by_language[] = $by_languages->member_id;
-                }
-            } else {
-                $by_language = $all_result;
-            }
-
-            if (isset($country) && $country != "") {
-                $this->db->select('member_id')->like('present_address','"country":"'.$country.'"','both');
-                $by_countries = $this->db->get('member')->result();
-                foreach ($by_countries as $by_countries) {
-                    $by_country[] = $by_countries->member_id;
-                }
-            } else {
-                $by_country = $all_result;
-            }
-
-            if (isset($state) && $state != "") {
-                $this->db->select('member_id')->like('present_address','"state":"'.$state.'"','both');
-                $by_states = $this->db->get('member')->result();
-                foreach ($by_states as $by_states) {
-                    $by_state[] = $by_states->member_id;
-                }
-            } else {
-                $by_state = $all_result;
-            }
-
-            if (isset($city) && $city != "") {
-                $this->db->select('member_id')->like('present_address','"city":"'.$city.'"','both');
-                $by_cities = $this->db->get('member')->result();
-                foreach ($by_cities as $by_cities) {
-                    $by_city[] = $by_cities->member_id;
-                }
-            } else {
-                $by_city = $all_result;
-            }
-
-            if (isset($sql_aged_from) && isset($sql_aged_to)) {
-                $by_ages = $this->db->select('member_id')->get_where('member',array('date_of_birth <=' => $sql_aged_from, 'date_of_birth >=' => $sql_aged_to))->result();
-                foreach ($by_ages as $by_ages) {
-                    $by_age[] = $by_ages->member_id;
-                }
-            } else {
-                $by_age = $all_result;
-            }
-
-            if (isset($min_height) && isset($max_height)) {
-                $by_heights = $this->db->select('member_id')->get_where('member',array('height >=' => $min_height, 'height <=' => $max_height))->result();
-                foreach ($by_heights as $by_heights) {
-                    $by_height[] = $by_heights->member_id;
-                }
-            } else {
-                $by_height = $all_result;
-            }
-
-            if (isset($search_member_type)) {
-                if ($search_member_type == "free_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 1))->result();
-                }
-                elseif ($search_member_type == "premium_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 2))->result();
-                }
-                elseif ($search_member_type == "all") {
-                    $by_members_type = $all_id;
-                }
-                foreach ($by_members_type as $by_members_type) {
-                    $by_member_type[] = $by_members_type->member_id;
-                }
-            } else {
-                $by_height = $all_result;
-            }
-
-            /*print_r($by_gender);
-            echo "<br>";
-            print_r($by_marital_status);
-            echo "<br>";
-            print_r($by_religion);
-            echo "<br>";
-            print_r($by_language);
-            echo "<br>";
-            print_r($by_country);
-            echo "<br>";
-            print_r($by_state);
-            echo "<br>";
-            print_r($by_city);
-            echo "<br>all<br>";*/
-            $all_array = array_intersect($by_gender,$by_member_profile_id,$by_marital_status,$by_profession,$by_religion,$by_caste,$by_sub_caste,$by_language,$by_country,$by_state,$by_city,$by_age,$by_height,$by_member_type);
-            // print_r($all_array);
-            $config['total_rows'] = count($all_array);
+            }            
         }
 
         // pagination
@@ -787,9 +521,7 @@ class Home extends CI_Controller {
         $config['cur_page_giv'] = $para1;
         if ($para2 == "search") {
             $function = "filter_members('0', 'search')";
-        } else if ($para2 == "matches") {
-            $function = "filter_members('0', 'matches')";
-        } {
+        } else {
             $function = "filter_members('0')";
         }
         $config['first_link'] = '&laquo;';
@@ -801,9 +533,7 @@ class Home extends CI_Controller {
         $last_start = floor($rr) * $config['per_page'];
         if ($para2 == "search") {
             $function = "filter_members('" . $last_start . "', 'search')";
-        } else if ($para2 == "matches") {
-            $function = "filter_members('" . $last_start . "', 'matches')";
-        }else {
+        } else {
             $function = "filter_members('" . $last_start . "')";
         }
         //$function = "filter_members('" . $last_start . "')";
@@ -813,9 +543,7 @@ class Home extends CI_Controller {
 
         if ($para2 == "search") {
             $function = "filter_members('" . ($para1 - $config['per_page']) . "', 'search')";
-        } else if ($para2 == "matches") {
-            $function = "filter_members('" . ($para1 - $config['per_page']) . "', 'matches')";
-        }else {
+        } else {
             $function = "filter_members('" . ($para1 - $config['per_page']) . "')";
         }
         //$function = "filter_members('" . ($para1 - $config['per_page']) . "')";
@@ -824,8 +552,6 @@ class Home extends CI_Controller {
 
         if ($para2 == "search") {
             $function = "filter_members('" . ($para1 - $config['per_page']) . "', 'search')";
-        }  if ($para2 == "matches") {
-            $function = "filter_members('" . ($para1 - $config['per_page']) . "', 'matches')";
         } else {
             $function = "filter_members('" . ($para1 + $config['per_page']) . "')";
         }
@@ -842,9 +568,7 @@ class Home extends CI_Controller {
 
         if ($para2 == "search") {
             $function = "filter_members(((this.innerHTML-1)*" . $config['per_page'] . "), 'search')";
-        } if ($para2 == "matches") {
-            $function = "filter_members(((this.innerHTML-1)*" . $config['per_page'] . "), 'matches')";
-        }else {
+        } else {
             $function = "filter_members(((this.innerHTML-1)*" . $config['per_page'] . "))";
         }
         // $function = "filter_members(((this.innerHTML-1)*" . $config['per_page'] . "))";
@@ -899,198 +623,6 @@ class Home extends CI_Controller {
             }
         }
         elseif ($para2 == "search") {
-            $all_result = array();
-            if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
-                $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
-            }
-            elseif ($this->member_permission() == TRUE) {
-                $member_id = $this->session->userdata('member_id');
-                //For Ignored Members
-                $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
-                $ignored_ids = json_decode($ignored_ids, true);
-                $ignored_by_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored_by');
-                $ignored_by_ids = json_decode($ignored_by_ids, true);
-                if (empty($ignored_by_ids)) {
-                    array_push($ignored_by_ids, 0);
-                }
-                if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
-                }
-                else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
-                }
-                
-            }
-            foreach ($all_id as $row) {
-                $all_result[] = $row->member_id;
-            }
-
-            if (isset($gender) && $gender != "") {
-                $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender))->result();
-                foreach ($by_genders as $by_genders) {
-                    $by_gender[] = $by_genders->member_id;
-                }
-            } else {
-                $by_gender = $all_result;
-            }
-
-            if (isset($member_profile_id) && $member_profile_id != "") {
-                $by_member_profile_ids = $this->db->select('member_id')->get_where('member', array('member_profile_id' => $member_profile_id))->result();
-                foreach ($by_member_profile_ids as $by_member_profile_ids) {
-                    $by_member_profile_id[] = $by_member_profile_ids->member_id;
-                }
-            } else {
-                $by_member_profile_id = $all_result;
-            }
-
-            if (isset($marital_status) && $marital_status != "") {
-                $this->db->select('member_id')->like('education_and_career','"marital_status":"'.$marital_status.'"','both');
-                $by_marital_statuss = $this->db->get('member')->result();
-                foreach ($by_marital_statuss as $by_marital_statuss) {
-                    $by_marital_status[] = $by_marital_statuss->member_id;
-                }
-            } else {
-                $by_marital_status = $all_result;
-            }
-
-            if (isset($profession) && $profession != "") {
-                $this->db->select('member_id')->like('basic_info','"occupation":"'.$profession.'"','both');
-                $by_professions = $this->db->get('member')->result();
-                foreach ($by_professions as $by_professions) {
-                    $by_profession[] = $by_professions->member_id;
-                }
-            } else {
-                $by_profession = $all_result;
-            }
-
-            if (isset($religion) && $religion != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"religion":"'.$religion.'"','both');
-                $by_religions = $this->db->get('member')->result();
-                foreach ($by_religions as $by_religions) {
-                    $by_religion[] = $by_religions->member_id;
-                }
-            } else {
-                $by_religion = $all_result;
-            }
-
-            if (isset($caste) && $caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"caste":"'.$caste.'"','both');
-                $by_castes = $this->db->get('member')->result();
-                foreach ($by_castes as $by_castes) {
-                    $by_caste[] = $by_castes->member_id;
-                }
-            } else {
-                $by_caste = $all_result;
-            }
-            if (isset($sub_caste) && $sub_caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"sub_caste":"'.$sub_caste.'"','both');
-                $by_sub_castes = $this->db->get('member')->result();
-                foreach ($by_sub_castes as $by_sub_castes) {
-                    $by_sub_caste[] = $by_sub_castes->member_id;
-                }
-            } else {
-                $by_sub_caste = $all_result;
-            }
-
-            if (isset($language) && $language != "") {
-                $this->db->select('member_id')->like('language','"mother_tongue":"'.$language.'"','both');
-                $by_languages = $this->db->get('member')->result();
-                foreach ($by_languages as $by_languages) {
-                    $by_language[] = $by_languages->member_id;
-                }
-            } else {
-                $by_language = $all_result;
-            }
-
-            if (isset($country) && $country != "") {
-                $this->db->select('member_id')->like('present_address','"country":"'.$country.'"','both');
-                $by_countries = $this->db->get('member')->result();
-                foreach ($by_countries as $by_countries) {
-                    $by_country[] = $by_countries->member_id;
-                }
-            } else {
-                $by_country = $all_result;
-            }
-
-            if (isset($state) && $state != "") {
-                $this->db->select('member_id')->like('present_address','"state":"'.$state.'"','both');
-                $by_states = $this->db->get('member')->result();
-                foreach ($by_states as $by_states) {
-                    $by_state[] = $by_states->member_id;
-                }
-            } else {
-                $by_state = $all_result;
-            }
-
-            if (isset($city) && $city != "") {
-                $this->db->select('member_id')->like('present_address','"city":"'.$city.'"','both');
-                $by_cities = $this->db->get('member')->result();
-                foreach ($by_cities as $by_cities) {
-                    $by_city[] = $by_cities->member_id;
-                }
-            } else {
-                $by_city = $all_result;
-            }
-
-            if (isset($sql_aged_from) && isset($sql_aged_to)) {
-                $by_ages = $this->db->select('member_id')->get_where('member',array('date_of_birth <=' => $sql_aged_from, 'date_of_birth >=' => $sql_aged_to))->result();
-                foreach ($by_ages as $by_ages) {
-                    $by_age[] = $by_ages->member_id;
-                }
-            } else {
-                $by_age = $all_result;
-            }
-
-            if (isset($min_height) && isset($max_height)) {
-                $by_heights = $this->db->select('member_id')->get_where('member',array('height >=' => $min_height, 'height <=' => $max_height))->result();
-                foreach ($by_heights as $by_heights) {
-                    $by_height[] = $by_heights->member_id;
-                }
-            } else {
-                $by_height = $all_result;
-            }
-
-            if (isset($search_member_type)) {
-                if ($search_member_type == "free_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 1))->result();
-                }
-                elseif ($search_member_type == "premium_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 2))->result();
-                }
-                elseif ($search_member_type == "all") {
-                    $by_members_type = $all_id;
-                }
-                foreach ($by_members_type as $by_members_type) {
-                    $by_member_type[] = $by_members_type->member_id;
-                }
-            } else {
-                $by_height = $all_result;
-            }
-            /*print_r($by_gender);
-            echo "<br>";
-            print_r($by_marital_status);
-            echo "<br>";
-            print_r($by_religion);
-            echo "<br>";
-            print_r($by_language);
-            echo "<br>";
-            print_r($by_country);
-            echo "<br>";
-            print_r($by_state);
-            echo "<br>";
-            print_r($by_city);
-            echo "<br>all<br>";*/
-            $all_array = array_intersect($by_gender,$by_member_profile_id,$by_profession,$by_marital_status,$by_religion,$by_caste,$by_sub_caste,$by_language,$by_country,$by_state,$by_city,$by_age,$by_height,$by_member_type);
-
-            if (count($all_array) != 0) {
-                $this->db->where_in('member_id', $all_array);
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
-                $page_data['get_all_members'] = $this->db->where($cond)->get('member', $config['per_page'], $para1)->result();
-            } else {
-                $page_data['get_all_members']  = array();
-            }
-        }elseif ($para2 == "matches") {
             $all_result = array();
             if ($this->member_permission() == FALSE) {
                 $cond = array('is_blocked' =>'no','is_closed' =>'no');
@@ -1770,13 +1302,6 @@ class Home extends CI_Controller {
             $para1 = "";            
         }
 
-
-        if ($para1 == "received-interests") {
-            $page_data['current_tab'] = "received_interests";
-            $para1 = "";
-        }
-
-
         if ($para1 == "shortlist") {
             $page_data['current_tab'] = "short_list";
             $para1 = "";            
@@ -1841,9 +1366,6 @@ class Home extends CI_Controller {
 		elseif ($para1=="my_interests") {
 			$this->load->view('front/profile/my_interests/index');
 		}
-        elseif ($para1 == "received_Interest") {
-           $this->load->view( 'front/profile/my_interests/received_interests' ); 
-        }
 		elseif ($para1=="ignored_list") {
 			$this->load->view('front/profile/ignored_list/index');
 		}
@@ -2218,7 +1740,6 @@ class Home extends CI_Controller {
                 }
 
                 recache();
-
                 $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
                 $this->load->view('front/profile/dashboard/basic_info', $page_data);
             }
@@ -2292,14 +1813,6 @@ class Home extends CI_Controller {
             }    
         }
         elseif ($para1=="update_physical_attributes") {
-            $this->form_validation->set_rules('weight', 'Weight', 'integer|greater_than[30]|less_than[200]');
-
-            if ($this->form_validation->run() == FALSE) {
-                $ajax_error[] = array('ajax_error'  =>  validation_errors());
-                echo json_encode($ajax_error);
-            }
-
-            else {
         	// ------------------------------------ Physical Attributes------------------------------------ //
         	$physical_attributes[] = array('weight'     =>	$this->input->post('weight'),	
 								'eye_color'				=>	$this->input->post('eye_color'),
@@ -2330,7 +1843,6 @@ class Home extends CI_Controller {
             $privacy_status = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'privacy_status');
             $page_data['privacy_status_data'] = json_decode($privacy_status, true);
             $this->load->view('front/profile/dashboard/physical_attributes', $page_data);
-        }
         }
         elseif ($para1=="update_language") {
             $this->form_validation->set_rules('mother_tongue', 'Mother Tongue', 'required');
@@ -2593,35 +2105,9 @@ class Home extends CI_Controller {
             $this->load->view('front/profile/dashboard/additional_personal_details', $page_data);
         }
         elseif ($para1=="update_partner_expectation") {
-            $this->form_validation->set_rules('partner_min_age', 'Minimum Age', 'greater_than[18]|less_than[60]');
-            $this->form_validation->set_rules('partner_max_age', 'Maximum Age', 'less_than[60]|greater_than['.$this->input->post('partner_min_age').']');
-            $this->form_validation->set_rules('partner_min_height', 'Minimum Height', 'greater_than[3]|less_than[8]');
-            $this->form_validation->set_rules('partner_max_height', 'Maximum Height', 'less_than[8]|greater_than['.$this->input->post('partner_min_height').']');
-            $this->form_validation->set_rules('partner_min_weight', 'Minimum Weight', 'greater_than[30]|less_than[200]');
-            $this->form_validation->set_rules('partner_max_weight', 'Maximum Weight', 'less_than[200]|greater_than['.$this->input->post('partner_min_weight').']');
-
-            if ($this->form_validation->run() == FALSE) {
-                $ajax_error[] = array('ajax_error'  =>  validation_errors());
-                echo json_encode($ajax_error);
-            }
-
-            else {
         	// ------------------------------------ Partner Expectation------------------------------------ //
         	$partner_expectation[] = array('general_requirement'	=>  $this->input->post('general_requirement'),
 								'partner_age'						=>	$this->input->post('partner_age'),	
-								'partner_height'					=>	$this->input->post('partner_height'),
-                                'partner_weight'					=>	$this->input->post('partner_weight'),
-                                
-                                'partner_min_age'						=>	$this->input->post('partner_min_age'),	
-								'partner_min_height'					=>	$this->input->post('partner_min_height'),
-                                'partner_min_weight'					=>	$this->input->post('partner_min_weight'),
-                                
-
-                                'partner_max_age'						=>	$this->input->post('partner_max_age'),	
-								'partner_max_height'					=>	$this->input->post('partner_max_height'),
-                                'partner_max_weight'					=>	$this->input->post('partner_max_weight'),
-                                
-                                'partner_age'						=>	$this->input->post('partner_age'),	
 								'partner_height'					=>	$this->input->post('partner_height'),
 								'partner_weight'					=>	$this->input->post('partner_weight'),
 								'partner_marital_status'			=>	$this->input->post('partner_marital_status'),
@@ -2644,56 +2130,17 @@ class Home extends CI_Controller {
 								'partner_family_value'				=>	$this->input->post('partner_family_value'),
 								'prefered_country'					=>	$this->input->post('prefered_country'),
 								'prefered_state'					=>	$this->input->post('prefered_state'),
-                                'prefered_status'					=>	$this->input->post('prefered_status'),
-                                'partner_family_status'             =>	$this->input->post('partner_family_status'),
+								'prefered_status'					=>	$this->input->post('prefered_status')
 		                        );
         	$data['partner_expectation'] = json_encode($partner_expectation);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
-
-            $p_data['partner_height_min'] = $this->input->post('partner_height_min');
-            $p_data['partner_height_max'] = $this->input->post('partner_height_max');
-            $p_data['partner_weight_min'] = $this->input->post('partner_weight_min');
-            $p_data['partner_weight_max'] = $this->input->post('partner_weight_max');
-            $p_data['partner_age_min'] = $this->input->post('partner_age_min');
-            $p_data['partner_age_max'] = $this->input->post('partner_age_max');
-            $p_data['partner_weight_units'] = 'kg';
-            $p_data['partner_marital_status'] = $this->input->post('partner_marital_status');
-            $p_data['partner_accepted_with_children'] = $this->input->post('with_children_acceptables');
-            $p_data['partner_religion'] = $this->input->post('partner_religion');
-            $p_data['partner_caste'] = $this->input->post('partner_caste');
-            $p_data['partner_sub_caste'] = $this->input->post('partner_sub_caste');
-            $p_data['partner_family_value'] = $this->input->post('partner_family_value');
-            $p_data['partner_education'] = $this->input->post('partner_education');
-            $p_data['partner_profession'] = $this->input->post('partner_profession');
-            $p_data['partner_drinking_habits'] = $this->input->post('partner_drinking_habits');
-            $p_data['partner_smoking_habits'] = $this->input->post('partner_smoking_habits');
-            $p_data['partner_diet'] = $this->input->post('partner_diet');
-            $p_data['partner_body_type'] = $this->input->post('partner_body_type');
-            $p_data['partner_manglik'] = $this->input->post('manglik');
-            $p_data['partner_disability'] = $this->input->post('partner_any_disability');
-            $p_data['partner_mother_tongue'] = $this->input->post('partner_mother_tongue');
-            $p_data['partner_family_status'] = $this->input->post('prefered_status');
-            $p_data['partner_complexion'] = $this->input->post('partner_complexion');
-            $p_data['partner_address_country'] = $this->input->post('prefered_country');
-            $p_data['partner_address_state'] = $this->input->post('prefered_state');
-            $p_data['partner_address_city'] = $this->input->post('partner_address_city');
-
-            $p_data_table = $this->db->get_where("partner_personal_preferances", array("member_id" => $this->session->userdata('member_id')))->result();                      
-            if ($p_data_table == null) {
-                $p_data['member_id'] =  $this->session->userdata('member_id');
-                $result= $this->db->insert('partner_personal_preferances', $p_data);   
-            }else{
-                $result = $this->db->update('partner_personal_preferances', $p_data);
-            }
-
             recache();
 
             $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
             $privacy_status = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'privacy_status');
             $page_data['privacy_status_data'] = json_decode($privacy_status, true);
             $this->load->view('front/profile/dashboard/partner_expectation', $page_data);
-        }
         }
         elseif ($para1=="update_image") {
             if ($_FILES['profile_image']['name'] !== '') {
@@ -3139,7 +2586,7 @@ class Home extends CI_Controller {
             array_push($total_interests_ids ,$total_interest['id']);
         }
         if (count($total_interests) != 0) {
-            $page_data['express_interest_members'] = $this->db->from('member')->where_in('member_id', $total_interests_ids)->limit($config['per_page'], $para1)->get()->result();
+            $page_data['express_interest_members'] = $this->db->from('member')->where_in('member_id', $total_interests_ids)->limit($config['per_page'], $para1)->get()->result();            
             $page_data['array_total_interests'] = $total_interests;
         }
         else{
@@ -4025,9 +3472,7 @@ class Home extends CI_Controller {
 				$this->form_validation->set_rules('last_name', 'Last Name', 'required');
 				$this->form_validation->set_rules('gender', 'Gender', 'required');
 	            $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
-                $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
-                $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
-                $this->form_validation->set_rules('yearob', 'Year of Birth', 'required');
+                $this->form_validation->set_rules('date_of_birth', 'Date of Birth', 'required');
                 $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
 	            $this->form_validation->set_rules('mobile', 'Mobile Number', 'required');
 	            $this->form_validation->set_rules('password', 'Password', 'required|matches[confirm_password]');
@@ -4266,7 +3711,7 @@ class Home extends CI_Controller {
                                 $data['last_name'] = $this->input->post('last_name');
                                 $data['gender'] = $this->input->post('gender');
                                 $data['email'] = $this->input->post('email');
-                                $data['date_of_birth'] = $dob;
+                                $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
                                 $data['height'] = 0.00;
                                 $data['mobile'] = $this->input->post('mobile');
                                 $data['password'] = sha1($this->input->post('password'));
@@ -4339,19 +3784,11 @@ class Home extends CI_Controller {
                                 $this->load->view('front/registration', $page_data);
                             }
                         } else {
-
-                            $monthob = $this->input->post('monthob');
-                            $dateob = $this->input->post('dateob');
-                            $yearob = $this->input->post('yearob');
-                            $dob = $yearob."-".$monthob."-".$dateob;
-
                             $data['first_name'] = $this->input->post('first_name');
                             $data['last_name'] = $this->input->post('last_name');
                             $data['gender'] = $this->input->post('gender');
                             $data['email'] = $this->input->post('email');
-                            // $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
-                            $data['date_of_birth'] = strtotime($dob);
-                            
+                            $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
                             $data['height'] = 0.00;
                             $data['mobile'] = $this->input->post('mobile');
                             $data['password'] = sha1($this->input->post('password'));
