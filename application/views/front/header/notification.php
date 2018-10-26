@@ -12,7 +12,9 @@
                         $noti_profile_image = $this->Crud_model->get_type_name_by_id('member', $row['by'], 'profile_image');
                         $noti_images = json_decode($noti_profile_image, true);
                         ?>
-                        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important; margin: 0 5%"></div>
+                        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important; margin: 0 5%">
+                            
+                        </div>
                         <span class="dropdown-item" id="noti_item">
                             <small class="pull-right" style="margin-top: -2px;"><i class="c-base-1 fa fa-clock-o"></i> <?=date('d M,y - h:i A', $row['time'])?></small>
                             <small class="sml_txt">
@@ -128,7 +130,7 @@
 		?>
     		<div class="text-center">
     			<small class="sml_txt">
-        			<?php echo translate('no_notification_to_show')?>
+        			<?php echo translate('no_notification_to_show'); ?>
         		</small>
         	</div>
 		<?php

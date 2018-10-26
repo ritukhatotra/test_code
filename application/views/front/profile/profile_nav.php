@@ -28,7 +28,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link my_interests p_nav" onclick="profile_load('my_interests')">
-                            <i class="fa fa-heart"></i> <?php echo translate('my_interests')?>
+                            <i class="fa fa-heart"></i> <?php echo translate('sent_interests')?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link received_interests p_nav" onclick="profile_load('received_interests')">
+                            <i class="fa fa-heart"></i> <?php echo translate('received_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">

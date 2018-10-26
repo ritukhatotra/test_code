@@ -81,9 +81,9 @@ $db['default'] = array(
 	'password' => 'prakash1234',
 	'database' => 'develope_matrimonial_v1.5',
 	*/
-	'username' => 'tipda',
-	'password' => 'tipda',
-	'database' => 'dev_orishta',
+	'username' => 'root',
+	'password' => '',
+	'database' => 'orishta',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

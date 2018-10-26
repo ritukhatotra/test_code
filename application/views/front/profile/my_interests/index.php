@@ -1,6 +1,6 @@
 <div class="card-title">
     <h3 class="heading heading-6 strong-500">
-    <b><?php echo translate('my_interests')?></b></h3>
+    <b><?php echo translate('sent_interests')?></b></h3>
 </div>
 
 <div class="card-body">

@@ -1770,6 +1770,13 @@ class Home extends CI_Controller {
             $para1 = "";            
         }
 
+
+        if ($para1 == "received-interests") {
+            $page_data['current_tab'] = "received_interests";
+            $para1 = "";
+        }
+
+
         if ($para1 == "shortlist") {
             $page_data['current_tab'] = "short_list";
             $para1 = "";            
@@ -1834,6 +1841,9 @@ class Home extends CI_Controller {
 		elseif ($para1=="my_interests") {
 			$this->load->view('front/profile/my_interests/index');
 		}
+        elseif ($para1 == "received_Interest") {
+           $this->load->view( 'front/profile/my_interests/received_interests' ); 
+        }
 		elseif ($para1=="ignored_list") {
 			$this->load->view('front/profile/ignored_list/index');
 		}
