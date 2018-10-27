@@ -1938,7 +1938,10 @@ class Home extends CI_Controller {
 
             $this->form_validation->set_rules('religion', 'Religion', 'required');
 
-            $this->form_validation->set_rules('date_of_birth', 'Date of Birth', 'required');
+            // $this->form_validation->set_rules('date_of_birth', 'Date of Birth', 'required');
+            $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
+            $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
+            $this->form_validation->set_rules('yearob', 'Year of Birth', 'required');
 
             $this->form_validation->set_rules('permanent_country', 'Permanent Country', 'required');
             $this->form_validation->set_rules('permanent_state', 'Permanent State', 'required');
@@ -1961,7 +1964,14 @@ class Home extends CI_Controller {
             	$data['gender'] = $this->input->post('gender');
             	$data['email'] = $this->input->post('email');
                 $data['mobile'] = $this->input->post('mobile');
-                $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
+
+                $monthob = $this->input->post('monthob');
+                $dateob = $this->input->post('dateob');
+                $yearob = $this->input->post('yearob');
+                $dob = $yearob."-".$monthob."-".$dateob;
+                $data['date_of_birth'] = strtotime($dob);
+                
+                // $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
                 $data['height'] = $this->input->post('height');
             	$data['introduction'] = $this->input->post('introduction');
 
@@ -2165,7 +2175,9 @@ class Home extends CI_Controller {
             $this->form_validation->set_rules('last_name', 'Last Name', 'required');
             $this->form_validation->set_rules('gender', 'Gender', 'required');
             $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
-            $this->form_validation->set_rules('date_of_birth', 'Date of Birth', 'required');
+            $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
+            $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
+            $this->form_validation->set_rules('yearob', 'Year of Birth', 'required');
             $this->form_validation->set_rules('belongs_to', 'Belongs to', 'required');
 
             if ($this->input->post('old_email') != $this->input->post('email')) {
@@ -2187,7 +2199,13 @@ class Home extends CI_Controller {
             	$data['email'] = $this->input->post('email');
                 $data['mobile'] = $this->input->post('mobile');
                 $data['belongs_to'] = $this->input->post('belongs_to');
-                $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
+
+                $monthob = $this->input->post('monthob');
+                $dateob = $this->input->post('dateob');
+                $yearob = $this->input->post('yearob');
+                $dob = $yearob."-".$monthob."-".$dateob;
+                $data['date_of_birth'] = strtotime($dob);
+                // $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
 
             	// ------------------------------------Basic Info------------------------------------ //
             	$basic_info[] = array(
@@ -4262,11 +4280,18 @@ class Home extends CI_Controller {
                             $captcha_answer = $this->input->post('g-recaptcha-response');
                             $response = $this->recaptcha->verifyResponse($captcha_answer);
                             if ($response['success']) {
+
+                                $monthob = $this->input->post('monthob');
+                                $dateob = $this->input->post('dateob');
+                                $yearob = $this->input->post('yearob');
+                                $dob = $yearob."-".$monthob."-".$dateob;
+                                $data['date_of_birth'] = strtotime($dob);
+
                                 $data['first_name'] = $this->input->post('first_name');
                                 $data['last_name'] = $this->input->post('last_name');
                                 $data['gender'] = $this->input->post('gender');
                                 $data['email'] = $this->input->post('email');
-                                $data['date_of_birth'] = $dob;
+                                // $data['date_of_birth'] = $dob;
                                 $data['height'] = 0.00;
                                 $data['mobile'] = $this->input->post('mobile');
                                 $data['password'] = sha1($this->input->post('password'));
