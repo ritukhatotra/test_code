@@ -159,7 +159,7 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <select name="monthob" id="mobrth" class="form-control form-control-sm">
-                                                        <option value="">Month</option>
+                                                        <option value="">MM</option>
                                                         <?php foreach ($month as $key => $value) : ?>
                                                         <option value="<?php echo $key; ?>">
                                                             <?php echo $value; ?>
@@ -169,12 +169,12 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <select name="dateob" id="dobrth" class="form-control form-control-sm">
-                                                        <option value="">Date</option>
+                                                        <option value="">DD</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <select name="yearob" id="yobrth" class="form-control form-control-sm">
-                                                        <option value="">Year</option>
+                                                        <option value="">YYYY</option>
                                                         <?php for( $y = 1970; $y <= $current_year; $y++ ) { ?>
                                                         <option value = "<?php echo $y; ?>">
                                                             <?php echo $y; ?>
@@ -208,7 +208,7 @@
                                                     
                                                 });
                                                 function date_drop(nmbr_days) {
-                                                    var date_html = "<option>Date</option>";
+                                                    var date_html = "<option>DD</option>";
                                                             for( var i = 1; i <= nmbr_days; i++ ) {
                                                                 date_html += "<option>"+i+"</option>";
                                                             }
