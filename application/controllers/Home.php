@@ -1841,7 +1841,7 @@ class Home extends CI_Controller {
 		elseif ($para1=="my_interests") {
 			$this->load->view('front/profile/my_interests/index');
 		}
-        elseif ($para1 == "received_Interest") {
+        elseif ($para1 == "received_interests") {
            $this->load->view( 'front/profile/my_interests/received_interests' ); 
         }
 		elseif ($para1=="ignored_list") {
