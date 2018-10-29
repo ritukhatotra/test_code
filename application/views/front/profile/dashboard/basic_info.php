@@ -55,6 +55,7 @@
                                     $calculated_age = (date('Y') - date('Y', $get_member[0]->date_of_birth));
                                     echo $calculated_age;
                                 ?>
+
                             </td>
                             <td class="td-label">
                                 <span><?php echo translate('marital_status')?></span>
@@ -166,8 +167,79 @@
                  <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="date_of_birth" class="text-uppercase c-gray-light"><?php echo translate('date_of_birth')?> </label>
-                        <input type="date" class="form-control no-resize" name="date_of_birth" value="<?=date('Y-m-d', $get_member[0]->date_of_birth)?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <!-- <input type="date" class="form-control no-resize" name="date_of_birth" value="<?=date('Y-m-d', $get_member[0]->date_of_birth)?>">
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span> -->
+                        <?php
+                                $month = [
+                                    '1' => 'January',
+                                    '2' => 'February',
+                                    '3' => 'March',
+                                    '4' => 'April',
+                                    '5' => 'May',
+                                    '6' => 'June',
+                                    '7' => 'July',
+                                    '8' => 'August',
+                                    '9' => 'September',
+                                    '10' => 'October',
+                                    '11' => 'November',
+                                    '12' => 'December'
+                                ];
+                                $current_year = date("Y");
+                                ?>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select name="monthob" id="mobrth" class="form-control form-control-sm">
+                                        <option value="">MM</option>
+                                        <?php foreach ($month as $key => $value) : ?>
+                                        <option value="<?php echo $key; ?>">
+                                            <?php echo $value; ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="dateob" id="dobrth" class="form-control form-control-sm">
+                                        <option value="">Date</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="yearob" id="yobrth" class="form-control form-control-sm">
+                                        <option value="">Year</option>
+                                        <?php for( $y = 1970; $y <= $current_year; $y++ ) { ?>
+                                        <option value = "<?php echo $y; ?>">
+                                            <?php echo $y; ?>
+                                        </option>
+                                        <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <script>
+                                    $(document).ready(function() {
+                                        $('#mobrth').on('change', function() {
+                                            var mobr = $('#mobrth').val();
+                                            var mon31 = ['1', '3', '5', '7','8', '10', '12'];
+                                            var mon30 = ['4', '6', '9', '11'];
+                                            if( $.inArray(mobr, mon31) != -1 ) {
+                                                date_drop(31);
+                                            }
+                                            else if( $.inArray(mobr, mon30) != -1 ) {
+                                                date_drop(30);
+                                                
+                                            }   else if( mobr == 2 ) {
+                                                date_drop(28);
+                                            }
+                                        });
+                                        
+                                        
+                                    });
+                                    function date_drop(nmbr_days) {
+                                        var date_html = "<option>Date</option>";
+                                                for( var i = 1; i <= nmbr_days; i++ ) {
+                                                    date_html += "<option>"+i+"</option>";
+                                                }
+                                                $('#dobrth').html(date_html);
+                                    }
+                                </script>
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
