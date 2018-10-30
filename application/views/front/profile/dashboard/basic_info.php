@@ -189,7 +189,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <select name="monthob" id="mobrth" class="form-control form-control-sm">
-                                        <option value="">MM</option>
+                                        <option value="">Month</option>
                                         <?php foreach ($month as $key => $value) : ?>
                                         <option value="<?php echo $key; ?>">
                                             <?php echo $value; ?>

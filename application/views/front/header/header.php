@@ -79,7 +79,8 @@
 	                                            </li>
 	                                        </ul>
                                         </nav>
-									</div> */?>																		<!----===================    Language Commented Code End   =======================--->									
+									</div> */?>																		
+									<!-- -===================    Language Commented Code End   ================- -->									
 						            <div class="col-lg-8 col-md-7">
 						               
 						            </div>
@@ -167,15 +168,21 @@
 					                <a class="nav-link <?php if($page == 'plans' || $page == 'subscribe'){?>nav_active<?php }?>" href="<?=base_url()?>home/plans" aria-haspopup="true" aria-expanded="false">
 					                <?php echo translate('pricing_plans')?></a>
 					                </li>
-					                <?php /*<li class="custom-nav">
+					                <?php 
+					                /*<li class="custom-nav">
 					                <a class="nav-link <?php if($page == 'stories' || $page == 'story_detail'){?>nav_active<?php }?>" href="<?=base_url()?>home/stories" aria-haspopup="true" aria-expanded="false">
 					                <?php echo translate('happy_stories')?></a>
-					                </li>*/?>
+					                </li>*/
+					                ?>
 					                <li class="custom-nav">
 					                <a class="nav-link <?php if($page == 'contact_us'){?>nav_active<?php }?>" href="<?=base_url()?>home/contact_us" aria-haspopup="true" aria-expanded="false">
 					                <?php echo translate('contact_us')?></a>
 					                </li>
-					            </ul>																								 <nav class="top-navbar-menu">							                <ul class="float-right top_bar_right">																		                </ul>						                </nav>								
+					            </ul>																				
+					            <nav class="top-navbar-menu">
+					            	<ul class="float-right top_bar_right">
+					            	</ul>						                
+					            </nav>								
 					        </div>
 					    </div>
 					</nav>
