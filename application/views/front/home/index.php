@@ -1,4 +1,4 @@
-<section class="sct-color-1">
+<section class="sct-color-1 no-padding">
     <div class="container-fluid no-padding">
         <div class="row row-no-padding">
             <?php $slider_status = $this->db->get_where('frontend_settings', array('type' => 'slider_status'))->row()->value;

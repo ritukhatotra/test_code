@@ -21,13 +21,13 @@
 											?>
 												<li class="dropdown dropdown--style-2 dropdown--animated float-left">
 													<a class="dropdown-icon dropdown-toggle has-notification noti_click" href="#" data-toggle="dropdown" aria-expanded="false">
-													    <i class="ion-ios-bell-outline"></i>
+													    <i class="ion-ios-bell-outline"></i> <span>Notification</span>
 													</a>
 													<?php include 'notification.php'; ?>
 							                    </li>
 												<li class="dropdown dropdown--style-2 dropdown--animated float-left">
 								                    <a class="dropdown-icon dropdown-toggle has-notification" href="#" data-toggle="dropdown" aria-expanded="false">
-									                    <i class="ion-ios-email-outline"></i>
+									                    <i class="ion-ios-email-outline"></i> <span>Inbox</span>
 								                    </a>
 								                    <?php include 'messages.php'; ?>
 							                    </li>
@@ -121,8 +121,8 @@
 												<?php
 												if (empty($this->session->userdata['member_id'])) {												
 												?>	
-		                                            <a href="<?=base_url()?>home/login" class="btn btn-styled btn-xs btn-base-1 btn-shadow"><i class="fa fa-power-off"></i> <?php echo translate('log_in')?></a>
-		                                            <a href="<?=base_url()?>home/registration" class="btn btn-styled btn-xs btn-base-1 btn-shadow"><i class="fa fa-user"></i> <?php echo translate('register')?></a>
+		                                            <a href="<?=base_url()?>home/login" class="btn btn-styled btn-base-1 btn-rouded"><i class="ion-android-person"></i> <?php echo translate('log_in')?></a>
+		                                            <!---a href="<?=base_url()?>home/registration" class="btn btn-styled btn-xs btn-base-1 btn-shadow"><i class="fa fa-user"></i> <?php //echo translate('register')?></a-->
 												<?php
 												}
 												?>
