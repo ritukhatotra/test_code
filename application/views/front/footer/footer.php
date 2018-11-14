@@ -25,7 +25,7 @@
                                                             }
                                                         ?>
                                                     </a>
-                                                    <div class="text-center"><small><?=$footer_text?></small></div>
+                                                    <div><small><?=$footer_text?></small></div>
                                                 </div>
                                             </div>
                                         <?php
@@ -114,7 +114,7 @@
                                                             }
                                                         ?>
                                                     </a>
-                                                    <div class="text-center"><small><?=$footer_text?></small></div>
+                                                    <div><small><?=$footer_text?></small></div>
                                                 </div>
                                             </div>
                                         <?php
