@@ -2714,6 +2714,27 @@ class Home extends CI_Controller {
         }
         }
         elseif ($para1=="update_image") {
+
+            if(isset($_POST['profile_image_data'])) {
+                $img_data = $_POST['profile_image_data'];
+                $id = $this->session->userdata('member_id');
+                $path = isset($_POST['profile_image_data_name']) ? $_POST['profile_image_data_name'] : 'profile_image_'.$id.time();
+                $ext = '.png';
+                $file_name = 'uploads/' .'profile_image/profile_' . $id . $ext;
+                $uri =  substr($img_data ,strpos($img_data ,",")+1);
+                file_put_contents($file_name, base64_decode($uri));
+                $this->Crud_model->img_thumb('profile', $id, $ext);
+                $images[] = array('profile_image' => 'profile_' . $id . $ext, 'thumb' => 'profile_' . $id . '_thumb' . $ext);
+                $data['profile_image'] = json_encode($images);
+
+                $this->db->where('member_id', $this->session->userdata('member_id'));
+
+                $result = $this->db->update('member', $data);
+                recache();
+                $this->session->set_flashdata('alert', 'edit_image');
+                redirect(base_url().'home/profile', 'refresh');
+            }
+
             if ($_FILES['profile_image']['name'] !== '') {
                 $id = $this->session->userdata('member_id');
                 $path = $_FILES['profile_image']['name'];

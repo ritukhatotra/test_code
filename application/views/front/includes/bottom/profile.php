@@ -33,3 +33,4 @@
 <script src="<?=base_url()?>template/front/vendor/lightgallery/js/lg-video.js"></script>
 <!-- App JS -->
 <script src="<?=base_url()?>template/front/js/wpx.app.js"></script>
+<script src="<?=base_url()?>template/front/js/croppie.min.js"></script>
