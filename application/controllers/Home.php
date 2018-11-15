@@ -3175,11 +3175,11 @@ class Home extends CI_Controller {
     {
         $this->load->library('Ajax_pagination');
 
-        $total_interests = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'notifications'), true);
+        $received_interests = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'notifications'), true);
         $config['total_rows'] = count($total_interests);
 
         // pagination
-        $config['base_url'] = base_url().'home/ajax_my_interest_list/';
+        $config['base_url'] = base_url().'home/ajax_received_interest_list/';
         $config['per_page'] = 10;
         $config['uri_segment'] = 5;
         $config['cur_page_giv'] = $para1;
@@ -3215,11 +3215,11 @@ class Home extends CI_Controller {
         $config['num_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
         $config['num_tag_close'] = '</a></li>';
         $this->ajax_pagination->initialize($config);
-        $total_interests_ids = array();
-        foreach ($total_interests as $total_interest) {
-            array_push($total_interests_ids ,$total_interest['id']);
+        $received_interests_ids = array();
+        foreach ($received_interests as $total_interest) {
+            array_push($received_interests_ids ,$received_interest['id']);
         }
-        if (count($total_interests) != 0) {
+        if (count($received_interests) != 0) {
             $page_data['express_interest_members'] = $this->db->from('member')->where_in('member_id', $total_interests_ids)->limit($config['per_page'], $para1)->get()->result();
             $page_data['array_total_interests'] = $total_interests;
         }
@@ -3229,7 +3229,7 @@ class Home extends CI_Controller {
         $page_data['count'] = $config['total_rows'];
 
 
-        $this->load->view('front/profile/my_interests/ajax_interest', $page_data);
+        $this->load->view('front/profile/my_interests/ajax_received_interest_view', $page_data);
     }
 
 
