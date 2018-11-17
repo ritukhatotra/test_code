@@ -1,3 +1,7 @@
+<?php 
+if(!empty($this->session->userdata['member_id'])) {
+	include_once APPPATH.'views/front/profile_nav.php';
+} ?>
 <style>
 
     @media (max-width: 576px) {

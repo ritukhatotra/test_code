@@ -1,3 +1,8 @@
+
+<?php 
+if(!empty($this->session->userdata['member_id'])) {
+	include_once APPPATH.'views/front/profile_nav.php';
+} ?>
 <section class="slice sct-color-1">
     <?php if (!empty($success_alert)): ?>
             <div class="col-6 ml-auto mr-auto" id="success_alert">

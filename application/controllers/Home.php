@@ -3923,7 +3923,7 @@ class Home extends CI_Controller {
 
     function faq()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "FAQ || ".$this->system_title;
         $page_data['top'] = "faq.php";
         $page_data['page'] = "faq";
         $page_data['bottom'] = "faq.php";
@@ -3934,7 +3934,7 @@ class Home extends CI_Controller {
 
     function terms_and_conditions()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "Terms & Conditions || ".$this->system_title;
         $page_data['top'] = "terms_and_conditions.php";
         $page_data['page'] = "terms_and_conditions";
         $page_data['bottom'] = "terms_and_conditions.php";
@@ -3945,7 +3945,7 @@ class Home extends CI_Controller {
 
     function privacy_policy()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "Privacy Policy || ".$this->system_title;
         $page_data['top'] = "privacy_policy.php";
         $page_data['page'] = "privacy_policy";
         $page_data['bottom'] = "privacy_policy.php";
