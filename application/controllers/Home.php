@@ -1842,7 +1842,7 @@ class Home extends CI_Controller {
 			$this->load->view('front/profile/my_interests/index');
 		}
         elseif ($para1 == "received_interests") {
-            $this->load->view( 'front/profile/my_interests/received_interests', compact('notification') ); 
+            $this->load->view( 'front/profile/received_interests/index'); 
         }
 		elseif ($para1=="ignored_list") {
 			$this->load->view('front/profile/ignored_list/index');
@@ -3129,7 +3129,7 @@ class Home extends CI_Controller {
         $this->load->view('front/stories/stories', $page_data);
     }
 
-    function ajax_my_interest_list($para1="",$para2="")
+ function ajax_my_interest_list($para1="",$para2="")
     {
         $this->load->library('Ajax_pagination');
 
@@ -3188,6 +3188,67 @@ class Home extends CI_Controller {
 
 
         $this->load->view('front/profile/my_interests/ajax_interest', $page_data);
+    }
+
+    function ajax_my_received_interest_list($para1="",$para2="")
+    {
+        $this->load->library('Ajax_pagination');
+
+        $total_interests = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'interested_by'), true);
+        $config['total_rows'] = count($total_interests);
+
+        // pagination
+        $config['base_url'] = base_url().'home/ajax_my_received_interest_list/';
+        $config['per_page'] = 10;
+        $config['uri_segment'] = 5;
+        $config['cur_page_giv'] = $para1;
+
+        $function = "filter_my_interets('0')";
+        $config['first_link'] = '&laquo;';
+        $config['first_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['first_tag_close'] = '</a></li>';
+
+        $rr = ($config['total_rows'] - 1) / $config['per_page'];
+        $last_start = floor($rr) * $config['per_page'];
+        $function = "filter_my_interets('" . $last_start . "')";
+        $config['last_link'] = '&raquo;';
+        $config['last_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['last_tag_close'] = '</a></li>';
+
+        $function = "filter_my_interets('" . ($para1 - $config['per_page']) . "')";
+        $config['prev_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['prev_tag_close'] = '</a></li>';
+
+        $function = "filter_my_interets('" . ($para1 + $config['per_page']) . "')";
+        $config['next_link'] = '>';
+        $config['next_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['next_tag_close'] = '</a></li>';
+
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link">';
+        $config['cur_tag_close'] = '<span class="sr-only">(current)</span></a></li>';
+
+        $function = "filter_my_interets(((this.innerHTML-1)*" . $config['per_page'] . "))";
+        $config['num_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['num_tag_close'] = '</a></li>';
+        $this->ajax_pagination->initialize($config);
+        $total_interests_ids = array();
+        foreach ($total_interests as $total_interest) {
+            array_push($total_interests_ids ,$total_interest['id']);
+        }
+        if (count($total_interests) != 0) {
+            $page_data['express_interest_members'] = $this->db->from('member')->where_in('member_id', $total_interests_ids)->limit($config['per_page'], $para1)->get()->result();
+            $page_data['array_total_interests'] = $total_interests;
+        }
+        else{
+            $page_data['express_interest_members'] = NULL;    
+        }
+        $page_data['count'] = $config['total_rows'];
+
+
+        $this->load->view('front/profile/received_interests/ajax_interest', $page_data);
     }
 
 

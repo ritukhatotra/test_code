@@ -1,6 +1,4 @@
-<?php  
-$notifications = $this->home->get_received_interests($this->session->userdata('member_id'));
-?>
+
 <div class="card-title">
     <h3 class="heading heading-6 strong-500">
     <b><?php echo translate('received_interests')?></b></h3>
@@ -142,6 +140,7 @@ $notifications = $this->home->get_received_interests($this->session->userdata('m
                     }
                 }
             }
+        }
         }
         if (count($notification) <= 0) {
         ?>
