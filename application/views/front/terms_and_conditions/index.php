@@ -1,3 +1,8 @@
+<?php 
+if(!empty($this->session->userdata['member_id'])) {
+	include_once APPPATH.'views/front/profile_nav.php';
+} ?>
+
 <section class="slice sct-color-1">
     <div class="container">
         <div class="section-title section-title--style-1 text-center mb-4">

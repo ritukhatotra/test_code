@@ -51,6 +51,7 @@
 ?>
 <!-- Custom style - Remove if not necessary -->
 <link type="text/css" href="<?=base_url()?>template/front/css/custom-style.css" rel="stylesheet">
+<link type="text/css" href="<?=base_url()?>template/front/css/croppie.css" rel="stylesheet">
 <!-- Favicon -->
 
 

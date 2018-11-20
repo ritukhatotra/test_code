@@ -1803,6 +1803,9 @@ class Home extends CI_Controller {
 			$page_data['page'] = "profile/dashboard";
 			$page_data['bottom'] = "profile.php";
 			$page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+ if ($this->session->flashdata('alert') == "complete_profile") {
+                $page_data['success_alert'] = translate("please_complete_your_profile!");
+            }
             if ($this->session->flashdata('alert') == "edit") {
                 $page_data['success_alert'] = translate("you_have_successfully_edited_your_profile!");
             }
@@ -1842,7 +1845,7 @@ class Home extends CI_Controller {
 			$this->load->view('front/profile/my_interests/index');
 		}
         elseif ($para1 == "received_interests") {
-            $this->load->view( 'front/profile/my_interests/received_interests', compact('notification') ); 
+            $this->load->view( 'front/profile/received_interests/index'); 
         }
 		elseif ($para1=="ignored_list") {
 			$this->load->view('front/profile/ignored_list/index');
@@ -2714,6 +2717,28 @@ class Home extends CI_Controller {
         }
         }
         elseif ($para1=="update_image") {
+
+            if(isset($_POST['profile_image_data'])) {
+//die("jh");
+                $img_data = $_POST['profile_image_data'];
+                $id = $this->session->userdata('member_id');
+                $path = isset($_POST['profile_image_data_name']) ? $_POST['profile_image_data_name'] : 'profile_image_'.$id.time();
+                $ext = '.png';
+                $file_name = 'uploads/' .'profile_image/profile_' . $id . $ext;
+                $uri =  substr($img_data ,strpos($img_data ,",")+1);
+                file_put_contents($file_name, base64_decode($uri));
+                $this->Crud_model->img_thumb('profile', $id, $ext);
+                $images[] = array('profile_image' => 'profile_' . $id . $ext, 'thumb' => 'profile_' . $id . '_thumb' . $ext);
+                $data['profile_image'] = json_encode($images);
+
+                $this->db->where('member_id', $this->session->userdata('member_id'));
+
+                $result = $this->db->update('member', $data);
+                recache();
+                $this->session->set_flashdata('alert', 'edit_image');
+                redirect(base_url().'home/profile', 'refresh');
+            }
+
             if ($_FILES['profile_image']['name'] !== '') {
                 $id = $this->session->userdata('member_id');
                 $path = $_FILES['profile_image']['name'];
@@ -2976,7 +3001,43 @@ class Home extends CI_Controller {
                     $new_index = $max_index + 1;
                 }
 
-                if ($_FILES['image']['name'] !== '') {
+if(isset($_POST['gallery_profile_image_data'])) {
+//die("jh");
+                $img_data = $_POST['gallery_profile_image_data'];
+                $id = $this->session->userdata('member_id');
+                $path = isset($_POST['gallery_profile_image_data_name']) ? $_POST['gallery_profile_image_data_name'] : 'gallery_'.$id.time();
+                $ext = '.png';
+                
+                $file_name = 'uploads/gallery_image/gallery_'.$member_id.'_'.$new_index.$ext;
+                $uri =  substr($img_data ,strpos($img_data ,",")+1);
+                file_put_contents($file_name, base64_decode($uri));
+                $file_name = 'gallery_'.$member_id.'_'.$new_index.$ext;
+                $this->Crud_model->img_thumb('gallery_image', $id, $ext);
+                
+               if (!empty($gallery_data)) {
+                            $gallery_data[] = array( 'index'    =>  $new_index,
+                                                    'title'     =>  $this->input->post('title'),
+                                                    'image'     =>  $file_name
+                                            );
+                            // print_r($gallery_data);
+                            $data['gallery'] = json_encode($gallery_data);
+                            // echo 'in if';
+                        } else {
+                            $gallery[] = array( 'index'     =>  $new_index,
+                                            'title'     =>  $this->input->post('title'),
+                                            'image'     =>  $file_name
+                                    );
+                            $data['gallery'] = json_encode($gallery);
+                            // print_r($data['gallery']);
+                            // echo '<br>in else';
+                        }
+                        
+                        $this->db->where('member_id', $member_id);
+                        $result = $this->db->update('member', $data);
+                        recache();
+            }
+
+                /*if ($_FILES['image']['name'] !== '') {
                     $path = $_FILES['image']['name'];
                     $ext = '.' . pathinfo($path, PATHINFO_EXTENSION);
                     if ($ext==".jpg" || $ext==".JPG" || $ext==".jpeg" || $ext==".JPEG" || $ext==".png" || $ext==".PNG") {
@@ -3011,7 +3072,7 @@ class Home extends CI_Controller {
                     else {
                         $this->session->set_flashdata('alert', 'failed');
                     }
-                }
+                }*/
 
                 if ($result) {
                     $data1['photo_gallery'] = $photo_gallery_amount - 1;
@@ -3108,7 +3169,7 @@ class Home extends CI_Controller {
         $this->load->view('front/stories/stories', $page_data);
     }
 
-    function ajax_my_interest_list($para1="",$para2="")
+ function ajax_my_interest_list($para1="",$para2="")
     {
         $this->load->library('Ajax_pagination');
 
@@ -3167,6 +3228,67 @@ class Home extends CI_Controller {
 
 
         $this->load->view('front/profile/my_interests/ajax_interest', $page_data);
+    }
+
+    function ajax_my_received_interest_list($para1="",$para2="")
+    {
+        $this->load->library('Ajax_pagination');
+
+        $total_interests = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'interested_by'), true);
+        $config['total_rows'] = count($total_interests);
+
+        // pagination
+        $config['base_url'] = base_url().'home/ajax_my_received_interest_list/';
+        $config['per_page'] = 10;
+        $config['uri_segment'] = 5;
+        $config['cur_page_giv'] = $para1;
+
+        $function = "filter_my_interets('0')";
+        $config['first_link'] = '&laquo;';
+        $config['first_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['first_tag_close'] = '</a></li>';
+
+        $rr = ($config['total_rows'] - 1) / $config['per_page'];
+        $last_start = floor($rr) * $config['per_page'];
+        $function = "filter_my_interets('" . $last_start . "')";
+        $config['last_link'] = '&raquo;';
+        $config['last_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['last_tag_close'] = '</a></li>';
+
+        $function = "filter_my_interets('" . ($para1 - $config['per_page']) . "')";
+        $config['prev_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['prev_tag_close'] = '</a></li>';
+
+        $function = "filter_my_interets('" . ($para1 + $config['per_page']) . "')";
+        $config['next_link'] = '>';
+        $config['next_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['next_tag_close'] = '</a></li>';
+
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link">';
+        $config['cur_tag_close'] = '<span class="sr-only">(current)</span></a></li>';
+
+        $function = "filter_my_interets(((this.innerHTML-1)*" . $config['per_page'] . "))";
+        $config['num_tag_open'] = '<li class="page-item"><a class="page-link" onClick="' . $function . '">';
+        $config['num_tag_close'] = '</a></li>';
+        $this->ajax_pagination->initialize($config);
+        $total_interests_ids = array();
+        foreach ($total_interests as $total_interest) {
+            array_push($total_interests_ids ,$total_interest['id']);
+        }
+        if (count($total_interests) != 0) {
+            $page_data['express_interest_members'] = $this->db->from('member')->where_in('member_id', $total_interests_ids)->limit($config['per_page'], $para1)->get()->result();
+            $page_data['array_total_interests'] = $total_interests;
+        }
+        else{
+            $page_data['express_interest_members'] = NULL;    
+        }
+        $page_data['count'] = $config['total_rows'];
+
+
+        $this->load->view('front/profile/received_interests/ajax_interest', $page_data);
     }
 
 
@@ -3902,7 +4024,7 @@ class Home extends CI_Controller {
 
     function faq()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "FAQ || ".$this->system_title;
         $page_data['top'] = "faq.php";
         $page_data['page'] = "faq";
         $page_data['bottom'] = "faq.php";
@@ -3913,7 +4035,7 @@ class Home extends CI_Controller {
 
     function terms_and_conditions()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "Terms & Conditions || ".$this->system_title;
         $page_data['top'] = "terms_and_conditions.php";
         $page_data['page'] = "terms_and_conditions";
         $page_data['bottom'] = "terms_and_conditions.php";
@@ -3924,7 +4046,7 @@ class Home extends CI_Controller {
 
     function privacy_policy()
     {
-        $page_data['title'] = "Contact Us || ".$this->system_title;
+        $page_data['title'] = "Privacy Policy || ".$this->system_title;
         $page_data['top'] = "privacy_policy.php";
         $page_data['page'] = "privacy_policy";
         $page_data['bottom'] = "privacy_policy.php";
@@ -3998,7 +4120,15 @@ class Home extends CI_Controller {
                         $this->session->set_userdata($data);
                     }
 
-                    redirect( base_url().'home/', 'refresh' );   
+                   $profile = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+                   $profile_basic_details = json_decode($profile->basic_details, true);
+
+                   if($profile->height > 0 && $profile->introduction != "" && $profile_basic_details['marital_status'] != "" && $profile->belongs_to != "") {
+                      redirect( base_url().'home/', 'refresh' ); 
+                    }else{
+                       $this->session->set_flashdata('alert','complete_profile');
+                       redirect( base_url().'home/profile', 'refresh' );   
+                    }
                 }
                 elseif ($result->is_blocked == "yes") {
                     $this->session->set_flashdata('alert','blocked');

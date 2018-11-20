@@ -1,3 +1,7 @@
+<?php 
+if(!empty($this->session->userdata['member_id'])) {
+	include_once APPPATH.'views/front/profile_nav.php';
+} ?>
 <section class="sct-color-1 no-padding">
     <div class="container-fluid no-padding">
         <div class="row row-no-padding">
