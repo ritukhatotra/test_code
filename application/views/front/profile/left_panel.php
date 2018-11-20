@@ -13,7 +13,7 @@
                 if (file_exists('uploads/profile_image/'.$images[0]['thumb'])) {
                 ?>
                     <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>)"></div>
+                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb'].'?t='.time()?>)"></div>
                     </div>
                 <?php
                 }
@@ -25,15 +25,65 @@
                 <?php
                 }
             ?>
+            <div class="upload-demo-wrap" style="display:none;">
+                                <div id="upload-demo"></div>
+                            </div>
             <div class="profile-connect mt-1 mb-0" id="save_button_section" style="display: none">
                 <button type="button" class="btn btn-styled btn-xs btn-base-2" id="save_image" ><?php echo translate('save_image')?></button>
+            </div>
+            <div class="profile-connect mt-1 mb-0" id="cancel_save_button_section" style="display: none">
+                <button type="button" class="btn btn-styled btn-xs btn-base-2" id="cancel_save_image" ><?php echo translate('cancel_image')?></button>
             </div>
             <label class="btn-aux" for="profile_image" style="cursor: pointer;">
                 <i class="ion ion-edit"></i>
             </label>
             <form action="<?=base_url()?>home/profile/update_image" method="POST" id="profile_image_form" enctype="multipart/form-data">
-                <input type="file" style="display: none;" id="profile_image" name="profile_image"/>
+            <input type="hidden" id="profile_image_data" name="profile_image_data" />
+                <input type="file" style="display: none;" id="profile_image" name="profile_image" onChange="readFile(event)"/>
+              <!--  <input type="file" id="upload" style="display: none;" value="Choose a file" accept="image/*" name="profile_image">-->
+                
             </form>
+            <style>
+            .upload-demo .upload-demo-wrap,
+.upload-demo .upload-result,
+.upload-demo.ready .upload-msg {
+    display: none;
+}
+.upload-demo.ready .upload-demo-wrap {
+    display: block;
+}
+.upload-demo.ready .upload-result {
+    display: inline-block;    
+}
+.upload-demo-wrap {
+    width: 300px;
+    height: 300px;
+    margin: 30px auto;
+}
+
+.upload-msg {
+    text-align: center;
+    padding: 50px;
+    font-size: 22px;
+    color: #aaa;
+    width: 260px;
+    margin: 50px auto;
+    border: 1px solid #aaa;
+}
+
+.profile-picture.profile-picture--style-2 .cr-image{
+    border-radius: unset;
+    margin-top:  unset;
+    border:  unset;
+}
+
+            </style>
+           
+
+<button class="upload-result"  style="display:none;">Result</button>
+            
+            
+            
             <!-- <a href="#" class="btn-aux">
                 <i class="ion ion-edit"></i>
             </a> -->
@@ -134,7 +184,7 @@
 </div>
 
 <script>
-    $("#profile_image").change(function () {
+    $("#profile_image__").change(function () {
         readURL(this);
     });
     function readURL(input) {
@@ -149,9 +199,84 @@
             $("#save_button_section").show();
         }
     }
-    $("#save_image").click(function(e) {
+    $("#save_image__").click(function(e) {
         e.preventDefault();
         // alert('asdas');
         $("#profile_image_form").submit();
     })
+    $(document).ready(function(){
+    
+$uploadCrop = $('#upload-demo').croppie({
+    enableExif: true,
+    viewport: {
+        width: 200,
+        height: 200,
+        type: 'square'
+    },
+    boundary: {
+        width: 250,
+        height: 250
+    }
+});
+
+	//	
+		$('#save_image').on('click', function (ev) {
+		ev.preventDefault();
+			$uploadCrop.croppie('result', {
+				type: 'canvas',
+				size: 'viewport'
+			}).then(function (resp) {
+				popupResult({
+					src: resp
+				});
+			});
+		});
+		$('#cancel_save_image').on('click', function (ev) {
+		//location.reload();
+			$("#save_button_section").hide();
+	            $("#show_img").parent().show();
+          	    $(".btn-aux").show();
+          	    $(".upload-demo-wrap").hide();
+          	    $("#cancel_save_button_section").hide();
+		});
+});
+
+$(document).delegate('#profile_image', 'change', function () { readFile(this); });
+
+function readFile(input) {
+//debugger;
+ 			if (input.files && input.files[0]) {
+ 			
+	            var reader = new FileReader();
+	            
+	            reader.onload = function (e) {
+					$('.upload-demo').addClass('ready');
+	            	$uploadCrop.croppie('bind', {
+	            		url: e.target.result
+	            	}).then(function(){
+	            		console.log('jQuery bind complete');
+	            	});
+	            	
+	            }
+	            
+	            reader.readAsDataURL(input.files[0]);
+	            
+	            $("#save_button_section").show();
+	            $("#show_img").parent().hide();
+          	    $(".btn-aux").hide();
+          	    $(".upload-demo-wrap").show();
+          	    $("#cancel_save_button_section").show();
+	            
+	        }
+	        }
+	        
+
+	
+	
+	function popupResult(result) {
+		
+        // alert('asdas');
+        	$("#profile_image_data").val(result.src);
+        	$("#profile_image_form").submit();
+	}
 </script>

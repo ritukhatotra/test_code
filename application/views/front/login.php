@@ -88,15 +88,16 @@
 
         ?>
 
-        <section class="slice-lg has-bg-cover bg-size-cover" style="background-image: url(<?=base_url()?>uploads/login_image/<?=$login_image_data[0]['image']?>); background-position: bottom bottom;">
-            <span class="mask mask-dark--style-2"></span>
+        <section class="has-bg-cover bg-size-cover login-register " style="background-image: url(<?=base_url()?>uploads/login_image/<?=$login_image_data[0]['image']?>); background-position: bottom bottom;">
+            <!---span class="mask mask-dark--style-2"></span-->
             <div class="container">
                 <div class="row cols-xs-space align-items-center text-center text-md-left">
                     <div class="col-lg-4 col-md-6 ml-auto mr-auto">
-                        <div class="form-card form-card--style-2 z-depth-3-top">
+                        <div class="form-card form-card--style-2 z-depth-3-top login-register-form form-white">
                             <div class="form-body">
                                 <div class="text-center px-2">
-                                    <h4 class="heading heading-4 strong-400 mb-4 font_light"><?php echo translate('log_in_to_your_account')?></h4>
+                                    <h4 class="heading heading-3"><?php echo translate('log_in_to_your_account')?></h4>
+									<div class="clearfix"></div><br>
                                     <?php 
                                         if (!empty($register_success)) {
                                         ?>
@@ -106,21 +107,21 @@
                                     ?>
                                 </div>
                                 <form class="form-default" role="form" method="post" action="<?=base_url()?>home/check_login">
-                                    <div class="row">
-                                        <div class="col-12">
+                                  
+                                      
                                             <div class="form-group">
-                                                <label class="text-uppercase font_light"><?php echo translate('email')?></label>
-                                                <input type="email" class="form-control input-sm" name="email" autofocus required>
+                                                <!---label class="text-uppercase font_light"></label-->
+                                                <input type="email" class="form-control form-control-lg" placeholder="<?php echo translate('email')?>"name="email" autofocus required>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
+                                      
+                               
+                                 
+                                      
                                             <div class="form-group has-feedback">
-                                                <label class="text-uppercase font_light"><?php echo translate('password')?></label>
-                                                <input type="password" class="form-control input-sm" name="password" required>
-                                            </div>
-                                            <p style="color: red">
+                                                <!---label class="text-uppercase font_light"></label-->
+                                                <input type="password" class="form-control form-control-lg" placeholder="<?php echo translate('password')?>" name="password" required>
+                                            
+											  <p style="color: red">
                                                 <?php 
                                                     if (!empty($login_error)){
                                                         echo $login_error;
@@ -134,9 +135,14 @@
                                                     }
                                                 ?>
                                             </p>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-styled btn-sm btn-block btn-base-1 z-depth-2-bottom mt-4"><?php echo translate('log_in')?></button>
+											
+											
+											
+											</div>
+                                          
+                                     
+                                 
+                                    <button type="submit" class="btn btn-styled btn-lg btn-block btn-base-1 z-depth-2-bottom mt-4"><?php echo translate('log_in')?></button>
                                     <div class="row pt-3">
                                         <div class="col-6" style="font-size: 12px;">
                                             <div class="checkbox">
@@ -149,13 +155,19 @@
                                         </div>
                                     </div>
                                 </form>
-                                <div class="row">
-                                    <div class="col-12 text-center" style="font-size: 12px;">
-                                        <span class="c-gray-light"><?php echo translate('new_here?')?></span><a class="c-gray-light" href="<?=base_url()?>home/registration"> <u><?php echo translate('create_an_account_from_here!')?></u></a>
-                                    </div>
-                                </div>
+                               
                             </div>
+							
                         </div>
+						
+						 <div class="clearfix"></div><br>
+					
+                                    <div class="col-12 text-center">
+                                        <span class="text-white"><?php echo translate('new_here?')?></span>
+										   <div class="clearfix"></div>
+										<a class="text-white" href="<?=base_url()?>home/registration"> <u><?php echo translate('create_an_account_from_here!')?></u></a>
+                                    </div>
+                               
                     </div>
                 </div>
             </div>

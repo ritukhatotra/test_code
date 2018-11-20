@@ -117,8 +117,12 @@
 					            </button>
 					        </div>
 					        <div class="collapse navbar-collapse align-items-center justify-content-end" id="navbar_main">
+							
+							  <!---nav class="top-navbar-menu"></nav-->
+					            	<ul class="float-right top_bar_right"></ul>	
+									
 					            <!-- Navbar links -->
-					            <ul class="navbar-nav" data-hover="dropdown">
+					            <ul class="navbar-nav float-right " data-hover="dropdown">
 					                <?php /*<li class="custom-nav">
 					                <a class="nav-link <?php if($page == 'home'){?>nav_active<?php }?>" href="<?=base_url()?>home" aria-haspopup="true" aria-expanded="false">
 					                <?php echo translate('home')?></a>
@@ -179,11 +183,15 @@
 					                <?php echo translate('contact_us')?></a>
 					                </li>
 					            </ul>																				
-					            <nav class="top-navbar-menu">
-					            	<ul class="float-right top_bar_right">
-					            	</ul>						                
-					            </nav>								
+					          					                
+					            								
 					        </div>
+							
+						<!---- USer nav for Mobile-->	
+							<!---ul class="float-right top_bar_right user-nav-mobile"></ul-->
+							
+								<!---- USer nav for Mobile END -->	
+							
 					    </div>
 					</nav>
 

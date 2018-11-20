@@ -286,8 +286,7 @@ definitions: {
 
     function load_section(section)
     {
-        
-        $('#info_'+section).show();
+	$('#info_'+section).show();
         $('#edit_'+section).hide();
     }
 

@@ -71,10 +71,46 @@
             clearInterval(message_interval);
         }
         if(page !== ''){
+        
             $.ajax({
                 url: "<?=base_url()?>home/profile/"+page,
                 success: function(response) {
                     $("#profile_load").html(response);
+                    var url_in =  "my-interests";
+                    if (page == "my_interests") {
+                    	url_in =  "my-interests";
+        	    }
+        	    if (page == "received_interests") {
+                    	url_in =  "received-interests";
+        	    }
+        	    if (page == "short_list") {
+                    	url_in =  "shortlist";
+        	    }
+        	    if (page == "followed_users") {
+                    	url_in =  "followed-users";
+        	    }
+        	    if (page == "messaging") {
+                    	url_in =  "messaging-list";
+        	    }
+        	     if (page == "ignored_list") {
+                    	url_in =  "ignored-list";
+        	    }
+                        var url = window.location.href;
+			url = url.split('/');
+			var var_url = url;
+			var_url = var_url.pop();
+			console.log('var_url'+var_url);
+			if(var_url == 'profile') {
+			     url = url.join('/');
+			     console.log('url'+url);
+			     
+				history.pushState(null, null, url+"/profile/"+url_in);
+			}else{			
+			  url.splice(-1,1)
+		          url = url.join('/');
+		          console.log('url'+url);
+          		 history.pushState(null, null, url+"/profile/"+url_in);
+       		 }
                     if(page == 'messaging'){
                         $('body').find('#thread_'+sp).click();
                     }

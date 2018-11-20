@@ -1,4 +1,8 @@
-<section class="sct-color-1">
+<?php 
+if(!empty($this->session->userdata['member_id'])) {
+	include_once APPPATH.'views/front/profile_nav.php';
+} ?>
+<section class="sct-color-1 no-padding">
     <div class="container-fluid no-padding">
         <div class="row row-no-padding">
             <?php $slider_status = $this->db->get_where('frontend_settings', array('type' => 'slider_status'))->row()->value;
