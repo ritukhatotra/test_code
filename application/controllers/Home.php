@@ -1803,6 +1803,9 @@ class Home extends CI_Controller {
 			$page_data['page'] = "profile/dashboard";
 			$page_data['bottom'] = "profile.php";
 			$page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+ if ($this->session->flashdata('alert') == "complete_profile") {
+                $page_data['success_alert'] = translate("please_complete_your_profile!");
+            }
             if ($this->session->flashdata('alert') == "edit") {
                 $page_data['success_alert'] = translate("you_have_successfully_edited_your_profile!");
             }
@@ -2716,6 +2719,7 @@ class Home extends CI_Controller {
         elseif ($para1=="update_image") {
 
             if(isset($_POST['profile_image_data'])) {
+//die("jh");
                 $img_data = $_POST['profile_image_data'];
                 $id = $this->session->userdata('member_id');
                 $path = isset($_POST['profile_image_data_name']) ? $_POST['profile_image_data_name'] : 'profile_image_'.$id.time();
@@ -2997,7 +3001,43 @@ class Home extends CI_Controller {
                     $new_index = $max_index + 1;
                 }
 
-                if ($_FILES['image']['name'] !== '') {
+if(isset($_POST['gallery_profile_image_data'])) {
+//die("jh");
+                $img_data = $_POST['gallery_profile_image_data'];
+                $id = $this->session->userdata('member_id');
+                $path = isset($_POST['gallery_profile_image_data_name']) ? $_POST['gallery_profile_image_data_name'] : 'gallery_'.$id.time();
+                $ext = '.png';
+                
+                $file_name = 'uploads/gallery_image/gallery_'.$member_id.'_'.$new_index.$ext;
+                $uri =  substr($img_data ,strpos($img_data ,",")+1);
+                file_put_contents($file_name, base64_decode($uri));
+                $file_name = 'gallery_'.$member_id.'_'.$new_index.$ext;
+                $this->Crud_model->img_thumb('gallery_image', $id, $ext);
+                
+               if (!empty($gallery_data)) {
+                            $gallery_data[] = array( 'index'    =>  $new_index,
+                                                    'title'     =>  $this->input->post('title'),
+                                                    'image'     =>  $file_name
+                                            );
+                            // print_r($gallery_data);
+                            $data['gallery'] = json_encode($gallery_data);
+                            // echo 'in if';
+                        } else {
+                            $gallery[] = array( 'index'     =>  $new_index,
+                                            'title'     =>  $this->input->post('title'),
+                                            'image'     =>  $file_name
+                                    );
+                            $data['gallery'] = json_encode($gallery);
+                            // print_r($data['gallery']);
+                            // echo '<br>in else';
+                        }
+                        
+                        $this->db->where('member_id', $member_id);
+                        $result = $this->db->update('member', $data);
+                        recache();
+            }
+
+                /*if ($_FILES['image']['name'] !== '') {
                     $path = $_FILES['image']['name'];
                     $ext = '.' . pathinfo($path, PATHINFO_EXTENSION);
                     if ($ext==".jpg" || $ext==".JPG" || $ext==".jpeg" || $ext==".JPEG" || $ext==".png" || $ext==".PNG") {
@@ -3032,7 +3072,7 @@ class Home extends CI_Controller {
                     else {
                         $this->session->set_flashdata('alert', 'failed');
                     }
-                }
+                }*/
 
                 if ($result) {
                     $data1['photo_gallery'] = $photo_gallery_amount - 1;
@@ -4080,7 +4120,15 @@ class Home extends CI_Controller {
                         $this->session->set_userdata($data);
                     }
 
-                    redirect( base_url().'home/', 'refresh' );   
+                   $profile = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+                   $profile_basic_details = json_decode($profile->basic_details, true);
+
+                   if($profile->height > 0 && $profile->introduction != "" && $profile_basic_details['marital_status'] != "" && $profile->belongs_to != "") {
+                      redirect( base_url().'home/', 'refresh' ); 
+                    }else{
+                       $this->session->set_flashdata('alert','complete_profile');
+                       redirect( base_url().'home/profile', 'refresh' );   
+                    }
                 }
                 elseif ($result->is_blocked == "yes") {
                     $this->session->set_flashdata('alert','blocked');

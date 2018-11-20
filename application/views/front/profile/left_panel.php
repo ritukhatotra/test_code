@@ -13,7 +13,7 @@
                 if (file_exists('uploads/profile_image/'.$images[0]['thumb'])) {
                 ?>
                     <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>)"></div>
+                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb'].'?t='.time()?>)"></div>
                     </div>
                 <?php
                 }
@@ -209,9 +209,9 @@
 $uploadCrop = $('#upload-demo').croppie({
     enableExif: true,
     viewport: {
-        width: 180,
-        height: 175,
-        type: 'circle'
+        width: 200,
+        height: 200,
+        type: 'square'
     },
     boundary: {
         width: 250,

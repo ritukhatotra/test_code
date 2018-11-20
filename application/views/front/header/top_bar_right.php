@@ -75,7 +75,12 @@
     <a class="dropdown-item" href="<?=base_url()?>home/profile">My Profile</a>
     <li class="nav-item">
                         <a class="nav-link my_interests p_nav" href="<?=base_url()?>home/profile/my-interests">
-                            <i class="fa fa-heart"></i> <?php echo translate('my_interests')?>
+                            <i class="fa fa-heart"></i> <?php echo translate('sent_interests')?>
+                        </a>
+                    </li>
+<li class="nav-item">
+                        <a class="nav-link received_interests p_nav" href="<?=base_url()?>home/profile/received-interests">
+                            <i class="fa fa-heart"></i> <?php echo translate('received_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">
