@@ -97,13 +97,93 @@
 	                            </div>
 	                            <div class="row">
 	                                <div class="col-md-6">
-	                                    <div class="form-group has-feedback">
+
+	                                	<div class="form-group has-feedback">
+					                        <label for="date_of_birth" class="text-uppercase c-gray-light"><?php echo translate('date_of_birth')?> </label>
+					                        <?php
+					                                $month = [
+					                                    '1' => 'January',
+					                                    '2' => 'February',
+					                                    '3' => 'March',
+					                                    '4' => 'April',
+					                                    '5' => 'May',
+					                                    '6' => 'June',
+					                                    '7' => 'July',
+					                                    '8' => 'August',
+					                                    '9' => 'September',
+					                                    '10' => 'October',
+					                                    '11' => 'November',
+					                                    '12' => 'December'
+					                                ];
+					                                $current_year = date("Y");
+					                                
+					                                $old_date = date('d', $value->date_of_birth);
+					                                $old_month = date('m', $value->date_of_birth);
+					                                $old_year = date('Y', $value->date_of_birth);
+					                                ?>
+					                                <div class="row">
+					                                    <div class="col-md-4">
+					                                        <select name="monthob" id="mobrth" class="form-control form-control-sm">
+					                                        <option value="">Month</option>
+					                                        <?php foreach ($month as $key => $value) : ?>
+					                                        <option value="<?php echo $key; ?>" <?php if($key == $old_month) { echo "selected"; } ?>>
+					                                            <?php echo $value; ?>
+					                                        </option>
+					                                        <?php endforeach; ?>
+					                                        </select>
+					                                    </div>
+					                                    <div class="col-md-4">
+					                                        <select name="dateob" id="dobrth" class="form-control form-control-sm">
+					                                        <option value="">Date</option>
+					                                        </select>
+					                                        <input type="hidden" id="old_dob" value="<?php echo $old_date; ?>">
+					                                    </div>
+					                                    <div class="col-md-4">
+					                                        <select name="yearob" id="yobrth" class="form-control form-control-sm">
+					                                        <option value="">Year</option>
+					                                        <?php for( $y = 1970; $y <= $current_year; $y++ ) { ?>
+					                                        <option value = "<?php echo $y; ?>" <?php if($y == $old_year) { echo "selected"; } ?>>
+					                                            <?php echo $y; ?>
+					                                        </option>
+					                                        <?php } ?>
+					                                        </select>
+					                                    </div>
+					                                </div>
+					                                <script>
+					                                    $(document).ready(function() {
+					                                        
+					                                            var mobr = $('#mobrth').val();
+					                                            var mon31 = ['1', '3', '5', '7','8', '10', '12'];
+					                                            var mon30 = ['4', '6', '9', '11'];
+					                                            if( $.inArray(mobr, mon31) != -1 ) {
+					                                                date_drop(31);
+					                                            }
+					                                            else if( $.inArray(mobr, mon30) != -1 ) {
+					                                                date_drop(30);
+					                                                
+					                                            }   else if( mobr == 2 ) {
+					                                                date_drop(28);
+					                                            }
+					                                    });
+					                                    function date_drop(nmbr_days) {
+					                                    	var old_dob = $('#old_dob').val();
+					                                        var date_html = "<option>Date</option>";
+					                                                for( var i = 1; i <= nmbr_days; i++ ) {
+					                                                	if( i == old_dob ) { var selected = "selected"; }	else { var selected = ""; }
+					                                                    date_html += "<option value='"+i+"' "+selected+">"+i+"</option>";
+					                                                }
+					                                                $('#dobrth').html(date_html);
+					                                    }
+					                                </script>
+					                        <div class="help-block with-errors"></div>
+					                    </div>
+	                                    <!-- <div class="form-group has-feedback">
 	                                        <label for="date_of_birth" class="text-uppercase c-gray-light"><?php echo translate('date_of_birth')?><span class="text-danger">*</span></label>
 	                                        <input type="date" class="form-control no-resize" name="date_of_birth" value="<?php if(!empty($form_contents)){echo $form_contents['date_of_birth'];} else{echo date('Y-m-d', $value->date_of_birth);}?>">
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
-	                                    </div>
+	                                    </div> -->
 	                                </div>
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
@@ -168,6 +248,15 @@
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors"></div>
 	                                    </div>
+	                                </div>
+	                                <div class="col-md-12">
+	                                	<div class="form-group has-feedback">
+					                        <label for="belongs_to" class="text-uppercase c-gray-light"><?php echo translate('belongs_to')?></label>
+					                        <input type="hidden" name="old_belongs_to" value="<?=$value->belongs_to?>">
+					                        <input type="text" class="form-control no-resize" name="belongs_to" value="<?=$value->belongs_to?>">
+					                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+					                        <div class="help-block with-errors"></div>
+					                    </div>
 	                                </div>
 	                            </div>
 				            </div>
@@ -292,8 +381,12 @@
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
 	                                        <label for="highest_education" class="text-uppercase c-gray-light"><?php echo translate('highest_education')?><span class="text-danger">*</span></label>
-	                                        <input type="text" class="form-control no-resize" name="highest_education" value="<?php if(!empty($form_contents)){echo $form_contents['highest_education'];} else{echo $education_and_career[0]['highest_education'];}?>">
-	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+	                                        <?php 
+
+												echo $this->Crud_model->select_html('education_level', 'highest_education', 'education_level_name', 'edit', 'form-control form-control-sm selectpicker', $education_and_career_data[0]['highest_education'], '', '', '');
+
+											?>
+											<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
 	                                    </div>
@@ -401,7 +494,12 @@
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
 	                                        <label for="body_type" class="text-uppercase c-gray-light"><?php echo translate('body_type')?></label>
-	                                        <input type="text" class="form-control no-resize" name="body_type" value="<?php if(!empty($form_contents)){echo $form_contents['body_type'];} else{echo $physical_attributes[0]['body_type'];}?>">
+
+	                                        <?php 
+
+					                        echo $this->Crud_model->select_html('body_type', 'partner_body_type', 'body_type_name', 'edit', 'form-control form-control-sm selectpicker', $physical_attributes[0]['body_type'], '', '', '');
+
+					                        ?>
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -409,8 +507,12 @@
 	                                </div>
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
-	                                        <label for="body_art" class="text-uppercase c-gray-light"><?php echo translate('body_art')?></label>
-	                                        <input type="text" class="form-control no-resize" name="body_art" value="<?php if(!empty($form_contents)){echo $form_contents['body_art'];} else{echo $physical_attributes[0]['body_art'];}?>">
+	                                        <label for="partner_family_status" class="text-uppercase c-gray-light"><?php echo translate('partner_family_status')?></label>
+	                                        <?php 
+
+					                        echo $this->Crud_model->select_html('family_status', 'partner_family_status', 'name', 'edit', 'form-control form-control-sm selectpicker', $partner_expectation_data[0]['partner_family_status'], '', '', '');
+
+					                        ?>
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -1313,9 +1415,23 @@
 	                                    </div>
 	                                </div>
 	                                <div class="col-md-6">
+	                                   
+	                                </div>
+	                            </div>
+	                            <div class="row">
+	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
-	                                        <label for="partner_age" class="text-uppercase c-gray-light"><?php echo translate('age')?></label>
-	                                        <input type="text" class="form-control no-resize" name="partner_age" value="<?php if(!empty($form_contents)){echo $form_contents['partner_age'];} else{echo $partner_expectation[0]['partner_age'];}?>">
+	                                        <label for="partner_age" class="text-uppercase c-gray-light"><?php echo translate('minimum_age')?></label>
+	                                        <input type="text" class="form-control no-resize" name="partner_min_age" value="<?php if(!empty($form_contents)){echo $form_contents['partner_min_age'];} else{echo $partner_expectation_data[0]['partner_min_age'];}?>">
+	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+	                                        <div class="help-block with-errors">
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-6">
+	                                    <div class="form-group has-feedback">
+	                                        <label for="partner_age" class="text-uppercase c-gray-light"><?php echo translate('maximum_age')?></label>
+	                                        <input type="text" class="form-control no-resize" name="partner_min_age" value="<?php if(!empty($form_contents)){echo $form_contents['partner_max_age'];} else{echo $partner_expectation_data[0]['partner_max_age'];}?>">
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -1325,8 +1441,9 @@
 	                            <div class="row">
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
-	                                        <label for="partner_height" class="text-uppercase c-gray-light"><?php echo translate('height')?></label>
-	                                        <input type="text" class="form-control no-resize" name="partner_height" value="<?php if(!empty($form_contents)){echo $form_contents['partner_height'];} else{echo $partner_expectation[0]['partner_height'];}?>">
+	                                        <label for="general_requirement" class="text-uppercase c-gray-light"><?php echo translate('minimum_height')?></label>
+
+	                                        <input type="text" class="form-control no-resize" name="general_requirement" value="<?php if(!empty($form_contents)){echo $form_contents['partner_min_height'];} else{echo $partner_expectation_data[0]['partner_min_height'];}?>">
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -1334,8 +1451,30 @@
 	                                </div>
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
-	                                        <label for="partner_weight" class="text-uppercase c-gray-light"><?php echo translate('weight')?></label>
-	                                        <input type="text" class="form-control no-resize" name="partner_weight" value="<?php if(!empty($form_contents)){echo $form_contents['partner_weight'];} else{echo $partner_expectation[0]['partner_weight'];}?>">
+	                                        <label for="partner_age" class="text-uppercase c-gray-light"><?php echo translate('maximum_height')?></label>
+	                                        <input type="text" class="form-control no-resize" name="partner_min_age" value="<?php if(!empty($form_contents)){echo $form_contents['partner_max_height'];} else{echo $partner_expectation_data[0]['partner_max_height'];}?>">
+	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+	                                        <div class="help-block with-errors">
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+
+	                            <div class="row">
+	                                <div class="col-md-6">
+	                                    <div class="form-group has-feedback">
+	                                        <label for="partner_age" class="text-uppercase c-gray-light"><?php echo translate('minimum_weight')?></label>
+	                                        <input type="text" class="form-control no-resize" name="partner_min_age" value="<?php if(!empty($form_contents)){echo $form_contents['partner_min_weight'];} else{echo $partner_expectation_data[0]['partner_min_weight'];}?>">
+	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+	                                        <div class="help-block with-errors">
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-md-6">
+	                                    <div class="form-group has-feedback">
+	                                        <label for="general_requirement" class="text-uppercase c-gray-light"><?php echo translate('maximum_weight')?></label>
+
+	                                        <input type="text" class="form-control no-resize" name="general_requirement" value="<?php if(!empty($form_contents)){echo $form_contents['partner_min_height'];} else{echo $partner_expectation_data[0]['partner_max_weight'];}?>">
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -1500,7 +1639,12 @@
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
 	                                        <label for="partner_diet" class="text-uppercase c-gray-light"><?php echo translate('diet')?></label>
-	                                        <input type="text" class="form-control no-resize" name="partner_diet" value="<?php if(!empty($form_contents)){echo $form_contents['partner_diet'];} else{echo $partner_expectation[0]['partner_diet'];}?>">
+
+	                                        <?php 
+
+					                        echo $this->Crud_model->select_html('diet', 'partner_diet', 'diet_name', 'edit', 'form-control form-control-sm selectpicker', $partner_expectation[0]['partner_diet'], '', '', '');
+
+					                        ?>
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>
@@ -1549,8 +1693,12 @@
 	                            <div class="row">
 	                                <div class="col-md-6">
 	                                    <div class="form-group has-feedback">
-	                                        <label for="partner_any_disability" class="text-uppercase c-gray-light"><?php echo translate('any_disability')?></label>
-	                                        <input type="text" class="form-control no-resize" name="partner_any_disability" value="<?php if(!empty($form_contents)){echo $form_contents['partner_any_disability'];} else{echo $partner_expectation[0]['partner_any_disability'];}?>">
+	                                        <label for="partner_any_disability" class="text-uppercase c-gray-light"><?php echo translate('any_disability_accepted')?></label>
+	                                        <?php 
+
+					                        echo $this->Crud_model->select_html('decision', 'partner_any_disability', 'name', 'edit', 'form-control form-control-sm selectpicker', $partner_expectation_data[0]['partner_any_disability'], '', '', '');
+
+					                        ?>
 	                                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	                                        <div class="help-block with-errors">
 	                                        </div>

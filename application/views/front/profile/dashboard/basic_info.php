@@ -80,15 +80,15 @@
                         </tr>
                         <tr>
                             <td class="td-label">
+                                <span><?php echo translate('mobile')?></span>
+                            </td>
+                            <td><?=$get_member[0]->mobile?></td>
+                            <td class="td-label">
                                 <span><?php echo translate('on_behalf')?></span>
                             </td>
                             <td>
                                  <?=$this->Crud_model->get_type_name_by_id('on_behalf', $basic_info_data[0]['on_behalf']);?>
                             </td>
-                            <td class="td-label">
-                                <span><?php echo translate('mobile')?></span>
-                            </td>
-                            <td><?=$get_member[0]->mobile?></td>
                         </tr>
                         <tr>
                             <td class="td-label">
@@ -167,8 +167,6 @@
                  <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="date_of_birth" class="text-uppercase c-gray-light"><?php echo translate('date_of_birth')?> </label>
-                        <!-- <input type="date" class="form-control no-resize" name="date_of_birth" value="<?=date('Y-m-d', $get_member[0]->date_of_birth)?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span> -->
                         <?php
                                 $month = [
                                     '1' => 'January',
@@ -185,13 +183,17 @@
                                     '12' => 'December'
                                 ];
                                 $current_year = date("Y");
+                                
+                                $old_date = date('d', $get_member[0]->date_of_birth);
+                                $old_month = date('m', $get_member[0]->date_of_birth);
+                                $old_year = date('Y', $get_member[0]->date_of_birth);
                                 ?>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <select name="monthob" id="mobrth" class="form-control form-control-sm">
                                         <option value="">Month</option>
                                         <?php foreach ($month as $key => $value) : ?>
-                                        <option value="<?php echo $key; ?>">
+                                        <option value="<?php echo $key; ?>" <?php if($key == $old_month) { echo "selected"; } ?>>
                                             <?php echo $value; ?>
                                         </option>
                                         <?php endforeach; ?>
@@ -201,12 +203,13 @@
                                         <select name="dateob" id="dobrth" class="form-control form-control-sm">
                                         <option value="">Date</option>
                                         </select>
+                                        <input type="hidden" id="old_dob" value="<?php echo $old_date; ?>">
                                     </div>
                                     <div class="col-md-4">
                                         <select name="yearob" id="yobrth" class="form-control form-control-sm">
                                         <option value="">Year</option>
                                         <?php for( $y = 1970; $y <= $current_year; $y++ ) { ?>
-                                        <option value = "<?php echo $y; ?>">
+                                        <option value = "<?php echo $y; ?>" <?php if($y == $old_year) { echo "selected"; } ?>>
                                             <?php echo $y; ?>
                                         </option>
                                         <?php } ?>
@@ -215,7 +218,7 @@
                                 </div>
                                 <script>
                                     $(document).ready(function() {
-                                        $('#mobrth').on('change', function() {
+                                        
                                             var mobr = $('#mobrth').val();
                                             var mon31 = ['1', '3', '5', '7','8', '10', '12'];
                                             var mon30 = ['4', '6', '9', '11'];
@@ -228,14 +231,13 @@
                                             }   else if( mobr == 2 ) {
                                                 date_drop(28);
                                             }
-                                        });
-                                        
-                                        
                                     });
                                     function date_drop(nmbr_days) {
+                                        var old_dob = $('#old_dob').val();
                                         var date_html = "<option>Date</option>";
                                                 for( var i = 1; i <= nmbr_days; i++ ) {
-                                                    date_html += "<option>"+i+"</option>";
+                                                    if( i == old_dob ) { var selected = "selected"; }   else { var selected = ""; }
+                                                    date_html += "<option value='"+i+"' "+selected+">"+i+"</option>";
                                                 }
                                                 $('#dobrth').html(date_html);
                                     }
@@ -294,7 +296,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group has-feedback">
                         <label for="belongs_to" class="text-uppercase c-gray-light"><?php echo translate('belongs_to')?></label>
                         <input type="hidden" name="old_belongs_to" value="<?=$get_member[0]->belongs_to?>">

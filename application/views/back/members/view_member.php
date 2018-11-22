@@ -20,11 +20,11 @@
 		<ol class="breadcrumb">
 			<li><a href="#"><?php echo translate('home')?></a></li>
 			<li><a href="#"><?php echo translate('members')?></a></li>
-			<li><a href="#"><?=translate($member_type)?> <?php echo translate('members')?></a></li>
-			<li class="active"><?php echo translate('member_details')?></li>
+			<li><a href="#"><?=translate($member_type)?> <?php echo translate('members'); ?></a></li>
+			<li class="active"><?php echo translate('member_details'); ?></li>
 		</ol>
-		<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-		<!--End breadcrumb-->
+		<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<!-- End breadcrumb -->
 	</div>
 	<!--Page content-->
                 <!--===================================================-->
