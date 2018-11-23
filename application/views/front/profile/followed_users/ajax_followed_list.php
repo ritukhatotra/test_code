@@ -27,6 +27,7 @@
         <tbody>
         <?php 
             $new_followed_members_data = array();
+            $followed_members_data  = is_array($followed_members_data) ? $followed_members_data : array($followed_members_data);
                 foreach ($followed_members_data as $member) {
                     if ($member->is_closed =='no') {
                         $new_followed_members_data[] = $member;

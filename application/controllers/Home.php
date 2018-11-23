@@ -1995,6 +1995,9 @@ class Home extends CI_Controller {
     								'postal_code'			=>	$this->input->post('postal_code')
 			                        );
             	$data['present_address'] = json_encode($present_address);
+ $loc_array  = $this->findLatLong($present_address);
+$data['latitude'] = $loc_array['latitude'];
+$data['longitude'] = $loc_array['longitude'];
             	// ------------------------------------Present Address------------------------------------ //
 
             	// ------------------------------------Education & Career------------------------------------ //
@@ -2262,6 +2265,12 @@ class Home extends CI_Controller {
                                     'postal_code'           =>  $this->input->post('postal_code')
                                     );
                 $data['present_address'] = json_encode($present_address);
+
+ $add_array = $this->findLatLong($present_address[0]);
+//print_r($add_array );exit;
+
+ $data['latitude'] = $add_array['latitude'];
+ $data['longitude'] = $add_array['longitude'];
 
                 $this->db->where('member_id', $this->session->userdata('member_id'));
                 $result = $this->db->update('member', $data);
@@ -4777,4 +4786,48 @@ if(isset($_POST['gallery_profile_image_data'])) {
         echo $notifications;die;
         
     }
+
+   function findLatLong($address)
+   {
+$address_string[] = $this->Crud_model->get_type_name_by_id('city', $address['city'], 'name');
+$state= $this->Crud_model->get_type_name_by_id('state', $address['state'], 'name');
+$address_string[] = $state;
+     $country= $this->Crud_model->get_type_name_by_id('country', $address['country'], 'name');
+$address_string[] = $country;
+
+$address_string[] = $address['postal_code'];
+$address_string = implode(',', array_filter($address_string));
+   
+
+      $array = [
+                 'latitude' => '',
+                 'longitude' => ''
+               ];   
+   //  try{
+      $url = "http://maps.google.com/maps/api/geocode/json?address=".urlencode($address_string )."&sensor=false&key=AIzaSyCNXmiZdeMd4arV4em-hbWc3p8aySeaHJQ";
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL, $url);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+     curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+     $response = curl_exec($ch);
+     curl_close($ch);
+
+     $response_a = json_decode($response);
+//print_r($response_a);exit;
+      $array = [
+                 'latitude' => $response_a->results[0]->geometry->location->lat,
+                 'longitude' => $response_a->results[0]->geometry->location->lng
+               ];   
+//     echo $lat = $response_a->results[0]->geometry->location->lat;
+  //   echo "<br />";
+    // echo $long = $response_a->results[0]->geometry->location->lng;
+   // }catch(Exception $e) {
+   //    log_message('error', $e->getMessage());
+   // }
+
+//print_r($array);exit;
+    return $array;
+   }
 }

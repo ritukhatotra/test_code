@@ -27,6 +27,7 @@
         <tbody>
         <?php 
             $new_express_shortlist_members = array();
+                        $express_shortlist_members = is_array($express_shortlist_members ) ? $express_shortlist_members : array($express_shortlist_members );
                 foreach ($express_shortlist_members as $member) {
                     if ($member->is_closed =='no') {
                         $new_express_shortlist_members[] = $member;

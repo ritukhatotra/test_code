@@ -33,6 +33,12 @@
                     $new_express_interest_members[] = $member;
                 }
             }
+
+         $interest_status_array = array();
+                     $array_total_interests = is_array($array_total_interests ) ? $array_total_interests : array($array_total_interests );
+            foreach ($array_total_interests as $interest) {
+               $interest_status_array[$interest['id']] = $interest['status'];
+            }
             if ($new_express_interest_members == NULL) {
         ?>
             <tr>
@@ -83,6 +89,28 @@
                     <td>
                         <?=$this->Crud_model->get_type_name_by_id('language', $language[0]['mother_tongue']);?>
                     </td>
+
+<td>
+<?php 
+
+                                if($interest_status_array[$data->member_id] == 'pending') {
+                                ?>
+                                    <div class="text-center pt-1 text_<?=$row['by']?>">
+                                        <button type="button" class="btn btn-sm btn-primary pt-0 pb-0" id="accept_<?=$data->member_id?>" onclick="confirm_accept(<?=$data->member_id?>)"><?php echo translate('accept')?></button>
+                                        <button type="button" class="btn btn-sm btn-danger pt-0 pb-0" id="reject_<?=$data->member_id?>" onclick="confirm_reject(<?=$data->member_id?>)"><?php echo translate('reject')?></button>
+                                    </div>
+                                <?php
+                                } else if($interest_status_array[$data->member_id] == 'accepted') {
+                                ?>
+                                    <span class="badge badge-md badge-pill bg-success"><?php echo translate('accepted')?></span>
+                                <?php
+                                } else if($interest_status_array[$data->member_id] == 'rejected') {
+                                ?>
+                                    <span class="badge badge-md badge-pill bg-danger"><?php echo translate('rejected')?></span>
+                                <?php
+                                }
+                            ?></td>
+<?php /*
                     <td>
                         <p>
                         <?php
@@ -105,7 +133,7 @@
                             }
                         ?>        
                         </p>
-                    </td>
+                    </td>*/?>
                 </tr>
             <?php endforeach;
             }
