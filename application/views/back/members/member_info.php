@@ -106,10 +106,10 @@
 									<?=date('d/m/Y', $value->date_of_birth)?>
 								</td>
 								<td>
-									<b></b>
+									<b><?php echo translate('belongs_to'); ?></b>
 								</td>
 								<td>
-
+									<?php echo $value->belongs_to; ?>
 								</td>
 							</tr>
 							</table>
@@ -675,18 +675,18 @@
 									<?=$astronomic_information[0]['moon_sign']?>
 								</td>
 							</tr>
-							<tr>
-								<td>
-									<b><?php echo translate('time_of_birth')?></b>
-								</td>
-								<td>
-									<?=$astronomic_information[0]['time_of_birth']?>
-								</td>								
+							<tr>								
 								<td>
 									<b><?php echo translate('city_of_birth')?></b>
 								</td>
 								<td>
 									<?=$astronomic_information[0]['city_of_birth']?>
+								</td>
+								<td>
+									<b><?php echo translate('time_of_birth')?></b>
+								</td>
+								<td>
+									<?=$astronomic_information[0]['time_of_birth']?>
 								</td>
 							</tr>
 							</table>

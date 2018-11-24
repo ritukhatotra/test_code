@@ -3,12 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
 
-	/*	
-	 *	Developed by: Active IT zone
-	 *	Date	: 18 September, 2017
-	 *	Active Matrimony CMS
-	 *	http://codecanyon.net/user/activeitezone
-	 */
+    /*  
+     *  Developed by: Active IT zone
+     *  Date    : 18 September, 2017
+     *  Active Matrimony CMS
+     *  http://codecanyon.net/user/activeitezone
+     */
 
     function __construct() {
         parent::__construct();
@@ -62,6 +62,7 @@ public function beforeRender() {
 		$page_data['top'] = "home.php";
 		$page_data['page'] = "home";
 		$page_data['bottom'] = "home.php";
+
         $page_data['all_genders'] = $this->db->get('gender')->result();
         $page_data['all_religions'] = $this->db->get('religion')->result();
         $page_data['all_languages'] = $this->db->get('language')->result();
@@ -70,11 +71,11 @@ public function beforeRender() {
         $page_data['premium_members'] = $this->db->order_by('rand()')->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no'), $max_premium_member_num)->result();
         $page_data['happy_stories'] = $this->db->get_where('happy_story', array('approval_status' => 1), $max_story_num)->result();
         $page_data['all_plans'] = $this->db->get("plan")->result();
-		$this->load->view('front/index', $page_data);
-	}
+        $this->load->view('front/index', $page_data);
+    }
 
-	function member_permission()
-	{
+    function member_permission()
+    {
         $login_state = $this->session->userdata('login_state');
         if($login_state == 'yes'){
             $member_id = $this->session->userdata('member_id');
@@ -82,16 +83,16 @@ public function beforeRender() {
                 return FALSE;
             }
             else {
-            	return TRUE;
+                return TRUE;
             }
         } else {
             return FALSE;
         }
-	}
+    }
 
-	function listing($para1="",$para2="")
-	{	
-		if ($para1=="") {
+    function listing($para1="",$para2="")
+    {   
+        if ($para1=="") {
             $page_data['title'] = "Listing Page || ".$this->system_title;
             $page_data['top'] = "listing.php";
             $page_data['page'] = "listing";
@@ -170,11 +171,11 @@ public function beforeRender() {
             recache();
             $this->load->view('front/index', $page_data);
         }
-	}
+    }
 
     function matches($para1="",$para2="")
-	{	
-		if ($para1=="") {
+    {   
+        if ($para1=="") {
             $page_data['title'] = "Listing Page || ".$this->system_title;
             $page_data['top'] = "matches.php";
             $page_data['page'] = "matches";
@@ -1774,12 +1775,12 @@ public function beforeRender() {
         recache();
     }
 
-	function profile($para1="",$para2="",$para3="")
-	{
+    function profile($para1="",$para2="",$para3="")
+    {
         
-		if ($this->member_permission() == FALSE) {
-			redirect(base_url().'home/login', 'refresh');
-        }	
+        if ($this->member_permission() == FALSE) {
+            redirect(base_url().'home/login', 'refresh');
+        }   
         
         if ($para1 == "my-interests") {
             $page_data['current_tab'] = "my_interests";
@@ -1813,12 +1814,12 @@ public function beforeRender() {
             $para1 = "";            
         }
 
-		if ($para1 == "" || $para1 == "nav") {
-			$page_data['title'] = "Profile || ".$this->system_title;
-			$page_data['top'] = "profile.php";
-			$page_data['page'] = "profile/dashboard";
-			$page_data['bottom'] = "profile.php";
-			$page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+        if ($para1 == "" || $para1 == "nav") {
+            $page_data['title'] = "Profile || ".$this->system_title;
+            $page_data['top'] = "profile.php";
+            $page_data['page'] = "profile/dashboard";
+            $page_data['bottom'] = "profile.php";
+            $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
  if ($this->session->flashdata('alert') == "complete_profile") {
                 $page_data['success_alert'] = translate("please_complete_your_profile!");
             }
@@ -1843,36 +1844,36 @@ public function beforeRender() {
             $page_data['load_nav']  = $para2;
             $page_data['sp_nav']    = $para3;
             
-			$this->load->view('front/index', $page_data);
-		}
-		elseif ($para1=="followed_users") {
-			$this->load->view('front/profile/followed_users/index');
-		}
-		elseif ($para1=="messaging") {
+            $this->load->view('front/index', $page_data);
+        }
+        elseif ($para1=="followed_users") {
+            $this->load->view('front/profile/followed_users/index');
+        }
+        elseif ($para1=="messaging") {
             $user_id = $this->session->userdata('member_id');
             $page_data['listed_messaging_members'] = $this->Crud_model->get_listed_messaging_members($user_id);
 
-			$this->load->view('front/profile/messaging/index', $page_data);			
-		}
-		elseif ($para1=="short_list") {
-			$this->load->view('front/profile/short_list/index');
-		}
-		elseif ($para1=="my_interests") {
-			$this->load->view('front/profile/my_interests/index');
-		}
+            $this->load->view('front/profile/messaging/index', $page_data);         
+        }
+        elseif ($para1=="short_list") {
+            $this->load->view('front/profile/short_list/index');
+        }
+        elseif ($para1=="my_interests") {
+            $this->load->view('front/profile/my_interests/index');
+        }
         elseif ($para1 == "received_interests") {
             $this->load->view( 'front/profile/received_interests/index'); 
         }
-		elseif ($para1=="ignored_list") {
-			$this->load->view('front/profile/ignored_list/index');
-		}
-		elseif ($para1=="my_packages") {
-			$this->load->view('front/profile/my_packages/index');
-		}
-		elseif ($para1=="payments") {
+        elseif ($para1=="ignored_list") {
+            $this->load->view('front/profile/ignored_list/index');
+        }
+        elseif ($para1=="my_packages") {
+            $this->load->view('front/profile/my_packages/index');
+        }
+        elseif ($para1=="payments") {
             $page_data['payments_info'] = $this->db->order_by("purchase_datetime", "desc")->get_where('package_payment', array('member_id' => $this->session->userdata('member_id')))->result();
-			$this->load->view('front/profile/payments/index', $page_data);
-		}
+            $this->load->view('front/profile/payments/index', $page_data);
+        }
         elseif ($para1=="change_pass") {
             $this->load->view('front/profile/change_password/index');
         }
@@ -1907,33 +1908,33 @@ public function beforeRender() {
             }
            
         }
-		elseif ($para1=="gallery") {
-			$this->load->view('front/profile/gallery/index');
-		}
-		elseif ($para1=="gallery_upload") {
-			$this->load->view('front/profile/gallery_upload/index');
-		}
-		elseif ($para1=="happy_story") {
-			$this->load->view('front/profile/happy_story/index');
-		}
-		elseif ($para1=="edit_full_profile") {
-			$page_data['title'] = "Edit Profile || ".$this->system_title;
-			$page_data['top'] = "profile.php";
-			$page_data['page'] = "profile/edit_full_profile";
-			$page_data['bottom'] = "profile.php";
+        elseif ($para1=="gallery") {
+            $this->load->view('front/profile/gallery/index');
+        }
+        elseif ($para1=="gallery_upload") {
+            $this->load->view('front/profile/gallery_upload/index');
+        }
+        elseif ($para1=="happy_story") {
+            $this->load->view('front/profile/happy_story/index');
+        }
+        elseif ($para1=="edit_full_profile") {
+            $page_data['title'] = "Edit Profile || ".$this->system_title;
+            $page_data['top'] = "profile.php";
+            $page_data['page'] = "profile/edit_full_profile";
+            $page_data['bottom'] = "profile.php";
             $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
 
             $page_data['load_nav']  = $para2;
             $page_data['sp_nav']    = $para3;
 
-			$this->load->view('front/index', $page_data);
-		}
-		elseif ($para1=="update_all") {
+            $this->load->view('front/index', $page_data);
+        }
+        elseif ($para1=="update_all") {
             $this->form_validation->set_rules('introduction', 'Introduction', 'required');
 
-			$this->form_validation->set_rules('first_name', 'First Name', 'required');
-			$this->form_validation->set_rules('last_name', 'Last Name', 'required');
-			$this->form_validation->set_rules('gender', 'Gender', 'required');
+            $this->form_validation->set_rules('first_name', 'First Name', 'required');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'required');
+            $this->form_validation->set_rules('gender', 'Gender', 'required');
             $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
             if ($this->input->post('old_email') != $this->input->post('email')) {
                 $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
@@ -1969,19 +1970,19 @@ public function beforeRender() {
             if ($this->form_validation->run() == FALSE) {
                 $page_data['form_contents'] = $this->input->post();
                 $page_data['title'] = "Edit Profile || ".$this->system_title;
-				$page_data['top'] = "profile.php";
-				$page_data['page'] = "profile/edit_full_profile";
-				$page_data['bottom'] = "profile.php";
+                $page_data['top'] = "profile.php";
+                $page_data['page'] = "profile/edit_full_profile";
+                $page_data['bottom'] = "profile.php";
                 $page_data['load_nav']  = $para2;
                 $page_data['sp_nav']    = $para3;
                 $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
-				$this->load->view('front/index', $page_data);
+                $this->load->view('front/index', $page_data);
             }
             else {
-            	$data['first_name'] = $this->input->post('first_name');
-            	$data['last_name'] = $this->input->post('last_name');
-            	$data['gender'] = $this->input->post('gender');
-            	$data['email'] = $this->input->post('email');
+                $data['first_name'] = $this->input->post('first_name');
+                $data['last_name'] = $this->input->post('last_name');
+                $data['gender'] = $this->input->post('gender');
+                $data['email'] = $this->input->post('email');
                 $data['mobile'] = $this->input->post('mobile');
 
                 $monthob = $this->input->post('monthob');
@@ -1992,14 +1993,15 @@ public function beforeRender() {
                 
                 // $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
                 $data['height'] = $this->input->post('height');
-            	$data['introduction'] = $this->input->post('introduction');
+                $data['introduction'] = $this->input->post('introduction');
 
-            	// ------------------------------------Basic Info------------------------------------ //
-            	$basic_info[] = array(
-    								'marital_status'		=>	$this->input->post('marital_status'),	
-    								'number_of_children'	=>	$this->input->post('number_of_children'),
-    								'area'					=>	$this->input->post('area'),
+                // ------------------------------------Basic Info------------------------------------ //
+                $basic_info[] = array(
+                                    'marital_status'        =>  $this->input->post('marital_status'),   
+                                    'number_of_children'    =>  $this->input->post('number_of_children'),
+                                    'area'                  =>  $this->input->post('area'),
                                     'on_behalf'             =>  $this->input->post('on_behalf')
+
 			                        );
             	$data['basic_info'] = json_encode($basic_info);
             	// ------------------------------------Basic Info------------------------------------ //
@@ -2087,85 +2089,86 @@ $data['longitude'] = $loc_array['longitude'];
     								'ethnicity'				=>	$this->input->post('ethnicity'),
     								'personal_value'		=>	$this->input->post('personal_value'),
     								'family_value'			=>	$this->input->post('family_value'),
+
                                     'u_manglik'             =>  $this->input->post('u_manglik'),
-    								'community_value'		=>	$this->input->post('community_value'),
+                                    'community_value'       =>  $this->input->post('community_value'),
                                     'family_status'         =>  $this->input->post('family_status')
-			                        );
-            	$data['spiritual_and_social_background'] = json_encode($spiritual_and_social_background);
-            	// ------------------------------------Spiritual and Social Background------------------------------------ //
+                                    );
+                $data['spiritual_and_social_background'] = json_encode($spiritual_and_social_background);
+                // ------------------------------------Spiritual and Social Background------------------------------------ //
 
-            	// ------------------------------------ Life Style------------------------------------ //
-            	$life_style[] = array('diet'				=>  $this->input->post('diet'),
-    								'drink'					=>	$this->input->post('drink'),	
-    								'smoke'					=>	$this->input->post('smoke'),
-    								'living_with'			=>	$this->input->post('living_with')
-			                        );
-            	$data['life_style'] = json_encode($life_style);
-            	// ------------------------------------ Life Style------------------------------------ //
+                // ------------------------------------ Life Style------------------------------------ //
+                $life_style[] = array('diet'                =>  $this->input->post('diet'),
+                                    'drink'                 =>  $this->input->post('drink'),    
+                                    'smoke'                 =>  $this->input->post('smoke'),
+                                    'living_with'           =>  $this->input->post('living_with')
+                                    );
+                $data['life_style'] = json_encode($life_style);
+                // ------------------------------------ Life Style------------------------------------ //
 
-            	// ------------------------------------ Astronomic Information------------------------------------ //
-            	$astronomic_information[] = array('sun_sign'	=>  $this->input->post('sun_sign'),
-    								'moon_sign'					=>	$this->input->post('moon_sign'),
-    								'time_of_birth'				=>	$this->input->post('time_of_birth'),
-    								'city_of_birth'				=>	$this->input->post('city_of_birth')
-			                        );
-            	$data['astronomic_information'] = json_encode($astronomic_information);
-            	// ------------------------------------ Astronomic Information------------------------------------ //
+                // ------------------------------------ Astronomic Information------------------------------------ //
+                $astronomic_information[] = array('sun_sign'    =>  $this->input->post('sun_sign'),
+                                    'moon_sign'                 =>  $this->input->post('moon_sign'),
+                                    'time_of_birth'             =>  $this->input->post('time_of_birth'),
+                                    'city_of_birth'             =>  $this->input->post('city_of_birth')
+                                    );
+                $data['astronomic_information'] = json_encode($astronomic_information);
+                // ------------------------------------ Astronomic Information------------------------------------ //
 
-            	// ------------------------------------Permanent Address------------------------------------ //
-            	$permanent_address[] = array('permanent_country'	=>  $this->input->post('permanent_country'),
-    								'permanent_city'				=>	$this->input->post('permanent_city'),	
-    								'permanent_state'				=>	$this->input->post('permanent_state'),
-    								'permanent_postal_code'			=>	$this->input->post('permanent_postal_code')
-			                        );
-            	$data['permanent_address'] = json_encode($permanent_address);
-            	// ------------------------------------Permanent Address------------------------------------ //
+                // ------------------------------------Permanent Address------------------------------------ //
+                $permanent_address[] = array('permanent_country'    =>  $this->input->post('permanent_country'),
+                                    'permanent_city'                =>  $this->input->post('permanent_city'),   
+                                    'permanent_state'               =>  $this->input->post('permanent_state'),
+                                    'permanent_postal_code'         =>  $this->input->post('permanent_postal_code')
+                                    );
+                $data['permanent_address'] = json_encode($permanent_address);
+                // ------------------------------------Permanent Address------------------------------------ //
 
-            	// ------------------------------------Family Information------------------------------------ //
-            	$family_info[] = array('father'				=>  $this->input->post('father'),
-    								'mother'				=>	$this->input->post('mother'),	
-    								'brother_sister'		=>	$this->input->post('brother_sister')
-			                        );
-            	$data['family_info'] = json_encode($family_info);
-            	// ------------------------------------Family Information------------------------------------ //
+                // ------------------------------------Family Information------------------------------------ //
+                $family_info[] = array('father'             =>  $this->input->post('father'),
+                                    'mother'                =>  $this->input->post('mother'),   
+                                    'brother_sister'        =>  $this->input->post('brother_sister')
+                                    );
+                $data['family_info'] = json_encode($family_info);
+                // ------------------------------------Family Information------------------------------------ //
 
-            	// ------------------------------------ Additional Personal Details------------------------------------ //
-            	$additional_personal_details[] = array('home_district'	=>  $this->input->post('home_district'),
-    								'family_residence'				=>	$this->input->post('family_residence'),	
-    								'fathers_occupation'			=>	$this->input->post('fathers_occupation'),
-    								'special_circumstances'			=>	$this->input->post('special_circumstances')
-			                        );
-            	$data['additional_personal_details'] = json_encode($additional_personal_details);
-            	// ------------------------------------ Additional Personal Details------------------------------------ //
+                // ------------------------------------ Additional Personal Details------------------------------------ //
+                $additional_personal_details[] = array('home_district'  =>  $this->input->post('home_district'),
+                                    'family_residence'              =>  $this->input->post('family_residence'), 
+                                    'fathers_occupation'            =>  $this->input->post('fathers_occupation'),
+                                    'special_circumstances'         =>  $this->input->post('special_circumstances')
+                                    );
+                $data['additional_personal_details'] = json_encode($additional_personal_details);
+                // ------------------------------------ Additional Personal Details------------------------------------ //
 
-            	// ------------------------------------ Partner Expectation------------------------------------ //
-            	$partner_expectation[] = array('general_requirement'	=>  $this->input->post('general_requirement'),
-    								'partner_age'						=>	$this->input->post('partner_age'),	
-    								'partner_height'					=>	$this->input->post('partner_height'),
-    								'partner_weight'					=>	$this->input->post('partner_weight'),
-    								'partner_marital_status'			=>	$this->input->post('partner_marital_status'),
-    								'with_children_acceptables'			=>	$this->input->post('with_children_acceptables'),
-    								'partner_country_of_residence'		=>	$this->input->post('partner_country_of_residence'),
-    								'partner_religion'					=>	$this->input->post('partner_religion'),
-    								'partner_caste'						=>	$this->input->post('partner_caste'),
-    								'partner_complexion'				=>	$this->input->post('partner_complexion'),
-    								'partner_education'                 =>	$this->input->post('partner_education'),
-    								'partner_profession'				=>	$this->input->post('partner_profession'),
-    								'partner_drinking_habits'			=>	$this->input->post('partner_drinking_habits'),
-    								'partner_smoking_habits'			=>	$this->input->post('partner_smoking_habits'),
-    								'partner_diet'						=>	$this->input->post('partner_diet'),
-    								'partner_body_type'					=>	$this->input->post('partner_body_type'),
-    								'partner_personal_value'			=>	$this->input->post('partner_personal_value'),
-    								'manglik'							=>	$this->input->post('manglik'),
-    								'partner_any_disability'			=>	$this->input->post('partner_any_disability'),
-    								'partner_mother_tongue'				=>	$this->input->post('partner_mother_tongue'),
-    								'partner_family_value'				=>	$this->input->post('partner_family_value'),
-    								'prefered_country'					=>	$this->input->post('prefered_country'),
-    								'prefered_state'					=>	$this->input->post('prefered_state'),
-    								'prefered_status'					=>	$this->input->post('prefered_status')
-			                        );
-            	$data['partner_expectation'] = json_encode($partner_expectation);
-            	// ------------------------------------ Partner Expectation------------------------------------ //
+                // ------------------------------------ Partner Expectation------------------------------------ //
+                $partner_expectation[] = array('general_requirement'    =>  $this->input->post('general_requirement'),
+                                    'partner_age'                       =>  $this->input->post('partner_age'),  
+                                    'partner_height'                    =>  $this->input->post('partner_height'),
+                                    'partner_weight'                    =>  $this->input->post('partner_weight'),
+                                    'partner_marital_status'            =>  $this->input->post('partner_marital_status'),
+                                    'with_children_acceptables'         =>  $this->input->post('with_children_acceptables'),
+                                    'partner_country_of_residence'      =>  $this->input->post('partner_country_of_residence'),
+                                    'partner_religion'                  =>  $this->input->post('partner_religion'),
+                                    'partner_caste'                     =>  $this->input->post('partner_caste'),
+                                    'partner_complexion'                =>  $this->input->post('partner_complexion'),
+                                    'partner_education'                 =>  $this->input->post('partner_education'),
+                                    'partner_profession'                =>  $this->input->post('partner_profession'),
+                                    'partner_drinking_habits'           =>  $this->input->post('partner_drinking_habits'),
+                                    'partner_smoking_habits'            =>  $this->input->post('partner_smoking_habits'),
+                                    'partner_diet'                      =>  $this->input->post('partner_diet'),
+                                    'partner_body_type'                 =>  $this->input->post('partner_body_type'),
+                                    'partner_personal_value'            =>  $this->input->post('partner_personal_value'),
+                                    'manglik'                           =>  $this->input->post('manglik'),
+                                    'partner_any_disability'            =>  $this->input->post('partner_any_disability'),
+                                    'partner_mother_tongue'             =>  $this->input->post('partner_mother_tongue'),
+                                    'partner_family_value'              =>  $this->input->post('partner_family_value'),
+                                    'prefered_country'                  =>  $this->input->post('prefered_country'),
+                                    'prefered_state'                    =>  $this->input->post('prefered_state'),
+                                    'prefered_status'                   =>  $this->input->post('prefered_status')
+                                    );
+                $data['partner_expectation'] = json_encode($partner_expectation);
+                // ------------------------------------ Partner Expectation------------------------------------ //
 
                 $this->db->where('member_id', $this->session->userdata('member_id'));
                 $result = $this->db->update('member', $data);
@@ -2175,7 +2178,7 @@ $data['longitude'] = $loc_array['longitude'];
                     redirect(base_url().'home/profile', 'refresh');
                 }
             }
-		}
+        }
         elseif ($para1=="update_introduction") {
             $this->form_validation->set_rules('introduction', 'Introduction', 'required');
 
@@ -2216,9 +2219,9 @@ $data['longitude'] = $loc_array['longitude'];
             }
             else {
                 $data['first_name'] = $this->input->post('first_name');
-            	$data['last_name'] = $this->input->post('last_name');
-            	$data['gender'] = $this->input->post('gender');
-            	$data['email'] = $this->input->post('email');
+                $data['last_name'] = $this->input->post('last_name');
+                $data['gender'] = $this->input->post('gender');
+                $data['email'] = $this->input->post('email');
                 $data['mobile'] = $this->input->post('mobile');
                 $data['belongs_to'] = $this->input->post('belongs_to');
 
@@ -2229,15 +2232,15 @@ $data['longitude'] = $loc_array['longitude'];
                 $data['date_of_birth'] = strtotime($dob);
                 // $data['date_of_birth'] = strtotime($this->input->post('date_of_birth'));
 
-            	// ------------------------------------Basic Info------------------------------------ //
-            	$basic_info[] = array(
-    								'marital_status'		=>	$this->input->post('marital_status'),	
-    								'number_of_children'	=>	$this->input->post('number_of_children'),
-    								'area'					=>	$this->input->post('area'),
+                // ------------------------------------Basic Info------------------------------------ //
+                $basic_info[] = array(
+                                    'marital_status'        =>  $this->input->post('marital_status'),   
+                                    'number_of_children'    =>  $this->input->post('number_of_children'),
+                                    'area'                  =>  $this->input->post('area'),
                                     'on_behalf'                  =>  $this->input->post('on_behalf')
 
-    		                        );
-            	$data['basic_info'] = json_encode($basic_info);
+                                    );
+                $data['basic_info'] = json_encode($basic_info);
                 $this->db->where('member_id', $this->session->userdata('member_id'));
                 $result = $this->db->update('member', $data);
                 
@@ -2273,7 +2276,7 @@ $data['longitude'] = $loc_array['longitude'];
                 echo json_encode($ajax_error);
             }
 
-        	else {
+            else {
                 // ------------------------------------Present Address------------------------------------ //
                 $present_address[] = array('country'        =>  $this->input->post('country'),
                                     'city'                  =>  $this->input->post('city'), 
@@ -2346,18 +2349,18 @@ $data['longitude'] = $loc_array['longitude'];
             }
 
             else {
-        	// ------------------------------------ Physical Attributes------------------------------------ //
-        	$physical_attributes[] = array('weight'     =>	$this->input->post('weight'),	
-								'eye_color'				=>	$this->input->post('eye_color'),
-								'hair_color'			=>	$this->input->post('hair_color'),
-								'complexion'			=>	$this->input->post('complexion'),
-								'blood_group'			=>	$this->input->post('blood_group'),
-								'body_type'				=>	$this->input->post('body_type'),
-								'body_art'				=>	$this->input->post('body_art'),
-								'any_disability'		=>	$this->input->post('any_disability')
-		                        );
+            // ------------------------------------ Physical Attributes------------------------------------ //
+            $physical_attributes[] = array('weight'     =>  $this->input->post('weight'),   
+                                'eye_color'             =>  $this->input->post('eye_color'),
+                                'hair_color'            =>  $this->input->post('hair_color'),
+                                'complexion'            =>  $this->input->post('complexion'),
+                                'blood_group'           =>  $this->input->post('blood_group'),
+                                'body_type'             =>  $this->input->post('body_type'),
+                                'body_art'              =>  $this->input->post('body_art'),
+                                'any_disability'        =>  $this->input->post('any_disability')
+                                );
             $data['height'] = $this->input->post('height');
-        	$data['physical_attributes'] = json_encode($physical_attributes);
+            $data['physical_attributes'] = json_encode($physical_attributes);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
             $p_data['height'] = $this->input->post('height');
@@ -2414,19 +2417,19 @@ $data['longitude'] = $loc_array['longitude'];
             }
         }
         elseif ($para1=="update_hobbies_and_interest") {
-        	// ------------------------------------Hobbies & Interest------------------------------------ //
-        	$hobbies_and_interest[] = array('hobby'	    =>  $this->input->post('hobby'),
-        						'interest'				=>  $this->input->post('interest'),
-								'music'					=>	$this->input->post('music'),	
-								'books'					=>	$this->input->post('books'),
-								'movie'					=>	$this->input->post('movie'),
-								'tv_show'				=>	$this->input->post('tv_show'),
-								'sports_show'			=>	$this->input->post('sports_show'),
-								'fitness_activity'		=>	$this->input->post('fitness_activity'),
-								'cuisine'				=>	$this->input->post('cuisine'),
-								'dress_style'			=>	$this->input->post('dress_style')
-		                        );
-        	$data['hobbies_and_interest'] = json_encode($hobbies_and_interest);
+            // ------------------------------------Hobbies & Interest------------------------------------ //
+            $hobbies_and_interest[] = array('hobby'     =>  $this->input->post('hobby'),
+                                'interest'              =>  $this->input->post('interest'),
+                                'music'                 =>  $this->input->post('music'),    
+                                'books'                 =>  $this->input->post('books'),
+                                'movie'                 =>  $this->input->post('movie'),
+                                'tv_show'               =>  $this->input->post('tv_show'),
+                                'sports_show'           =>  $this->input->post('sports_show'),
+                                'fitness_activity'      =>  $this->input->post('fitness_activity'),
+                                'cuisine'               =>  $this->input->post('cuisine'),
+                                'dress_style'           =>  $this->input->post('dress_style')
+                                );
+            $data['hobbies_and_interest'] = json_encode($hobbies_and_interest);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
             recache();
@@ -2437,13 +2440,13 @@ $data['longitude'] = $loc_array['longitude'];
             $this->load->view('front/profile/dashboard/hobbies_and_interest', $page_data);
         }
         elseif ($para1=="update_personal_attitude_and_behavior") {
-        	// ------------------------------------ Personal Attitude & Behavior------------------------------------ //
-        	$personal_attitude_and_behavior[] = array('affection'	=>  $this->input->post('affection'),	
-                								'humor'             =>	$this->input->post('humor'),
-                								'political_view'    =>	$this->input->post('political_view'),
-                								'religious_service' =>	$this->input->post('religious_service')
-            			                        );
-        	$data['personal_attitude_and_behavior'] = json_encode($personal_attitude_and_behavior);
+            // ------------------------------------ Personal Attitude & Behavior------------------------------------ //
+            $personal_attitude_and_behavior[] = array('affection'   =>  $this->input->post('affection'),    
+                                                'humor'             =>  $this->input->post('humor'),
+                                                'political_view'    =>  $this->input->post('political_view'),
+                                                'religious_service' =>  $this->input->post('religious_service')
+                                                );
+            $data['personal_attitude_and_behavior'] = json_encode($personal_attitude_and_behavior);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
             recache();
@@ -2529,13 +2532,13 @@ $data['longitude'] = $loc_array['longitude'];
             }
         }
         elseif ($para1=="update_life_style") {
-        	// ------------------------------------ Life Style------------------------------------ //
-        	$life_style[] = array('diet'				=>  $this->input->post('diet'),
-								'drink'					=>	$this->input->post('drink'),	
-								'smoke'					=>	$this->input->post('smoke'),
-								'living_with'			=>	$this->input->post('living_with')
-		                        );
-        	$data['life_style'] = json_encode($life_style);
+            // ------------------------------------ Life Style------------------------------------ //
+            $life_style[] = array('diet'                =>  $this->input->post('diet'),
+                                'drink'                 =>  $this->input->post('drink'),    
+                                'smoke'                 =>  $this->input->post('smoke'),
+                                'living_with'           =>  $this->input->post('living_with')
+                                );
+            $data['life_style'] = json_encode($life_style);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
 
@@ -2606,12 +2609,12 @@ $data['longitude'] = $loc_array['longitude'];
             }
         }
         elseif ($para1=="update_family_info") {
-        	// ------------------------------------Family Information------------------------------------ //
-        	$family_info[] = array('father'				=>  $this->input->post('father'),
-								'mother'				=>	$this->input->post('mother'),	
-								'brother_sister'		=>	$this->input->post('brother_sister')
-		                        );
-        	$data['family_info'] = json_encode($family_info);
+            // ------------------------------------Family Information------------------------------------ //
+            $family_info[] = array('father'             =>  $this->input->post('father'),
+                                'mother'                =>  $this->input->post('mother'),   
+                                'brother_sister'        =>  $this->input->post('brother_sister')
+                                );
+            $data['family_info'] = json_encode($family_info);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
             recache();
@@ -2622,13 +2625,13 @@ $data['longitude'] = $loc_array['longitude'];
             $this->load->view('front/profile/dashboard/family_info', $page_data);
         }
         elseif ($para1=="update_additional_personal_details") {
-        	// ------------------------------------ Additional Personal Details------------------------------------ //
-        	$additional_personal_details[] = array('home_district'	=>  $this->input->post('home_district'),
-								'family_residence'				=>	$this->input->post('family_residence'),	
-								'fathers_occupation'			=>	$this->input->post('fathers_occupation'),
-								'special_circumstances'			=>	$this->input->post('special_circumstances')
-		                        );
-        	$data['additional_personal_details'] = json_encode($additional_personal_details);
+            // ------------------------------------ Additional Personal Details------------------------------------ //
+            $additional_personal_details[] = array('home_district'  =>  $this->input->post('home_district'),
+                                'family_residence'              =>  $this->input->post('family_residence'), 
+                                'fathers_occupation'            =>  $this->input->post('fathers_occupation'),
+                                'special_circumstances'         =>  $this->input->post('special_circumstances')
+                                );
+            $data['additional_personal_details'] = json_encode($additional_personal_details);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
             recache();
@@ -2652,48 +2655,48 @@ $data['longitude'] = $loc_array['longitude'];
             }
 
             else {
-        	// ------------------------------------ Partner Expectation------------------------------------ //
-        	$partner_expectation[] = array('general_requirement'	=>  $this->input->post('general_requirement'),
-								'partner_age'						=>	$this->input->post('partner_age'),	
-								'partner_height'					=>	$this->input->post('partner_height'),
-                                'partner_weight'					=>	$this->input->post('partner_weight'),
+            // ------------------------------------ Partner Expectation------------------------------------ //
+            $partner_expectation[] = array('general_requirement'    =>  $this->input->post('general_requirement'),
+                                'partner_age'                       =>  $this->input->post('partner_age'),  
+                                'partner_height'                    =>  $this->input->post('partner_height'),
+                                'partner_weight'                    =>  $this->input->post('partner_weight'),
                                 
-                                'partner_min_age'						=>	$this->input->post('partner_min_age'),	
-								'partner_min_height'					=>	$this->input->post('partner_min_height'),
-                                'partner_min_weight'					=>	$this->input->post('partner_min_weight'),
+                                'partner_min_age'                       =>  $this->input->post('partner_min_age'),  
+                                'partner_min_height'                    =>  $this->input->post('partner_min_height'),
+                                'partner_min_weight'                    =>  $this->input->post('partner_min_weight'),
                                 
 
-                                'partner_max_age'						=>	$this->input->post('partner_max_age'),	
-								'partner_max_height'					=>	$this->input->post('partner_max_height'),
-                                'partner_max_weight'					=>	$this->input->post('partner_max_weight'),
+                                'partner_max_age'                       =>  $this->input->post('partner_max_age'),  
+                                'partner_max_height'                    =>  $this->input->post('partner_max_height'),
+                                'partner_max_weight'                    =>  $this->input->post('partner_max_weight'),
                                 
-                                'partner_age'						=>	$this->input->post('partner_age'),	
-								'partner_height'					=>	$this->input->post('partner_height'),
-								'partner_weight'					=>	$this->input->post('partner_weight'),
-								'partner_marital_status'			=>	$this->input->post('partner_marital_status'),
-								'with_children_acceptables'			=>	$this->input->post('with_children_acceptables'),
-								'partner_country_of_residence'		=>	$this->input->post('partner_country_of_residence'),
-								'partner_religion'					=>	$this->input->post('partner_religion'),
-								'partner_caste'						=>	$this->input->post('partner_caste'),
+                                'partner_age'                       =>  $this->input->post('partner_age'),  
+                                'partner_height'                    =>  $this->input->post('partner_height'),
+                                'partner_weight'                    =>  $this->input->post('partner_weight'),
+                                'partner_marital_status'            =>  $this->input->post('partner_marital_status'),
+                                'with_children_acceptables'         =>  $this->input->post('with_children_acceptables'),
+                                'partner_country_of_residence'      =>  $this->input->post('partner_country_of_residence'),
+                                'partner_religion'                  =>  $this->input->post('partner_religion'),
+                                'partner_caste'                     =>  $this->input->post('partner_caste'),
                                 'partner_sub_caste'                 =>  $this->input->post('partner_sub_caste'),
-								'partner_complexion'				=>	$this->input->post('partner_complexion'),
-								'partner_education'                 =>	$this->input->post('partner_education'),
-								'partner_profession'				=>	$this->input->post('partner_profession'),
-								'partner_drinking_habits'			=>	$this->input->post('partner_drinking_habits'),
-								'partner_smoking_habits'			=>	$this->input->post('partner_smoking_habits'),
-								'partner_diet'						=>	$this->input->post('partner_diet'),
-								'partner_body_type'					=>	$this->input->post('partner_body_type'),
-								'partner_personal_value'			=>	$this->input->post('partner_personal_value'),
-								'manglik'							=>	$this->input->post('manglik'),
-								'partner_any_disability'			=>	$this->input->post('partner_any_disability'),
-								'partner_mother_tongue'				=>	$this->input->post('partner_mother_tongue'),
-								'partner_family_value'				=>	$this->input->post('partner_family_value'),
-								'prefered_country'					=>	$this->input->post('prefered_country'),
-								'prefered_state'					=>	$this->input->post('prefered_state'),
-                                'prefered_status'					=>	$this->input->post('prefered_status'),
-                                'partner_family_status'             =>	$this->input->post('partner_family_status'),
-		                        );
-        	$data['partner_expectation'] = json_encode($partner_expectation);
+                                'partner_complexion'                =>  $this->input->post('partner_complexion'),
+                                'partner_education'                 =>  $this->input->post('partner_education'),
+                                'partner_profession'                =>  $this->input->post('partner_profession'),
+                                'partner_drinking_habits'           =>  $this->input->post('partner_drinking_habits'),
+                                'partner_smoking_habits'            =>  $this->input->post('partner_smoking_habits'),
+                                'partner_diet'                      =>  $this->input->post('partner_diet'),
+                                'partner_body_type'                 =>  $this->input->post('partner_body_type'),
+                                'partner_personal_value'            =>  $this->input->post('partner_personal_value'),
+                                'manglik'                           =>  $this->input->post('manglik'),
+                                'partner_any_disability'            =>  $this->input->post('partner_any_disability'),
+                                'partner_mother_tongue'             =>  $this->input->post('partner_mother_tongue'),
+                                'partner_family_value'              =>  $this->input->post('partner_family_value'),
+                                'prefered_country'                  =>  $this->input->post('prefered_country'),
+                                'prefered_state'                    =>  $this->input->post('prefered_state'),
+                                'prefered_status'                   =>  $this->input->post('prefered_status'),
+                                'partner_family_status'             =>  $this->input->post('partner_family_status'),
+                                );
+            $data['partner_expectation'] = json_encode($partner_expectation);
             $this->db->where('member_id', $this->session->userdata('member_id'));
             $result = $this->db->update('member', $data);
 
@@ -2856,10 +2859,10 @@ $data['longitude'] = $loc_array['longitude'];
              recache();
 
         }
-	}
+    }
 
-	function plans($para1="",$para2="")
-	{
+    function plans($para1="",$para2="")
+    {
         if ($para1=="") {
             $page_data['title'] = "Premium Plans || ".$this->system_title;
             $page_data['top'] = "plans.php";
@@ -2891,18 +2894,18 @@ $data['longitude'] = $loc_array['longitude'];
             $page_data['selected_plan'] = $this->db->get_where("plan", array("plan_id" => $para2))->result();
             $this->load->view('front/index', $page_data);
         }
-	}
+    }
 
-	function stories($para1="",$para2="", $para3="")
-	{
-		if ($para1=="") {
-			$page_data['title'] = "Happy Stories || ".$this->system_title;
-			$page_data['top'] = "stories.php";
-			$page_data['page'] = "stories";
-			$page_data['bottom'] = "stories.php";
+    function stories($para1="",$para2="", $para3="")
+    {
+        if ($para1=="") {
+            $page_data['title'] = "Happy Stories || ".$this->system_title;
+            $page_data['top'] = "stories.php";
+            $page_data['page'] = "stories";
+            $page_data['bottom'] = "stories.php";
             $page_data['all_happy_stories'] = $this->db->get_where("happy_story", array("approval_status" => 1))->result();
-			$this->load->view('front/index', $page_data);
-		}
+            $this->load->view('front/index', $page_data);
+        }
         elseif ($para1=="story_detail") {
             $page_data['title'] = "Story Detail || ".$this->system_title;
             $page_data['top'] = "story_detail.php";
@@ -3001,7 +3004,7 @@ $data['longitude'] = $loc_array['longitude'];
                     echo '<iframe src="https://player.vimeo.com/video/' . $para3 . '" width="400" height="300" frameborder="0"></iframe>';
                 }
             }
-	}
+    }
 
     function gallery_upload($para1) {
         if ($this->member_permission() == FALSE) {
@@ -3622,8 +3625,8 @@ if(isset($_POST['gallery_profile_image_data'])) {
         }
     }
 
-	function contact_us($para1="", $para2="")
-	{	
+    function contact_us($para1="", $para2="")
+    {   
         if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
             $this->load->library('recaptcha');
         }
@@ -3702,7 +3705,7 @@ if(isset($_POST['gallery_profile_image_data'])) {
                 }
             }
         }
-	}
+    }
 
     function process_payment()
     {
@@ -4080,15 +4083,15 @@ if(isset($_POST['gallery_profile_image_data'])) {
         $this->load->view('front/index', $page_data);
     }
 
-	function login()
-	{
+    function login()
+    {
         if ($this->member_permission() == TRUE) {
             redirect(base_url().'home/', 'refresh');
         }
         if ($this->member_permission() == TRUE) {
             redirect(base_url().'home/', 'refresh');
         }
-		else{
+        else{
             $page_data['page'] = "login";
             $page_data['login_error'] = "";
             if ($this->session->flashdata('alert') == "login_error") {
@@ -4109,27 +4112,27 @@ if(isset($_POST['gallery_profile_image_data'])) {
             elseif ($this->session->flashdata('alert') == "register_success") {
                 $page_data['register_success'] = translate('you_have_registered_successfully._please_log_in_to_continue');
             }
-			$this->load->view('front/login', $page_data);
-		}	
-	}
+            $this->load->view('front/login', $page_data);
+        }   
+    }
 
-	function check_login()
-	{
-		if ($this->member_permission() == TRUE) {
-        	redirect(base_url().'home/', 'refresh');
-		}
-		else{
-			$username = $this->input->post('email');
-	        $password = sha1($this->input->post('password'));
+    function check_login()
+    {
+        if ($this->member_permission() == TRUE) {
+            redirect(base_url().'home/', 'refresh');
+        }
+        else{
+            $username = $this->input->post('email');
+            $password = sha1($this->input->post('password'));
             
             $remember_me = $this->input->post('remember_me');
-	        
-	        $result = $this->Crud_model->check_login('member', $username, $password);
-	        // echo $this->db->last_query();
+            
+            $result = $this->Crud_model->check_login('member', $username, $password);
+            // echo $this->db->last_query();
 
-	        $data = array();
-	        if($result)    
-	        {
+            $data = array();
+            if($result)    
+            {
                 if ($result->is_blocked == "no") {
                     $data['login_state'] = 'yes';
                     $data['member_id'] = $result->member_id;
@@ -4161,13 +4164,13 @@ if(isset($_POST['gallery_profile_image_data'])) {
                     redirect( base_url().'home/login', 'refresh' );
                 }
             }
-	        else {
-	            $this->session->set_flashdata('alert','login_error');
+            else {
+                $this->session->set_flashdata('alert','login_error');
 
-	            redirect( base_url().'home/login', 'refresh' );
-	        }
-		}		
-	}
+                redirect( base_url().'home/login', 'refresh' );
+            }
+        }       
+    }
 
     function forget_pass($para1="") {
         if ($this->member_permission() == TRUE) {
@@ -4211,76 +4214,76 @@ if(isset($_POST['gallery_profile_image_data'])) {
         }
     }
 
-	function logout()
-	{
+    function logout()
+    {
         setcookie("cookie_member_id", "", time() - 3600, "/");
         setcookie("cookie_member_name", "", time() - 3600, "/");
         setcookie("cookie_member_email", "", time() - 3600, "/");
 
         $this->session->unset_userdata('login_state');
         $this->session->unset_userdata('member_id');
-		$this->session->unset_userdata('member_name');
-		$this->session->unset_userdata('member_email');
+        $this->session->unset_userdata('member_name');
+        $this->session->unset_userdata('member_email');
 
         // $this->session->sess_destroy();
         
         redirect(base_url().'home/', 'refresh');
-	}
+    }
 
-	function registration($para1="")
-	{
-		if ($this->member_permission() == TRUE) {
-        	redirect(base_url().'home/', 'refresh');
-		}
-		else{
+    function registration($para1="")
+    {
+        if ($this->member_permission() == TRUE) {
+            redirect(base_url().'home/', 'refresh');
+        }
+        else{
             recache();
             if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                 $this->load->library('recaptcha');
             }
-			// --------------------Check for Disallowed Characters-------------------- //
-			$safe = 'yes';
-	        $char = '';
-	        foreach($_POST as $check=>$row){
-	            if (preg_match('/[\'^":()}{#~><>|=¬]/', $row,$match))
-	            {
-	                if($check !== 'password' && $check !== 'confirm_password')
-	                {
-	                    $safe = 'no';
-	                    $char = $match[0];
-	                }
-	            }
-	        }
-	        // --------------------Check for Disallowed Characters-------------------- //
-			if ($para1 == "") {
+            // --------------------Check for Disallowed Characters-------------------- //
+            $safe = 'yes';
+            $char = '';
+            foreach($_POST as $check=>$row){
+                if (preg_match('/[\'^":()}{#~><>|=¬]/', $row,$match))
+                {
+                    if($check !== 'password' && $check !== 'confirm_password')
+                    {
+                        $safe = 'no';
+                        $char = $match[0];
+                    }
+                }
+            }
+            // --------------------Check for Disallowed Characters-------------------- //
+            if ($para1 == "") {
                 if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                     $page_data['recaptcha_html'] = $this->recaptcha->render();
                 }
                 $page_data['page'] = "registration";
-				$this->load->view('front/registration', $page_data);
-			}
-			elseif ($para1=="add_info") {
-				$this->form_validation->set_rules('first_name', 'First Name', 'required');
-				$this->form_validation->set_rules('last_name', 'Last Name', 'required');
-				$this->form_validation->set_rules('gender', 'Gender', 'required');
-	            $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
+                $this->load->view('front/registration', $page_data);
+            }
+            elseif ($para1=="add_info") {
+                $this->form_validation->set_rules('first_name', 'First Name', 'required');
+                $this->form_validation->set_rules('last_name', 'Last Name', 'required');
+                $this->form_validation->set_rules('gender', 'Gender', 'required');
+                $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
                 $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
                 $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
                 $this->form_validation->set_rules('yearob', 'Year of Birth', 'required');
                 $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
-	            $this->form_validation->set_rules('mobile', 'Mobile Number', 'required');
-	            $this->form_validation->set_rules('password', 'Password', 'required|matches[confirm_password]');
-	            $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required');
+                $this->form_validation->set_rules('mobile', 'Mobile Number', 'required');
+                $this->form_validation->set_rules('password', 'Password', 'required|matches[confirm_password]');
+                $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required');
 
-	            if ($this->form_validation->run() == FALSE) {
+                if ($this->form_validation->run() == FALSE) {
                     if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                         $page_data['recaptcha_html'] = $this->recaptcha->render();
                     }
                     $page_data['page'] = "registration";
-	                $page_data['form_contents'] = $this->input->post();
-	                $this->load->view('front/registration', $page_data);
-	            }
-	            else {
-	            	if ($safe == 'yes') {
+                    $page_data['form_contents'] = $this->input->post();
+                    $this->load->view('front/registration', $page_data);
+                }
+                else {
+                    if ($safe == 'yes') {
                         // ------------------------------------Profile Image------------------------------------ //
                         $profile_image[] = array('profile_image'    =>  'default.jpg',
                                                     'thumb'         =>  'default_thumb.jpg'
@@ -4659,20 +4662,20 @@ if(isset($_POST['gallery_profile_image_data'])) {
                             $this->session->set_flashdata('alert', 'register_success');
                             redirect(base_url().'home/login', 'refresh');
                         }
-	            	}
-	            	else {
+                    }
+                    else {
                         if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                             $page_data['recaptcha_html'] = $this->recaptcha->render();
                         }
                         $page_data['form_contents'] = $this->input->post();
-	                    $page_data['disallowed_char'] =  translate('disallowed_charecter').' " '.$char.' " '.translate('in_the_POST');
+                        $page_data['disallowed_char'] =  translate('disallowed_charecter').' " '.$char.' " '.translate('in_the_POST');
                         $page_data['page'] = "registration";
-	                    $this->load->view('front/registration', $page_data);
-	                }
-	            }
-			}
-		}		
-	}
+                        $this->load->view('front/registration', $page_data);
+                    }
+                }
+            }
+        }       
+    }
 
     function view_payment_detail($para1)
     {

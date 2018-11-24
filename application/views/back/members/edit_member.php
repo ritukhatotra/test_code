@@ -24,6 +24,7 @@
 		$family_info = json_decode($value->family_info, true);
 		$additional_personal_details = json_decode($value->additional_personal_details, true);
 		$partner_expectation = json_decode($value->partner_expectation, true);
+        $belongs_to = $value->belongs_to;
 	}
 ?>
 <!--CONTENT CONTAINER-->

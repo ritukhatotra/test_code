@@ -933,6 +933,8 @@ class Admin extends CI_Controller {
 	            $this->form_validation->set_rules('permanent_state', 'Permanent State', 'required');
 	            // $this->form_validation->set_rules('permanent_city', 'Permanent City', 'required');
 
+	            $this->form_validation->set_rules( 'belongs_to', 'Belongs To', 'required' );
+
 	            if ($this->form_validation->run() == FALSE) {
 	            	$page_data['top'] 		= "members/index.php";
 					$page_data['folder'] 	= "members";
@@ -1137,6 +1139,7 @@ class Admin extends CI_Controller {
 	            	$data['partner_expectation'] = json_encode($partner_expectation);
 	            	// ------------------------------------ Partner Expectation------------------------------------ //
 
+	            	$data['belongs_to'] = $this->input->post( 'belongs_to' );
 	                $this->db->where('member_id', $para2);
 	                $result = $this->db->update('member', $data);
 	                recache();

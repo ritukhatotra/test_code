@@ -47,14 +47,13 @@
                             <td>
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $life_style_data[0]['smoke'])?>
                             </td>
-<?php /*
+
                             <td class="td-label">
                                 <span><?php echo translate('living_with')?></span>
                             </td>
                             <td>
                                 <?=$life_style_data[0]['living_with']?>
                             </td>
-*/?>
                         </tr>
                     </tbody>
                 </table>
