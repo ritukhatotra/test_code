@@ -37,8 +37,24 @@ class Home extends CI_Controller {
                 $this->output->cache($cache_time);
             }
         }
+$this->beforeRender();
         setcookie('lang', $this->session->userdata('language'), time() + (86400), "/");
     }
+
+public function beforeRender() {
+       ### UPDATE LAST VISIT ###
+        if ($this->session->userdata('member_id') != ""){
+        // Checking for the SESSION - Proceed only if MEMBER/USER is logged in.
+           $this->db->where('member_id', $this->session->userdata('member_id'));
+             
+            
+            // UPDATE MEMBER VISIT TIME
+            $last_visit = date('Y-m-d H:i:s', time());
+            $data['last_visit'] = $last_visit;
+            $result = $this->db->update('member', $data);
+            recache();
+        }    
+       }
 	
 	public function index()
 	{	
@@ -4829,5 +4845,58 @@ $address_string = implode(',', array_filter($address_string));
 
 //print_r($array);exit;
     return $array;
+   }
+
+   public function getOnlineStatus($id) 
+   {
+
+     $member_last_visit = $this->Crud_model->get_type_name_by_id('member', $id, 'last_visit');
+  if($member_last_visit == null) {
+   return "";
+}
+            $current_time = strtotime(date("Y-m-d H:i:s")); // CURRENT TIME
+            $last_visit = strtotime($member_last_visit['Member']['last_visit']); // LAST VISITED TIME
+            
+            $time_period = floor(round(abs($current_time - $last_visit)/60,2)); //CALCULATING MINUTES
+            
+            //IF YOU WANT TO CALCULATE DAYS THEN USER THIS
+            //$time_period = floor(round(abs($current_time - $last_visit)/60,2)/1440);
+            
+           
+            if ($time_period <= 10){
+                return true;
+            } else {
+               return "Online ".$this->time_elapsed_string($last_visit);
+            }
+        $this->db->where('member_id', $this->session->userdata('member_id'));
+   }
+
+   public function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
    }
 }

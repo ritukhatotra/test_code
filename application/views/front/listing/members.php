@@ -76,7 +76,9 @@ foreach ($get_all_members as $member): ?>
             <h3 class="heading heading-5 strong-600 <?php if($member->membership == 1){echo 'mt-4';} else {echo'mt-1';}?>">
                 <a onclick="return goto_profile(<?=$member->member_id?>)" class="c-base-1"><?=$member->first_name." ".$member->last_name?></a>
             </h3>
-            <h4 class="heading heading-xs c-gray-light strong-400"><i class="fa fa-circle"></i> Online 2w ago</h4>
+<?php $online_status = $this->Crud_model->get_online_status($member->member_id);
+?>
+            <h4 class="heading heading-xs c-gray-light strong-400 <?php echo $online_status == 'Online'? 'online' : 'offline'; ?>"><i class="fa fa-circle"></i> <?php echo  $online_status; ?></h4>
 			 <div class="clearfix"></div><hr>
 			 
 			 <div class="row list-box-columns">			 

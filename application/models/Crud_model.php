@@ -1456,4 +1456,57 @@ class Crud_model extends CI_Model
         }
         return false;
     }
+
+public function get_online_status($id) 
+   {
+
+     $member_last_visit = $this->get_type_name_by_id('member', $id, 'last_visit');
+  if($member_last_visit == null) {
+   return "Offline";
+}
+            $current_time = strtotime(date("Y-m-d H:i:s")); // CURRENT TIME
+
+            $last_visit = strtotime($member_last_visit); // LAST VISITED TIME
+            
+            $time_period = floor(round(abs($current_time - $last_visit)/60,2)); //CALCULATING MINUTES
+            
+            //IF YOU WANT TO CALCULATE DAYS THEN USER THIS
+            //$time_period = floor(round(abs($current_time - $last_visit)/60,2)/1440);
+            
+           
+            if ($time_period <= 10){
+                return "Online";
+            } else {
+               return "Online ".$this->time_elapsed_string($member_last_visit);
+            }
+   }
+
+   public function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+   }
 }

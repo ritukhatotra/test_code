@@ -31,6 +31,7 @@ ALTER TABLE `member` ADD `belongs_to` VARCHAR(255) NULL AFTER `pic_privacy`;
 
 ALTER TABLE `member` ADD `latitude` VARCHAR(255) NULL AFTER `belongs_to`;
 ALTER TABLE `member` ADD `longitude` VARCHAR(255) NULL AFTER `belongs_to`;
+ALTER TABLE `member` ADD `last_visit` datetime NULL AFTER `belongs_to`;
 
 DROP TABLE IF EXISTS `partner_personal_preferances`;
 CREATE TABLE `partner_personal_preferances` (

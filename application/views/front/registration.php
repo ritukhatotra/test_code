@@ -59,7 +59,8 @@
             }
         ?>
         <!-- Custom style - Remove if not necessary -->
-        <link type="text/css" href="<?=base_url()?>template/front/css/custom-style.css" rel="stylesheet">
+        <!--link type="text/css" href="<?=base_url()?>template/front/css/custom-style.css" rel="stylesheet"-->
+        <link type="text/css" href="<?=base_url()?>template/front/css/responsive.css" rel="stylesheet">
         <!-- Favicon -->
         <script src="<?=base_url()?>template/front/vendor/jquery/jquery.min.js"></script>
         

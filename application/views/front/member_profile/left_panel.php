@@ -46,11 +46,13 @@
             ?>
         </div>
         <!-- Profile details -->
+		
         <div class="profile-details">
             <h2 class="heading heading-3 strong-500 profile-name"><?=$get_member[0]->first_name." ".$get_member[0]->last_name?></h2>
             <h3 class="heading heading-6 strong-400 profile-occupation mt-3"><?=$education_and_career_data[0]['occupation']?></h3>
         </div>
         <!-- Profile connect -->
+		
         <?php if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'no'){ ?>
         <div class="profile-connect mt-2">
             <div class="row">

@@ -6,7 +6,7 @@
                 <div class="st-content-inner">
                 	<?php if ($page == 'login' || $page == 'registration') { } else { ?>
 						<!-- Navbar -->
-						<div class="top-navbar align-items-center">
+						<div class="top-navbar align-items-center" style="display:none;">
 						    <div class="container">
 						        <div class="row align-items-center py-1" style="padding-bottom: 0px !important">																		<!----===================    Language Commented Code   =======================--->									
 						            <?php /* <div class="col-lg-4 col-md-5">
@@ -88,6 +88,96 @@
 						    </div>
 						</div>
                 	<?php } ?>
+					
+					
+						<!----=============== mobile-nav for Mobile ==================-->	
+						
+						   <aside id="mobile-menu-outer" class="mobile-menu-outer">
+						   
+						     <div class="mobile-user-info"> 
+						   
+						         <!-- Profile picture -->
+					           <div class="profile-picture">
+						          <?php
+							$profile_image = $get_member[0]->profile_image;
+							$images = json_decode($profile_image, true);
+							if (file_exists('uploads/profile_image/'.$images[0]['thumb'])) {
+								$pic_privacy = $get_member[0]->pic_privacy;
+								$pic_privacy_data = json_decode($pic_privacy, true);
+								$is_premium = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'membership');
+								if($pic_privacy_data[0]['profile_pic_show']=='only_me'){
+							?>
+							
+																
+								<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Picture">
+								
+								
+							<?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='premium' and $is_premium==2) {
+							?>
+							
+							<img src="<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>" alt="Picture">
+								
+							<?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='premium' and $is_premium==1) {
+							?>
+															
+								<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Picture">
+								
+							<?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='all') {
+							?>
+							
+								<img src="<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>" alt="Picture">
+							
+							
+							<?php }else{
+								?>								
+									<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Picture">
+								
+								<?php }
+							} else {
+							?>
+								
+								<img src="<?=base_url()?>uploads/profile_image/default_image.png" alt="Picture">
+								
+							<?php
+							}
+						?>
+					              </div>
+								  
+								 <div class="user-details">
+										<h2 class="heading heading-6 strong-500 profile-name">
+										<?=$get_member[0]->first_name." ".$get_member[0]->last_name?> Jagvir Singh
+										</h2>
+										<p class="">ID:12345678</p>
+										<a class="link" href="#"><i class="ion-edit"></i> Edit Profile</a>
+									
+									</div>
+									
+						  </div>			
+									
+						 <div class="clearfix"></div>			
+						   
+						   
+						        
+					<!-- Profile details -->
+					
+					
+					
+						   
+						   
+						   
+						
+							  <ul class="mobile-user-menu">
+							  
+							  
+							  
+							  
+							  
+							     </ul>							  
+							  
+							  </aside>
+							
+						<!----=============== mobile-nav  for Mobile END ==================-->	
+
 
 					<nav class="navbar navbar-expand-lg navbar-light bg-default navbar--link-arrow navbar--uppercase">
 					    <div class="container navbar-container">
@@ -109,17 +199,23 @@
                                 ?>
 					        </a>
 					        <div class="d-inline-block">
-					            <!-- Navbar toggler  -->
-					            <button class="navbar-toggler hamburger hamburger-js hamburger--spring" type="button" data-toggle="collapse" data-target="#navbar_main" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-					            <span class="hamburger-box">
-					            <span class="hamburger-inner"></span>
-					            </span>
-					            </button>
+							
+					            <!---========== Navbar toggler  ===========-->								
+								
+									<button type="button" class="navbar-toggle">
+											 <label class="label">Menu</label>
+										  <div class="bars">
+											<span class="icon-bar"></span>
+											<span class="icon-bar"></span>
+											<span class="icon-bar"></span>
+										  </div>
+									</button>
+								
+								
+								
 					        </div>
 					        <div class="collapse navbar-collapse align-items-center justify-content-end" id="navbar_main">
 							
-							  <!---nav class="top-navbar-menu"></nav-->
-					            	<ul class="float-right top_bar_right"></ul>	
 									
 					            <!-- Navbar links -->
 					            <ul class="navbar-nav float-right " data-hover="dropdown">
@@ -182,19 +278,20 @@
 					                <a class="nav-link <?php if($page == 'contact_us'){?>nav_active<?php }?>" href="<?=base_url()?>home/contact_us" aria-haspopup="true" aria-expanded="false">
 					                <?php echo translate('contact_us')?></a>
 					                </li>
-					            </ul>																				
+					            </ul>	
+
+                        <!---nav class="top-navbar-menu"></nav-->
+					            	<ul class="top_bar_right"></ul>									
 					          					                
 					            								
 					        </div>
 							
-						<!---- USer nav for Mobile-->	
-							<!---ul class="float-right top_bar_right user-nav-mobile"></ul-->
-							
-								<!---- USer nav for Mobile END -->	
+						
 							
 					    </div>
 					</nav>
-
+					
+				
 					<script type="text/javascript">
 					    $(document).ready(function () {
 					        $('.set_langs').on('click', function () {
@@ -203,6 +300,15 @@
 					                    location.reload();
 					                }});
 					        });
+							
+							$('.navbar-toggle').click(function() {  
+									$(this).toggleClass('closed');        
+									$('#mobile-menu-outer').toggleClass('active');
+									//$('.main_wrapper').toggleClass('active');
+									//$('html').toggleClass('active');
+								});
+							
+							
 					    });
 					</script>
 					<style>
