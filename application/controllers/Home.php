@@ -4820,7 +4820,7 @@ $address_string = implode(',', array_filter($address_string));
                  'longitude' => ''
                ];   
    //  try{
-      $url = "http://maps.google.com/maps/api/geocode/json?address=".urlencode($address_string )."&sensor=false&key=AIzaSyCNXmiZdeMd4arV4em-hbWc3p8aySeaHJQ";
+      $url = "http://maps.google.com/maps/api/geocode/json?address=".urlencode($address_string )."&sensor=false&key=";
      $ch = curl_init();
      curl_setopt($ch, CURLOPT_URL, $url);
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
