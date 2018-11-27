@@ -93,7 +93,7 @@
 						<!----=============== mobile-nav for Mobile ==================-->	
 						
 						   <aside id="mobile-menu-outer" class="mobile-menu-outer">
-						   
+						   <?php if (!empty($this->session->userdata['member_id'])) { ?>
 						     <div class="mobile-user-info"> 
 						   
 						         <!-- Profile picture -->
@@ -144,35 +144,96 @@
 					              </div>
 								  
 								 <div class="user-details">
-										<h2 class="heading heading-6 strong-500 profile-name">
-										<?=$get_member[0]->first_name." ".$get_member[0]->last_name?> Jagvir Singh
+										<h2 class="heading heading-6 strong-600 profile-name">
+										<?=$get_member[0]->first_name." ".$get_member[0]->last_name?>
 										</h2>
-										<p class="">ID:12345678</p>
-										<a class="link" href="#"><i class="ion-edit"></i> Edit Profile</a>
+										<p class=""><b><?=translate('ID').' - '?></b><?=$get_member[0]->member_profile_id?></p>
+										<a class="link" href="<?=base_url()?>home/profile/edit_full_profile"><i class="ion-edit"></i> Edit Profile</a>
 									
 									</div>
 									
 						  </div>			
 									
-						 <div class="clearfix"></div>			
-						   
-						   
-						        
-					<!-- Profile details -->
+						 <div class="clearfix"></div>     
+						 <?php }?>            
 					
+								  
+								 <ul class="nav mobile-user-menu  tree-menu">
+								  <?php if (!empty($this->session->userdata['member_id'])) { ?>
+								    <li><a href="<?=base_url()?>home/profile/notifications-list"><i class="ion-ios-bell"></i> Notifications
+									<span class="badge badge-primary badge-pill">14</span>
+									</a> </li>
+								    <li><a href="<?=base_url()?>home/profile/messaging-list"><i class="ion-chatbubble-working"></i> Messages
+									<span class="badge badge-primary badge-pill">14</span>
+									</a>									
+									</li>									
+									<li class="has-child">
+									<a class="tree-toggler nav-header"><i class="ion-android-person"></i>  My Profile</a>
+										<ul class="nav nav-list tree">
+											<li ><a href="<?=base_url()?>home/profile/my-interests"><?php echo translate('sent_interests')?></a></li>
+                    <li><a href="<?=base_url()?>home/profile/received-interests"><?php echo translate('received_interests')?></a></li>
+                    <li class="<?php echo $_SERVER[REQUEST_URI] == '/home/profile/shortlist' ? 'active' : ''; ?>"> <a href="<?=base_url()?>home/profile/shortlist"><?php echo translate('shortlist')?></a> </li>
+                    <li><a href="<?=base_url()?>home/profile/followed-users"><?php echo translate('followed_users')?></a></li>
+                    <li><a href="<?=base_url()?>home/profile/messaging-list"> <?php echo translate('messaging')?></a></li>
+                    <li><a  href="<?=base_url()?>home/profile/ignored-list"><?php echo translate('ignored_list')?> </a></li>
 					
-					
-						   
-						   
-						   
-						
-							  <ul class="mobile-user-menu">
-							  
-							  
-							  
-							  
-							  
-							     </ul>							  
+  </ul>
+									</li>
+					                    <li>
+									<a class="tree-toggler nav-header"><i class="ion-android-person"></i><?php echo translate('matches')?></a> </a>
+										<ul class="nav nav-list tree">									
+					                    <li>
+					                    <a href="<?=base_url()?>home/matches">
+					                    <?php echo translate('my_matches')?></a>
+					                    </li>
+					                </ul>
+									</li>
+									<?php } ?>
+									
+									
+									<li class="has-child">
+									<a class="tree-toggler nav-header"><i class="ion-android-person"></i><?php echo translate('search_partner')?></a> </a>
+										<ul class="nav nav-list tree">
+											 
+					                    <li>
+					                    <a href="<?=base_url()?>home/listing">
+					                    <?php echo translate('all_members')?></a>
+					                    </li>
+					                    <li>
+					                    <a  href="<?=base_url()?>home/listing/premium_members">
+					                    <?php echo translate('premium_members')?></a>
+					                    </li>
+					                    <li>
+					                    <a href="<?=base_url()?>home/listing/free_members">
+					                    <?php echo translate('free_members')?></a>
+					                    </li>
+					                    </ul>
+					                    </li>
+					                    
+					                    <li>
+					                <a href="<?=base_url()?>home/plans">
+					                <i class="ion-check"></i>
+					                <?php echo translate('pricing_plans')?></a>
+					                </li>
+					                <li>
+					                <a href="<?=base_url()?>home/contact_us">
+					                <i class="ion-check"></i>
+					                <?php echo translate('contact_us')?></a>
+					                </li>
+					                
+					                   
+							
+									
+								</ul>
+								   <div class="text-center mt-3">	
+                                     <?php if (empty($this->session->userdata['member_id'])) { ?>
+                                   								  
+											 <a href="<?=base_url()?>home/login" class="btn btn-styled btn-base-1 btn-rouded"><i class="ion-android-person"></i> <?php echo translate('log_in')?></a>
+											<?php }else{?>
+											<a href="<?=base_url()?>home/logout" class="btn btn-styled btn-base-1 btn-rouded"><i class="fa fa-power-off"></i> <?php echo translate('log_out')?></a>
+									  
+					                <?php }?>
+									  </div>
 							  
 							  </aside>
 							
@@ -307,6 +368,15 @@
 									//$('.main_wrapper').toggleClass('active');
 									//$('html').toggleClass('active');
 								});
+								
+							 // SIDEBAR TREE NAV 
+								$(document).ready(function () {
+									$('a.tree-toggler').click(function () {
+										$(this).parent().children('ul.tree').toggle(300);
+									});
+								});
+								 // SIDEBAR TREE NAV  END	
+								
 							
 							
 					    });

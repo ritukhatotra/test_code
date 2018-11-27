@@ -1,4 +1,98 @@
-<sup class="badge bg-base-1 noti_badge msg_counter" style="display: none;"> <!-- Counts Messages with JavaScript  --> </sup>
+<sup class="badge bg-base-1 noti_badge msg_counter" style="display: none;"> 
+<!-- Counts Messages with JavaScript  --> </sup>
+
+
+<ul class="dropdown-menu notify-drop">
+            <div class="notify-drop-title">
+            	<div class="row">
+            		<div class="col-md-6 col-sm-6 col-xs-6"><?php echo translate('messages')?></div>
+            		<div class="col-md-6 col-sm-6 col-xs-6 text-right"><a href="" class="rIcon allRead" data-tooltip="tooltip" data-placement="bottom" title="tümü okundu."><i class="fa fa-dot-circle-o"></i></a></div>
+            	</div>
+            </div>
+            <!-- end notify title -->
+			
+            <!-- notify content -->
+            <div class="drop-content">			
+		
+			<?php 
+        $listed_messaging_members = $this->Crud_model->get_listed_messaging_members($this->session->userdata('member_id'));
+        sort_array_of_array($listed_messaging_members, 'message_thread_time', SORT_DESC);
+        foreach ($listed_messaging_members as $messaging_member) {
+        	if($this->db->get_where("member", array("member_id" => $messaging_member['member_id']))->row()->is_closed == 'no'){
+	        	if ($this->db->get_where('member', array('member_id' => $messaging_member['member_id']))->row()->member_id) {
+	        		$member = $this->session->userdata('member_id');
+		        	if(!$this->Crud_model->is_message_thread_seen($messaging_member['message_thread_id'],$member)){
+				        	$msg_counter++;
+				    }
+		        	$messaging_member_info = $this->db->get_where('member', array('member_id' => $messaging_member['member_id']))->row();
+		        	?>
+		
+            	<li>
+				
+				<div class="row">
+            		<div class="col-md-3 col-sm-3 col-xs-3">
+					<div class="notify-img">
+
+<?php
+											$msg_profile_image = $this->Crud_model->get_type_name_by_id('member', $messaging_member_info->member_id, 'profile_image');
+				                			$msg_images = json_decode($msg_profile_image, true);
+							                if (file_exists('uploads/profile_image/'.$msg_images[0]['thumb'])) {
+							                ?>
+							                    <img src="<?=base_url()?>uploads/profile_image/<?=$msg_images[0]['thumb']?>" class="dropdown-image rounded-circle">
+							                <?php
+							                }
+							                else {
+							                ?>
+							                    <img src="<?=base_url()?>uploads/profile_image/default_image.png" class="dropdown-image rounded-circle">
+							                <?php
+							                }
+							            ?></div></div>
+					
+            		<div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
+						<a href="<?=base_url()?>home/member_profile/<?= $messaging_member_info->member_id ?>" ><?= $this->Crud_model->get_type_name_by_id('member', $messaging_member_info->member_id, 'first_name'); ?></a>
+						 has sent a	<a href="<?=base_url()?>home/profile/nav/messaging/<?=$messaging_member['message_thread_id']?>"> message </a>
+						<!---a href="" class="rIcon"><i class="fa fa-dot-circle-o"></i></a-->
+						
+					 
+						<p class="time"><i class="c-base-1 fa fa-clock-o"></i> <?=date('d M,y - h:i A', $messaging_member['message_thread_time'])?></p>
+						
+            		</div>
+					</div>
+            	</li>
+				<?php
+	        	}
+	        }
+	        }
+               
+
+        if (count($listed_messaging_members) <= 0) {
+		?>
+    		<div class="text-center">
+    			<small class="sml_txt">
+        			<?php echo translate('no_messages_to_show')?>
+        		</small>
+        	</div>
+		<?php
+		}
+    ?>
+            	
+				
+            </div>
+			
+		  <!-- notify content -->
+		  
+            <div class="notify-drop-footer text-center">
+            	<a href="<?=base_url()?>home/profile/messaging-list">View All <i class="ion-ios-arrow-thin-right"></i> </a>
+            </div>
+          </ul>
+		  
+		  
+
+
+
+		<?php /*  
+		  
+
 <div class="dropdown-menu dropdown-menu-right dropdown-scale" style="max-height: 300px;overflow: auto;">
     <h6 class="dropdown-header"><?php echo translate('messages')?></h6>
     <?php 
@@ -52,4 +146,4 @@
 		<?php
 		}
     ?>
-</div>
+</div> */?>

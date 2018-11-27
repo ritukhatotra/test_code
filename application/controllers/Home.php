@@ -314,9 +314,10 @@ public function beforeRender() {
             $state    = $this->input->post('state');
             $city     = $this->input->post('city');
             $profession     = $this->input->post('profession');
-
-            $aged_from = $this->input->post('aged_from') - 1;
+           $aged_from = $this->input->post('aged_from');
+           
             if (!empty($aged_from)) {
+                $aged_from = $this->input->post('aged_from') - 1;
                 $from_year = date('Y') - $aged_from;
                 $from_date = $from_year."-01-01";
                 $sql_aged_from = strtotime($from_date);   
@@ -1809,10 +1810,21 @@ public function beforeRender() {
             $para1 = "";            
         }
 
+        if ($para1 == "notifications-list") {
+            $page_data['current_tab'] = "notifications";
+            $para1 = "";
+        }
+
         if ($para1 == "ignored-list") {
             $page_data['current_tab'] = "ignored_list";
             $para1 = "";            
         }
+ if ($para1 == "gallery-list") {
+            $page_data['current_tab'] = "gallery";
+            $para1 = "";            
+        }
+
+
 
         if ($para1 == "" || $para1 == "nav") {
             $page_data['title'] = "Profile || ".$this->system_title;
@@ -1863,6 +1875,8 @@ public function beforeRender() {
         }
         elseif ($para1 == "received_interests") {
             $this->load->view( 'front/profile/received_interests/index'); 
+        }elseif ($para1 == "notifications") {
+            $this->load->view( 'front/profile/notifications/index'); 
         }
         elseif ($para1=="ignored_list") {
             $this->load->view('front/profile/ignored_list/index');
@@ -3320,6 +3334,15 @@ if(isset($_POST['gallery_profile_image_data'])) {
     }
 
 
+public function ajax_notifications_list($para1="",$para2="")
+{
+     $this->load->library('Ajax_pagination');
+
+        $notifications = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'notifications'), true);
+$page_data['notifications'] = $notifications;
+
+        $this->load->view('front/profile/notifications/ajax_interest', $page_data);
+}
 
     function ajax_received_interest_list($para1="",$para2="")
     {
@@ -4805,6 +4828,8 @@ if(isset($_POST['gallery_profile_image_data'])) {
         echo $notifications;die;
         
     }
+
+
 
    function findLatLong($address)
    {

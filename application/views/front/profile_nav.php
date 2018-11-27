@@ -22,44 +22,45 @@
             <div class="collapse navbar-collapse justify-content-between align-items-center" id="navbar_main">
                 <ul class="navbar-nav " data-hover="dropdown" data-animations="zoomIn zoomIn zoomIn zoomIn">
                     <li class="nav-item">
-                        <a href="<?=base_url()?>home/profile" class="nav-link p_nav active">
+                        <a href="<?=base_url()?>home/profile" class="nav-link p_nav">
                             <i class="fa fa-user"></i> <?php echo translate('profile')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link my_interests p_nav" onclick="profile_load('my_interests')">
+                        <a class="nav-link my_interests p_nav" href="<?=base_url()?>home/profile/my-interests">
                             <i class="fa fa-heart"></i> <?php echo translate('sent_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link received_interests p_nav" onclick="profile_load('received_interests')">
+                        <a class="nav-link received_interests p_nav" href="<?=base_url()?>home/profile/received-interests">
                             <i class="fa fa-heart"></i> <?php echo translate('received_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link short_list p_nav" onclick="profile_load('short_list')">
+                        <a class="nav-link short_list p_nav" href="<?=base_url()?>home/profile/shortlist">
                             <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link followed_users p_nav" onclick="profile_load('followed_users')">
+                        <a class="nav-link followed_users p_nav"  href="<?=base_url()?>home/profile/followed-users">
                             <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link messaging p_nav" onclick="profile_load('messaging')">
+                        <a class="nav-link messaging p_nav" href="<?=base_url()?>home/profile/messaging-list">
                             <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link ignored_list p_nav" onclick="profile_load('ignored_list')">
+                        <a class="nav-link ignored_list p_nav" href="<?=base_url()?>home/profile/ignored-list">
                             <i class="fa fa-ban"></i> <?php echo translate('ignored_list')?>
                         </a>
                     </li>
-<?php /* <li class="nav-item">
-                     <a class="nav-link ignored_list p_nav"  onclick="profile_load('gallery')">
+<?php /*                    <li class="nav-item">
+                     <a class="nav-link ignored_list p_nav"  href="<?=base_url()?>home/profile/gallery-list">
                     <b style="font-size: 12px"><?php echo translate('gallery')?></b>
                     </li>*/?>
+                </a>
                 </ul>
             </div>
         </div>
@@ -75,49 +76,10 @@
             clearInterval(message_interval);
         }
         if(page !== ''){
-        
             $.ajax({
                 url: "<?=base_url()?>home/profile/"+page,
                 success: function(response) {
                     $("#profile_load").html(response);
-                    var url_in =  "my-interests";
-                    if (page == "my_interests") {
-                    	url_in =  "my-interests";
-        	    }
-        	    if (page == "received_interests") {
-                    	url_in =  "received-interests";
-        	    }
-        	    if (page == "short_list") {
-                    	url_in =  "shortlist";
-        	    }
-        	    if (page == "followed_users") {
-                    	url_in =  "followed-users";
-        	    }
-        	    if (page == "messaging") {
-                    	url_in =  "messaging-list";
-        	    }
-        	     if (page == "ignored_list") {
-                    	url_in =  "ignored-list";
-        	    }
-if (page == "notifications") {
-                    	url_in =  "notifications-list";
-        	    }
-                        var url = window.location.href;
-			url = url.split('/');
-			var var_url = url;
-			var_url = var_url.pop();
-			console.log('var_url'+var_url);
-			if(var_url == 'profile') {
-			     url = url.join('/');
-			     console.log('url'+url);
-			     
-				history.pushState(null, null, url+"/profile/"+url_in);
-			}else{			
-			  url.splice(-1,1)
-		          url = url.join('/');
-		          console.log('url'+url);
-          		 history.pushState(null, null, url+"/profile/"+url_in);
-       		 }
                     if(page == 'messaging'){
                         $('body').find('#thread_'+sp).click();
                     }

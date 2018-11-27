@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <!-- Alerts for Member actions -->
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 sidebar-outer">
                         <?php include_once APPPATH.'views/front/profile/left_panel.php';?>
                     </div>
 
