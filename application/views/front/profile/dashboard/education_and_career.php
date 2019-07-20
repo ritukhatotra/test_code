@@ -20,40 +20,53 @@
                 </button>               
             </div>
         </div>
-        <div class="table-full-width">
-            <div class="table-full-width">
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-                    <tbody>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('highest_education')?></span>
-                            </td>
-                            <td>
+		
+		<div class="clearfix"></div><hr>
+		
+		<div class="row list-box-columns">
+	    
+		<div class="col-md-6">
+		     <div class="row">	
+                            <div class="col-6 p-0">
+                                <b><?php echo translate('highest_education')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
 
                             <?=$this->Crud_model->get_type_name_by_id('education_level', $education_and_career_data[0]['highest_education'], 'education_level_name')?>
 
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('occupation')?></span>
-                            </td>
-                            <td>
+                                </div>
+                            </div>
+							
+				<div class="row">
+				    <div class="col-6 p-0">
+                                <b><?php echo translate('occupation')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$education_and_career_data[0]['occupation']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('annual_income')?></span>
-                            </td>
-                            <td>
+                            </div>
+				
+				   </div>			
+							
+		 
+		   </div>
+		   
+		<div class="col-md-6">
+		     
+			   <div class="row">	
+                            <div class="col-6 p-0">
+                                <b><?php echo translate('annual_income')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$education_and_career_data[0]['annual_income']?>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            </div>
+                           
+                        </div>		
+				   
+		
+		    </div>
+		
+		  </div>
+		 
     </div>
 
     <div id="edit_education_and_career" style="display: none;">

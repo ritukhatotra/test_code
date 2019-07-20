@@ -12,7 +12,7 @@
                 <h1 class="heading heading-inverse heading-1 strong-400 text-normal">
                 <?=$this->system_name?> </h1>
                 <span class="clearfix"></span>
-                <div class="fluid-paragraph fluid-paragraph-sm mt-3 mb-3 c-white">
+                <div class="mt-3 mb-3 c-white">
                     <?=$home_parallax_text?>
                 </div>
                 <div class="btn-container mt-5">

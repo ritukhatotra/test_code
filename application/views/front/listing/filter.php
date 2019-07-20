@@ -8,6 +8,7 @@
                 </div>
                 <div class="card-body">
                     <form class="form-default" id="filter_form" data-toggle="validator" role="form">
+                        <?php if(empty($this->session->userdata('member_id'))) { ?>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group has-feedback">
@@ -21,11 +22,23 @@
                                 </div>
                             </div>
                         </div>
+                        <?php } ?>
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group has-feedback">
                                     <label for="" class="text-uppercase"><?php echo translate('age_from')?></label>
-                                    <input type="number" class="form-control form-control-sm" name="aged_from" id="filter_aged_from" value="<?php if(isset($aged_from)){echo $aged_from;}?>">
+                                    
+                                     <select class="form-control form-control-sm selectpicker" name="aged_from" id="aged_from" >
+                                         <option value=""></option>
+                            <?php 
+                            $selected = "";
+                            if(isset($aged_from)){$selected = $aged_from;}
+                            for($i = 18; $i<=70; $i++) {?>
+                            
+                              <option value="<?= $i ?>" <?php echo $selected == $i ? 'selected' : '' ?>><?= $i ?></option>
+                            <?php } ?>
+                                   </select>
+                                    
                                     <div class="help-block with-errors">
                                     </div>
                                 </div>
@@ -33,7 +46,17 @@
                             <div class="col-sm-6">
                                 <div class="form-group has-feedback">
                                     <label for="" class="text-uppercase"><?php echo translate('to')?></label>
-                                    <input type="number" class="form-control form-control-sm" name="aged_to" id="filter_aged_to" value="<?php if(isset($aged_to)){echo $aged_to;}?>">
+                                    <select class="form-control form-control-sm selectpicker" name="aged_to" id="aged_to" >
+                                        <option value=""></option>
+                            <?php 
+                            $t_selected = "";
+                            if(isset($aged_to)){$t_selected = $aged_to;}
+                            for($i = 18; $i<=70; $i++) {?>
+                            
+                              <option value="<?= $i ?>" <?php echo $t_selected == $i ? 'selected' : '' ?>><?= $i ?></option>
+                            <?php } ?>
+                                   </select>
+                                   
                                 </div>
                                 <div class="help-block with-errors">
                                 </div>
@@ -154,7 +177,16 @@
                             <div class="col-sm-6">
                                 <div class="form-group has-feedback">
                                     <label for="" class="text-uppercase"><?php echo translate('min_height_(Feet)')?></label>
-                                    <input type="text" class="form-control form-control-sm height_mask" name="min_height" id="min_height" value="<?php if($min_height != ""){echo $min_height;}else{echo '0.00';}?>">
+                                    
+                                    <select  name="min_height" id="min_height"  class="form-control form-control-sm selectpicker">
+                                                                    <option value="">Select Height</option>
+                                                                    <?php  foreach($height_array as $h => $height) {?>
+                                                                    <option value="<?php echo $h; ?>" <?php if(!empty($min_height)){echo $min_height == $h ? 'selected' : '' ;}?>><?php echo $height ?></option>
+                                                                    <?php } ?>
+                                                                </select>
+                                    
+                                    
+                                        <?php /*<input type="text" class="form-control form-control-sm height_mask" name="min_height" id="min_height" value="<?php if($min_height != ""){echo $min_height;}else{echo '0.00';}?>">*/?>
                                     <div class="help-block with-errors">
                                     </div>
                                 </div>
@@ -162,7 +194,15 @@
                             <div class="col-sm-6">
                                 <div class="form-group has-feedback">
                                     <label for="" class="text-uppercase"><?php echo translate('max_height_(Feet)')?></label>
-                                    <input type="text" class="form-control form-control-sm height_mask" name="max_height" id="max_height" value="<?php if($max_height != ""){echo $max_height;}else{echo '8.00';}?>">
+                                    <select  name="max_height" id="max_height"  class="form-control form-control-sm selectpicker">
+                                                                    <option value="">Select Height</option>
+                                                                    <?php  foreach($height_array as $h => $height) {?>
+                                                                    <option value="<?php echo $h; ?>" <?php if(!empty($max_height)){echo $max_height == $h ? 'selected' : '' ;}?>><?php echo $height ?></option>
+                                                                    <?php } ?>
+                                                                </select>
+                                    
+                                    
+                                    <?php /*<input type="text" class="form-control form-control-sm height_mask" name="max_height" id="max_height" value="<?php if($max_height != ""){echo $max_height;}else{echo '8.00';}?>">*/?>
                                 </div>
                                 <div class="help-block with-errors">
                                 </div>

@@ -20,45 +20,42 @@
                 </button>  
             </div>
         </div>
-        <div class="table-full-width">
-            <div class="table-full-width">
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-                    <tbody>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('diet')?></span>
-                            </td>
-                            <td>
+		
+	<div class="clearfix"></div><hr>
 
-                            <?=$this->Crud_model->get_type_name_by_id('diet', $life_style_data[0]['diet'], 'diet_name')?>
 
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('drink')?></span>
-                            </td>
-                            <td>
-                                <?=$this->Crud_model->get_type_name_by_id('decision', $life_style_data[0]['drink'])?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('smoke')?></span>
-                            </td>
-                            <td>
-                                <?=$this->Crud_model->get_type_name_by_id('decision', $life_style_data[0]['smoke'])?>
-                            </td>
+<div class="row list-box-columns">
+	    
+		<div class="col-md-6">
+		      <div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('diet')?>:</b></div>
+					<div class="col-6 p-0"><?=$this->Crud_model->get_type_name_by_id('diet', $life_style_data[0]['diet'], 'diet_name')?></div>								  
+					</div>
+					
+					<div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('drink')?>:</b></div>
+					<div class="col-6 p-0"><?=$this->Crud_model->get_type_name_by_id('decision', $life_style_data[0]['drink'])?></div>								  
+					</div>
+					
 
-                            <td class="td-label">
-                                <span><?php echo translate('living_with')?></span>
-                            </td>
-                            <td>
-                                <?=$life_style_data[0]['living_with']?>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+		     </div>
+	
+	  
+	  <div class="col-md-6">
+		     <div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('smoke')?>:</b></div>
+					<div class="col-6 p-0"><?=$this->Crud_model->get_type_name_by_id('decision', $life_style_data[0]['smoke'])?></div>								  
+					</div>
+					
+					 <div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('living_with')?>:</b></div>
+					<div class="col-6 p-0"><?=$life_style_data[0]['living_with']?></div>								  
+					</div>
+
+		     </div>
+	
+	    </div>
+
     </div>
 
     <div id="edit_life_style" style="display: none;">

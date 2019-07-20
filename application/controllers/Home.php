@@ -37,11 +37,12 @@ class Home extends CI_Controller {
                 $this->output->cache($cache_time);
             }
         }
-$this->beforeRender();
+        
+        $this->beforeRender();
         setcookie('lang', $this->session->userdata('language'), time() + (86400), "/");
     }
 
-public function beforeRender() {
+     public function beforeRender() {
        ### UPDATE LAST VISIT ###
         if ($this->session->userdata('member_id') != ""){
         // Checking for the SESSION - Proceed only if MEMBER/USER is logged in.
@@ -54,7 +55,19 @@ public function beforeRender() {
             $result = $this->db->update('member', $data);
             recache();
         }    
-       }
+      }
+      
+      public function set_timezone()
+      {
+          $this->db->where('member_id', $this->session->userdata('member_id'));
+            
+            // UPDATE MEMBER VISIT TIME
+            $timezone =  $this->input->post('timezone');
+            $data['timezone'] = $timezone;
+            $result = $this->db->update('member', $data);
+            recache();
+          
+      }
 	
 	public function index()
 	{	
@@ -68,7 +81,54 @@ public function beforeRender() {
         $page_data['all_languages'] = $this->db->get('language')->result();
         $max_premium_member_num = $this->db->get_where('frontend_settings', array('type' => 'max_premium_member_num'))->row()->value;
         $max_story_num = $this->db->get_where('frontend_settings', array('type' => 'max_story_num'))->row()->value;
-        $page_data['premium_members'] = $this->db->order_by('rand()')->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no'), $max_premium_member_num)->result();
+        
+         $member_id = $this->session->userdata('member_id');
+         
+         if ($member_id == NULL) {
+             $page_data['premium_members'] = $this->db->order_by('rand()')->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1), $max_premium_member_num)->result();
+             
+             $page_data['recent_members'] = $this->db->order_by('member_since', 'desc')->get_where('member', array('is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1), $max_premium_member_num)->result();
+             
+             
+         }else{
+             $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+              $gender = 1;
+              
+             if(!empty($member_loggedin[0])) {
+                 $gender = $member_loggedin[0]->gender;
+             }
+             
+             if ($gender == 1) {
+                 $gender = 2;
+             } else {
+                 $gender = 1;
+             }
+             
+             
+             //For Ignored Members
+                $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
+                $ignored_ids = json_decode($ignored_ids, true);
+                $ignored_by_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored_by');
+                $ignored_by_ids = json_decode($ignored_by_ids, true);
+                
+                if (empty($ignored_by_ids)) {
+                    array_push($ignored_by_ids, 0);
+                }
+                
+                if (!empty($ignored_ids)) {
+                    $page_data['premium_members'] = $this->db->order_by('rand()')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
+                    
+                    $page_data['recent_members'] = $this->db->order_by('member_since', 'desc')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
+                 
+                }
+                else {
+                     $page_data['premium_members'] = $this->db->order_by('rand()')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
+                     
+                     $page_data['recent_members'] = $this->db->order_by('member_since', 'desc')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
+                }
+         }
+        
         $page_data['happy_stories'] = $this->db->get_where('happy_story', array('approval_status' => 1), $max_story_num)->result();
         $page_data['all_plans'] = $this->db->get("plan")->result();
         $this->load->view('front/index', $page_data);
@@ -92,6 +152,11 @@ public function beforeRender() {
 
     function listing($para1="",$para2="")
     {   
+
+       if(strpos($para1, '-') !== false) {
+           $para1 = str_replace('-', '_', $para1);
+       }
+       $page_data['height_array'] = $this->height_array();
         if ($para1=="") {
             $page_data['title'] = "Listing Page || ".$this->system_title;
             $page_data['top'] = "listing.php";
@@ -170,11 +235,33 @@ public function beforeRender() {
             $page_data['search_member_type'] = "all";
             recache();
             $this->load->view('front/index', $page_data);
-        }
+        } elseif($para1 == "near_me") {
+			//echo "hello";
+			$page_data['title'] = "Near Me || ".$this->system_title;
+            $page_data['top'] = "listing.php";
+            $page_data['page'] = "listing";
+            $page_data['bottom'] = "listing.php";
+            $page_data['member_type'] = "near_me";
+            $page_data['nav_dropdown'] = "near_me";
+            $page_data['home_search'] = "false";
+            $page_data['home_gender'] = "";
+            $page_data['home_religion'] = "";
+            $page_data['home_caste'] = "";
+            $page_data['home_sub_caste'] = "";
+            $page_data['home_language'] = "";
+            $page_data['min_height'] = "";
+            $page_data['max_height'] = "";
+            $page_data['search_member_type'] = "all";
+            recache();
+            $this->load->view('front/index', $page_data);
+		}
     }
 
     function matches($para1="",$para2="")
     {   
+		if(strpos($para1, '-') !== false) {
+           $para1 = str_replace('-', '_', $para1);
+		}
         if ($para1=="") {
             $page_data['title'] = "Listing Page || ".$this->system_title;
             $page_data['top'] = "matches.php";
@@ -184,7 +271,17 @@ public function beforeRender() {
             $page_data['home_search'] = "false";
             recache();
             $this->load->view('front/index', $page_data);
-        }
+        } elseif($para1 == "near_matches") {
+			$page_data['title'] = "Listing Page || ".$this->system_title;
+            $page_data['top'] = "matches.php";
+            $page_data['page'] = "matches";
+            $page_data['bottom'] = "matches.php";
+            $page_data['nav_dropdown'] = "matches";
+            $page_data['home_search'] = "false";
+            recache();
+            $this->load->view('front/index', $page_data);
+		}
+		
     }
     
     function member_profile($para1="",$para2="")
@@ -192,7 +289,7 @@ public function beforeRender() {
         if ($this->member_permission() == FALSE) {
             redirect(base_url().'home/login', 'refresh');
         }
-      
+
         if ($para1 != "" || $para1 != NULL) {
             $is_valid = $this->db->get_where("member", array("member_id" => $para1))->row()->member_id;
             if (!$is_valid) {
@@ -202,6 +299,29 @@ public function beforeRender() {
                 redirect(base_url().'home', 'refresh');
             }
             $member_id = $this->session->userdata('member_id');
+             
+            if ($para2 == 'contact') {
+                 $membership = $this->Crud_model->get_type_name_by_id('member', $member_id, 'membership');     
+                 if ($membership > 1) {
+                    $profile = $this->db->get_where("member", array("member_id" => $para1))->result();
+                    $accepted = $this->Crud_model->get_type_name_by_id('member', $para1, 'interest');
+                    $accepted  = json_decode($accepted , true);
+                //    print_r($accepted);exit;
+                    foreach($accepted as $a) {
+                       if($a['id'] == $member_id && $a['status'] == 'accepted')  { 
+                          $html = "<p>".$profile[0]->mobile."</p><p>".$profile[0]->email."</p>";       
+//print_r($html);exit;
+                          break;                  
+                       }else{
+                          $html = "<p>Contact information is visible to accepted members only.</p>";
+                       }
+                    }
+                 }else{
+                            $html = "<p>Contact information is visible to paid members only. Please upgrade your plan</p>";
+                 }
+
+               echo $html; exit;
+            }
             $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
             $ignored_ids = json_decode($ignored_ids, true);
 
@@ -225,8 +345,7 @@ public function beforeRender() {
 
     function ajax_member_list($para1="",$para2="")
     {
-        $this->load->library('Ajax_pagination');
-
+         $this->load->library('Ajax_pagination');
         //$this->db->like('basic_info','"age":"30"','both');
         $config_base_url = base_url().'home/ajax_member_list/';
         if ($para2 == "free_members") {
@@ -235,6 +354,22 @@ public function beforeRender() {
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -243,20 +378,81 @@ public function beforeRender() {
                 if (empty($ignored_by_ids)) {
                     array_push($ignored_by_ids, 0);
                 }
+                
                 if (!empty($ignored_ids)) {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
                 else {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
             }
-        }
-        elseif ($para2 == "premium_members") {
+        } elseif($para2 == "near_me") {
+			 if ($this->member_permission() == FALSE) {
+                //echo "if";
+				$ip  = $_SERVER['REMOTE_ADDR'];
+				
+				$geoIP  =  json_decode(file_get_contents("http://ipinfo.io/{$ip}/json"));
+				
+				$location  =$geoIP->city;  
+				// $lat = explode(",", $location)[0];
+				// $lon = explode(",", $location)[1];
+				
+ $url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=".$geoIP->loc."&radius=100&key=";
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL, $url);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+     curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+     $response = curl_exec($ch);
+     curl_close($ch);
+	 
+	 echo '<pre>';
+	 print_r($response);
+	 echo '</pre>';
+	 
+				exit;
+				
+				 $city = $this->db->get_where('city', array('name' => $location))->row();
+					
+				$this->db->select('*')->like('present_address','"city":"'.$city->city_id.'"','both');
+               $query = $this->db->get('member')->result();
+				foreach($query as $val) {					
+					echo '<pre>';
+					print_r($val);
+					echo '</pre>';			
+					
+				}
+				//$config['total_rows'] = $this->db->get_where('member', array('is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'city' => $geoIP, ))->num_rows();	
+							
+            } elseif ($this->member_permission() == TRUE) {
+			//	echo "else";
+			}
+			
+		
+		} elseif($para2 == "near_matches") {
+				echo "hello";
+		} elseif ($para2 == "premium_members") {
             if ($this->member_permission() == FALSE) {
-                $config['total_rows'] = $this->db->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                $config['total_rows'] = $this->db->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1))->num_rows();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -266,10 +462,10 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
                 else {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
             }
         }
@@ -277,11 +473,27 @@ public function beforeRender() {
             $config_base_url = base_url().'home/ajax_member_list/search/';
             $all_result = array();
             if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                 //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -291,11 +503,11 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                     //$this->db->last_query($all_id);
                 }
                 else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                 }
                 
             }
@@ -329,9 +541,10 @@ public function beforeRender() {
                 $to_date = $to_year."-01-01";
                 $sql_aged_to = strtotime($to_date);
             }
-
+            if (!empty($this->input->post('min_height')) && !empty($this->input->post('max_height'))) {
             $min_height = $this->input->post('min_height');
             $max_height = $this->input->post('max_height');
+            }
             $search_member_type = $this->input->post('search_member_type');
 
             $by_gender = array();
@@ -350,15 +563,39 @@ public function beforeRender() {
             $by_member_type = array();
 
             $all_array = array();
-
-            if (isset($gender) && $gender != "") {
+             
+             $member_id = $this->session->userdata('member_id');
+             if ($member_id) {
+              //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+             
                 $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender))->result();
                 foreach ($by_genders as $by_genders) {
                     $by_gender[] = $by_genders->member_id;
                 }
-            } else {
-                $by_gender = $all_result;
-            }
+             }else{
+                 if (isset($gender) && $gender != "") {
+                    $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender))->result();
+                    foreach ($by_genders as $by_genders) {
+                        $by_gender[] = $by_genders->member_id;
+                    }
+                } else {
+                    $by_gender = $all_result;
+                }
+             }
+
 
             if (isset($member_profile_id) && $member_profile_id != "") {
                 $by_member_profile_ids = $this->db->select('member_id')->get_where('member', array('member_profile_id' => $member_profile_id))->result();
@@ -429,7 +666,7 @@ public function beforeRender() {
                 $by_sub_caste = $all_result;
             }
 
-            if (isset($language) && $language != "") {
+            /*if (isset($language) && $language != "") {
                 $this->db->select('member_id')->like('language','"mother_tongue":"'.$language.'"','both');
                 $by_languages = $this->db->get('member')->result();
                 foreach ($by_languages as $by_languages) {
@@ -437,7 +674,8 @@ public function beforeRender() {
                 }
             } else {
                 $by_language = $all_result;
-            }
+            }*/
+            $by_language = $all_result;
 
             if (isset($country) && $country != "") {
                 $this->db->select('member_id')->like('present_address','"country":"'.$country.'"','both');
@@ -486,6 +724,7 @@ public function beforeRender() {
             } else {
                 $by_height = $all_result;
             }
+            
 
             if (isset($search_member_type)) {
                 if ($search_member_type == "free_members") {
@@ -501,7 +740,7 @@ public function beforeRender() {
                     $by_member_type[] = $by_members_type->member_id;
                 }
             } else {
-                $by_height = $all_result;
+                $by_member_type = $all_result;
             }
             /*print_r($by_gender);
             echo "<br>";
@@ -516,18 +755,50 @@ public function beforeRender() {
             print_r($by_state);
             echo "<br>";
             print_r($by_city);
+            echo "<br>";
+            print_r($by_member_profile_id);
+            echo "<br>";
+            print_r($by_profession);
+            echo "<br>";
+            print_r($by_caste);
+            echo "<br>";
+            print_r($by_sub_caste);
+            echo "<br>";
+            print_r($by_age);
+            echo "<br>";
+            print_r($by_height);
+            echo "<br>";
+            print_r($by_member_type);
+            
             echo "<br>all<br>";*/
             $all_array = array_intersect($by_gender,$by_member_profile_id,$by_marital_status,$by_profession,$by_religion,$by_caste,$by_sub_caste,$by_language,$by_country,$by_state,$by_city,$by_age,$by_height,$by_member_type);
-            // print_r($all_array);
+             //print_r($all_array);exit;
             $config['total_rows'] = count($all_array);
         }
         elseif ($para2 == "") {
-            if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+           
+            if ($this->member_permission() == FALSE) { 
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $config['total_rows'] = $this->db->where($cond)->count_all_results('member');
             }
-            elseif ($this->member_permission() == TRUE) {
+            elseif ($this->member_permission() == TRUE) { 
                 $member_id = $this->session->userdata('member_id');
+                //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -537,10 +808,10 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
                 else {
-                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->num_rows();
+                    $config['total_rows'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->num_rows();
                 }
                 
             }        
@@ -548,7 +819,7 @@ public function beforeRender() {
             $config_base_url = base_url().'home/ajax_member_list/search/';
             $all_result = array();
             if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
             }
             elseif ($this->member_permission() == TRUE) {
@@ -562,11 +833,11 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1))->result();
                     //$this->db->last_query($all_id);
                 }
                 else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1))->result();
                 }
                 
             }
@@ -794,7 +1065,7 @@ public function beforeRender() {
             print_r($by_city);
             echo "<br>all<br>";*/
             $all_array = array_intersect($by_gender,$by_member_profile_id,$by_marital_status,$by_profession,$by_religion,$by_caste,$by_sub_caste,$by_language,$by_country,$by_state,$by_city,$by_age,$by_height,$by_member_type);
-            // print_r($all_array);
+
             $config['total_rows'] = count($all_array);
         }
 
@@ -874,10 +1145,26 @@ public function beforeRender() {
 
         if ($para2 == "free_members") {
             if ($this->member_permission() == FALSE) {
-                $page_data['get_all_members'] = $this->db->get_where('member', array('membership' => 1, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                $page_data['get_all_members'] = $this->db->get_where('member', array('membership' => 1, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1), $config['per_page'], $para1)->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                 //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -887,19 +1174,53 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
                 else {
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 1, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
             }
-        }
-        elseif ($para2 == "premium_members") {
+        } elseif($para2 == "near_me") {
+			 if ($this->member_permission() == FALSE) {
+                //echo "if";
+				$ip  = $_SERVER['REMOTE_ADDR'];
+				
+				$geoIP  =  json_decode(file_get_contents("http://ipinfo.io/{$ip}/json"));
+				
+				$city = $geoIP;
+								
+				//$page_data['get_all_members'] = $this->db->get_where('member', array('is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1), $config['per_page'], $para1)->result();
+				
+				//				echo $this->db->last_query();
+
+				
+				
+            } elseif ($this->member_permission() == TRUE) {
+			//	echo "else";
+			}
+			
+		
+		} elseif ($para2 == "premium_members") {
             if ($this->member_permission() == FALSE) {
-                $page_data['get_all_members'] = $this->db->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                $page_data['get_all_members'] = $this->db->get_where('member', array('membership' => 2, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1), $config['per_page'], $para1)->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -909,21 +1230,36 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
                 else {
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('membership' => 2, 'member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
             }
         }
         elseif ($para2 == "search") {
             $all_result = array();
             if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -933,10 +1269,10 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                 }
                 else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                 }
                 
             }
@@ -1103,7 +1439,7 @@ public function beforeRender() {
 
             if (count($all_array) != 0) {
                 $this->db->where_in('member_id', $all_array);
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $page_data['get_all_members'] = $this->db->where($cond)->get('member', $config['per_page'], $para1)->result();
             } else {
                 $page_data['get_all_members']  = array();
@@ -1111,11 +1447,26 @@ public function beforeRender() {
         }elseif ($para2 == "matches") {
             $all_result = array();
             if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $all_id = $this->db->select('member_id')->where($cond)->get('member')->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                 //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -1125,10 +1476,10 @@ public function beforeRender() {
                     array_push($ignored_by_ids, 0);
                 }
                 if (!empty($ignored_ids)) {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                 }
                 else {
-                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'))->result();
+                    $all_id = $this->db->select('member_id')->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender))->result();
                 }
                 
             }
@@ -1137,7 +1488,7 @@ public function beforeRender() {
             }
 
             if (isset($gender) && $gender != "") {
-                $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender))->result();
+                $by_genders = $this->db->select('member_id')->get_where('member', array('gender' => $gender, 'is_completed' => 1))->result();
                 foreach ($by_genders as $by_genders) {
                     $by_gender[] = $by_genders->member_id;
                 }
@@ -1146,7 +1497,7 @@ public function beforeRender() {
             }
 
             if (isset($member_profile_id) && $member_profile_id != "") {
-                $by_member_profile_ids = $this->db->select('member_id')->get_where('member', array('member_profile_id' => $member_profile_id))->result();
+                $by_member_profile_ids = $this->db->select('member_id')->get_where('member', array('member_profile_id' => $member_profile_id, 'is_completed' => 1))->result();
                 foreach ($by_member_profile_ids as $by_member_profile_ids) {
                     $by_member_profile_id[] = $by_member_profile_ids->member_id;
                 }
@@ -1155,7 +1506,7 @@ public function beforeRender() {
             }
 
             if (isset($marital_status) && $marital_status != "") {
-                $this->db->select('member_id')->like('education_and_career','"marital_status":"'.$marital_status.'"','both');
+                $this->db->select('member_id')->like('education_and_career','"marital_status":"'.$marital_status.'"','both')->where(array('is_completed' => 1));
                 $by_marital_statuss = $this->db->get('member')->result();
                 foreach ($by_marital_statuss as $by_marital_statuss) {
                     $by_marital_status[] = $by_marital_statuss->member_id;
@@ -1165,7 +1516,7 @@ public function beforeRender() {
             }
 
             if (isset($profession) && $profession != "") {
-                $this->db->select('member_id')->like('basic_info','"occupation":"'.$profession.'"','both');
+                $this->db->select('member_id')->like('basic_info','"occupation":"'.$profession.'"','both')->where(array('is_completed' => 1));
                 $by_professions = $this->db->get('member')->result();
                 foreach ($by_professions as $by_professions) {
                     $by_profession[] = $by_professions->member_id;
@@ -1175,7 +1526,7 @@ public function beforeRender() {
             }
 
             if (isset($religion) && $religion != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"religion":"'.$religion.'"','both');
+                $this->db->select('member_id')->like('spiritual_and_social_background','"religion":"'.$religion.'"','both')->where(array('is_completed' => 1));
                 $by_religions = $this->db->get('member')->result();
                 foreach ($by_religions as $by_religions) {
                     $by_religion[] = $by_religions->member_id;
@@ -1185,7 +1536,7 @@ public function beforeRender() {
             }
 
             if (isset($caste) && $caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"caste":"'.$caste.'"','both');
+                $this->db->select('member_id')->like('spiritual_and_social_background','"caste":"'.$caste.'"','both')->where(array('is_completed' => 1));
                 $by_castes = $this->db->get('member')->result();
                 foreach ($by_castes as $by_castes) {
                     $by_caste[] = $by_castes->member_id;
@@ -1194,7 +1545,7 @@ public function beforeRender() {
                 $by_caste = $all_result;
             }
             if (isset($sub_caste) && $sub_caste != "") {
-                $this->db->select('member_id')->like('spiritual_and_social_background','"sub_caste":"'.$sub_caste.'"','both');
+                $this->db->select('member_id')->like('spiritual_and_social_background','"sub_caste":"'.$sub_caste.'"','both')->where(array('is_completed' => 1));
                 $by_sub_castes = $this->db->get('member')->result();
                 foreach ($by_sub_castes as $by_sub_castes) {
                     $by_sub_caste[] = $by_sub_castes->member_id;
@@ -1204,7 +1555,7 @@ public function beforeRender() {
             }
 
             if (isset($language) && $language != "") {
-                $this->db->select('member_id')->like('language','"mother_tongue":"'.$language.'"','both');
+                $this->db->select('member_id')->like('language','"mother_tongue":"'.$language.'"','both')->where(array('is_completed' => 1));
                 $by_languages = $this->db->get('member')->result();
                 foreach ($by_languages as $by_languages) {
                     $by_language[] = $by_languages->member_id;
@@ -1214,7 +1565,7 @@ public function beforeRender() {
             }
 
             if (isset($country) && $country != "") {
-                $this->db->select('member_id')->like('present_address','"country":"'.$country.'"','both');
+                $this->db->select('member_id')->like('present_address','"country":"'.$country.'"','both')->where(array('is_completed' => 1));
                 $by_countries = $this->db->get('member')->result();
                 foreach ($by_countries as $by_countries) {
                     $by_country[] = $by_countries->member_id;
@@ -1224,7 +1575,7 @@ public function beforeRender() {
             }
 
             if (isset($state) && $state != "") {
-                $this->db->select('member_id')->like('present_address','"state":"'.$state.'"','both');
+                $this->db->select('member_id')->like('present_address','"state":"'.$state.'"','both')->where(array('is_completed' => 1));
                 $by_states = $this->db->get('member')->result();
                 foreach ($by_states as $by_states) {
                     $by_state[] = $by_states->member_id;
@@ -1234,7 +1585,7 @@ public function beforeRender() {
             }
 
             if (isset($city) && $city != "") {
-                $this->db->select('member_id')->like('present_address','"city":"'.$city.'"','both');
+                $this->db->select('member_id')->like('present_address','"city":"'.$city.'"','both')->where(array('is_completed' => 1));
                 $by_cities = $this->db->get('member')->result();
                 foreach ($by_cities as $by_cities) {
                     $by_city[] = $by_cities->member_id;
@@ -1244,7 +1595,7 @@ public function beforeRender() {
             }
 
             if (isset($sql_aged_from) && isset($sql_aged_to)) {
-                $by_ages = $this->db->select('member_id')->get_where('member',array('date_of_birth <=' => $sql_aged_from, 'date_of_birth >=' => $sql_aged_to))->result();
+                $by_ages = $this->db->select('member_id')->get_where('member',array('date_of_birth <=' => $sql_aged_from, 'date_of_birth >=' => $sql_aged_to, 'is_completed' => 1))->result();
                 foreach ($by_ages as $by_ages) {
                     $by_age[] = $by_ages->member_id;
                 }
@@ -1253,7 +1604,7 @@ public function beforeRender() {
             }
 
             if (isset($min_height) && isset($max_height)) {
-                $by_heights = $this->db->select('member_id')->get_where('member',array('height >=' => $min_height, 'height <=' => $max_height))->result();
+                $by_heights = $this->db->select('member_id')->get_where('member',array('height >=' => $min_height, 'height <=' => $max_height, 'is_completed' => 1))->result();
                 foreach ($by_heights as $by_heights) {
                     $by_height[] = $by_heights->member_id;
                 }
@@ -1263,10 +1614,10 @@ public function beforeRender() {
 
             if (isset($search_member_type)) {
                 if ($search_member_type == "free_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 1))->result();
+                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 1, 'is_completed' => 1))->result();
                 }
                 elseif ($search_member_type == "premium_members") {
-                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 2))->result();
+                    $by_members_type = $this->db->select('member_id')->get_where('member',array('membership' => 2, 'is_completed' => 1))->result();
                 }
                 elseif ($search_member_type == "all") {
                     $by_members_type = $all_id;
@@ -1295,7 +1646,7 @@ public function beforeRender() {
 
             if (count($all_array) != 0) {
                 $this->db->where_in('member_id', $all_array);
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $page_data['get_all_members'] = $this->db->where($cond)->get('member', $config['per_page'], $para1)->result();
             } else {
                 $page_data['get_all_members']  = array();
@@ -1303,11 +1654,27 @@ public function beforeRender() {
         }
         elseif ($para2 == "") {
             if ($this->member_permission() == FALSE) {
-                $cond = array('is_blocked' =>'no','is_closed' =>'no');
+                $cond = array('is_blocked' =>'no','is_closed' =>'no', 'is_completed' => 1);
                 $page_data['get_all_members'] = $this->db->where($cond)->get('member', $config['per_page'], $para1)->result();
             }
             elseif ($this->member_permission() == TRUE) {
                 $member_id = $this->session->userdata('member_id');
+                  //For Opposite Gender
+                 $member_loggedin = $this->db->get_where('member', array('member_id' => $member_id))->result();
+             
+                  $gender = 1;
+                  
+                 if(!empty($member_loggedin[0])) {
+                     $gender = $member_loggedin[0]->gender;
+                 }
+                 
+                 if ($gender == 1) {
+                     $gender = 2;
+                 } else {
+                     $gender = 1;
+                 }
+                
+                
                 //For Ignored Members
                 $ignored_ids = $this->Crud_model->get_type_name_by_id('member', $member_id, 'ignored');
                 $ignored_ids = json_decode($ignored_ids, true);
@@ -1316,13 +1683,15 @@ public function beforeRender() {
                 if (empty($ignored_by_ids)) {
                     array_push($ignored_by_ids, 0);
                 }
+                
+                
                 if (!empty($ignored_ids)) {
                     // $this->db->like('basic_info','"age":"25"','both');
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_ids)->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
                 else {
                     // $this->db->like('basic_info','"age":"25"','both');
-                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no'), $config['per_page'], $para1)->result();
+                    $page_data['get_all_members'] = $this->db->where_not_in('member_id', $ignored_by_ids)->get_where('member', array('member_id !=' => $member_id, 'is_blocked' => 'no','is_closed' => 'no', 'is_completed' => 1, 'gender' => $gender), $config['per_page'], $para1)->result();
                 }
             }
         }
@@ -1778,53 +2147,81 @@ public function beforeRender() {
 
     function profile($para1="",$para2="",$para3="")
     {
-        
         if ($this->member_permission() == FALSE) {
             redirect(base_url().'home/login', 'refresh');
         }   
-        
+        $page_data['height_array'] = $this->height_array();
+       
         if ($para1 == "my-interests") {
             $page_data['current_tab'] = "my_interests";
+            $page_data['current_tab_title'] = "My Interests";
             $para1 = "";            
         }
 
 
         if ($para1 == "received-interests") {
             $page_data['current_tab'] = "received_interests";
+            $page_data['current_tab_title'] = "Received Interests";
             $para1 = "";
         }
 
-
+        if ($para1 == "gallery-list") {
+            $page_data['current_tab'] = "gallery";
+            $page_data['current_tab_title'] = "Gallery";
+            $para1 = "";
+        }
         if ($para1 == "shortlist") {
             $page_data['current_tab'] = "short_list";
+            $page_data['current_tab_title'] = "Short List";
             $para1 = "";            
         }
 
         if ($para1 == "followed-users") {
             $page_data['current_tab'] = "followed_users";
+            $page_data['current_tab_title'] = "Followed Users";
             $para1 = "";            
         }
 
         if ($para1 == "messaging-list") {
             $page_data['current_tab'] = "messaging";
+            $page_data['current_tab_title'] = "Messaging";
             $para1 = "";            
         }
 
         if ($para1 == "notifications-list") {
             $page_data['current_tab'] = "notifications";
+            $page_data['current_tab_title'] = "Notifications";
             $para1 = "";
         }
 
         if ($para1 == "ignored-list") {
             $page_data['current_tab'] = "ignored_list";
+            $page_data['current_tab_title'] = "Ignored List";
             $para1 = "";            
         }
- if ($para1 == "gallery-list") {
+
+        if ($para1 == "gallery-list") {
             $page_data['current_tab'] = "gallery";
+            $page_data['current_tab_title'] = "Gallery";
+            $para1 = "";            
+        }
+
+        if ($para1 == "settings") {
+            $page_data['current_tab'] = "picture_privacy";
+            $page_data['current_tab_title'] = "Picture Privacy Settings";
             $para1 = "";            
         }
 
 
+       $ok = $this->Crud_model->isCompleted($this->session->userdata('member_id'));
+        
+       if($ok == false && $para1 != 'complete_profile' && $para1 != 'complete_profile_update') {
+           $this->session->set_flashdata('alert','complete_profile');
+            redirect( base_url().'home/profile/complete_profile', 'refresh' ); 
+       }
+       if($ok == true && $para1 == 'complete_profile') {
+            redirect( base_url().'home/profile', 'refresh' ); 
+       }
 
         if ($para1 == "" || $para1 == "nav") {
             $page_data['title'] = "Profile || ".$this->system_title;
@@ -1931,7 +2328,7 @@ public function beforeRender() {
         elseif ($para1=="happy_story") {
             $this->load->view('front/profile/happy_story/index');
         }
-        elseif ($para1=="edit_full_profile") {
+        elseif ($para1=="edit-full-profile") {
             $page_data['title'] = "Edit Profile || ".$this->system_title;
             $page_data['top'] = "profile.php";
             $page_data['page'] = "profile/edit_full_profile";
@@ -1940,14 +2337,148 @@ public function beforeRender() {
 
             $page_data['load_nav']  = $para2;
             $page_data['sp_nav']    = $para3;
-
+            
+            if ($this->session->flashdata('alert') == "complete_profile") {
+                $page_data['danger_alert'] = translate("please_complete_your_profile!");
+            }
+           
             $this->load->view('front/index', $page_data);
+        }elseif ($para1=="complete_profile") {
+            $page_data['title'] = "complete Profile || ".$this->system_title;
+            $page_data['top'] = "profile.php";
+            $page_data['page'] = "profile/complete_profile";
+            $page_data['bottom'] = "profile.php";
+            $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+
+            $page_data['load_nav']  = $para2;
+            $page_data['sp_nav']    = $para3;
+            if ($this->session->flashdata('alert') == "complete_profile") {
+                $page_data['danger_alert'] = translate("please_complete_your_profile!");
+            }
+            $this->load->view('front/index', $page_data);
+        }elseif ($para1=="complete_profile_update") {
+            $this->form_validation->set_rules('introduction', 'Introduction', 'required');
+            $this->form_validation->set_rules('first_name', 'First Name', 'required|min_length[2]|max_length[16]');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'required|min_length[2]|max_length[16]');
+            $this->form_validation->set_rules('gender', 'Gender', 'required');
+            if ($this->input->post('old_email') != $this->input->post('email')) {
+                $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
+            }
+            if ($this->input->post('old_mobile') != $this->input->post('mobile')) {
+                $this->form_validation->set_rules('mobile', 'Mobile', 'required|is_unique[member.mobile]',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
+            }
+            $this->form_validation->set_rules('marital_status', 'Marital Status', 'required');
+            $this->form_validation->set_rules('country', 'Country', 'required');
+            $this->form_validation->set_rules('state', 'State', 'required');
+          //  $this->form_validation->set_rules('city', 'City', 'required');
+            $this->form_validation->set_rules('highest_education', 'Highest Education', 'required');
+            $this->form_validation->set_rules('occupation', 'Occupation', 'required');
+            $this->form_validation->set_rules('mother_tongue', 'Mother Tongue', 'required');
+            $this->form_validation->set_rules('religion', 'Religion', 'required');
+            $this->form_validation->set_rules('caste', 'Caste', 'required');
+            $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
+            $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
+            $this->form_validation->set_rules('yearob', 'Year of Birth', 'required');
+            $this->form_validation->set_rules('belongs_to', 'Belongs to', 'required');
+            $this->form_validation->set_rules('height', 'Height', 'required');
+            $this->form_validation->set_rules('postal_code', 'Postal Code', 'required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $page_data['form_contents'] = $this->input->post();
+                $page_data['title'] = "complete Profile || ".$this->system_title;
+                $page_data['top'] = "profile.php";
+                $page_data['page'] = "profile/complete_profile";
+                $page_data['bottom'] = "profile.php";
+                $page_data['get_member'] = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
+
+                $page_data['load_nav']  = $para2;
+                $page_data['sp_nav']    = $para3;            
+                $this->load->view('front/index', $page_data);
+            }
+            else {
+                $data['first_name'] = $this->input->post('first_name');
+                $data['last_name'] = $this->input->post('last_name');
+                $data['gender'] = $this->input->post('gender');
+                $data['email'] = $this->input->post('email');
+                $data['mobile'] = $this->input->post('mobile');
+                $data['height'] = $this->input->post('height');
+                $data['belongs_to'] = $this->input->post('belongs_to');
+                $monthob = $this->input->post('monthob');
+                $dateob = $this->input->post('dateob');
+                $yearob = $this->input->post('yearob');
+                $dob = $yearob."-".$monthob."-".$dateob;
+                $data['date_of_birth'] = strtotime($dob);
+                $data['introduction'] = $this->input->post('introduction');
+                $data['is_completed '] = 1;
+
+                // ------------------------------------Basic Info------------------------------------ //
+                $basic_info[] = array(
+                                    'marital_status'        =>  $this->input->post('marital_status'),   
+                                    'number_of_children'    =>  $this->input->post('number_of_children'),
+                                    'area'                  =>  $this->input->post('area'),
+                                    'on_behalf'             =>  $this->input->post('on_behalf')
+			                        );
+            	$data['basic_info'] = json_encode($basic_info);
+            	// ------------------------------------Basic Info------------------------------------ //
+
+            	// ------------------------------------Present Address------------------------------------ //
+            	$present_address[] = array('country'		=>  $this->input->post('country'),
+    								'city'					=>	$this->input->post('city'),	
+    								'state'					=>	$this->input->post('state'),
+    								'postal_code'			=>	$this->input->post('postal_code')
+			                        );
+            	$data['present_address'] = json_encode($present_address);
+                $loc_array  = $this->findLatLong($present_address);
+                $data['latitude'] = $loc_array['latitude'];
+                $data['longitude'] = $loc_array['longitude'];
+            	// ------------------------------------Present Address------------------------------------ //
+
+            	// ------------------------------------Education & Career------------------------------------ //
+            	$education_and_career[] = array('highest_education'	=>  $this->input->post('highest_education'),
+    								'occupation'					=>	$this->input->post('occupation'),	
+    								'annual_income'					=>	$this->input->post('annual_income')
+			                        );
+            	$data['education_and_career'] = json_encode($education_and_career);
+            	// ------------------------------------Education & Career------------------------------------ //
+            	
+            	// ------------------------------------ Language------------------------------------ //
+            	$language[] = array('mother_tongue'			=>  $this->input->post('mother_tongue'),
+    								'language'				=>	$this->input->post('language'),	
+    								'speak'					=>	$this->input->post('speak'),
+    								'read'					=>	$this->input->post('read')
+			                        );
+            	$data['language'] = json_encode($language);
+            	// ------------------------------------ Language------------------------------------ //
+
+            	// ------------------------------------Spiritual and Social Background------------------------------------ //
+            	$spiritual_and_social_background[] = array('religion'	=>  $this->input->post('religion'),
+    								'caste'					=>	$this->input->post('caste'),	
+    								'sub_caste'				=>	$this->input->post('sub_caste'),
+    								'ethnicity'				=>	$this->input->post('ethnicity'),
+    								'personal_value'		=>	$this->input->post('personal_value'),
+    								'family_value'			=>	$this->input->post('family_value'),
+
+                                    'u_manglik'             =>  $this->input->post('u_manglik'),
+                                    'community_value'       =>  $this->input->post('community_value'),
+                                    'family_status'         =>  $this->input->post('family_status')
+                                    );
+                $data['spiritual_and_social_background'] = json_encode($spiritual_and_social_background);
+                // ------------------------------------Spiritual and Social Background------------------------------------ //
+               
+                $this->db->where('member_id', $this->session->userdata('member_id'));
+                $result = $this->db->update('member', $data);
+                recache();
+                if ($result) {
+                    $this->session->set_flashdata('alert', 'edit');
+                    redirect(base_url().'home/profile', 'refresh');
+                }
+            }
         }
         elseif ($para1=="update_all") {
             $this->form_validation->set_rules('introduction', 'Introduction', 'required');
 
-            $this->form_validation->set_rules('first_name', 'First Name', 'required');
-            $this->form_validation->set_rules('last_name', 'Last Name', 'required');
+            $this->form_validation->set_rules('first_name', 'First Name', 'required|min_length[2]|max_length[16]');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'required|min_length[2]|max_length[16]');
             $this->form_validation->set_rules('gender', 'Gender', 'required');
             $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
             if ($this->input->post('old_email') != $this->input->post('email')) {
@@ -2210,8 +2741,8 @@ $data['longitude'] = $loc_array['longitude'];
             }
         }
         elseif ($para1=="update_basic_info") {
-            $this->form_validation->set_rules('first_name', 'First Name', 'required');
-            $this->form_validation->set_rules('last_name', 'Last Name', 'required');
+            $this->form_validation->set_rules('first_name', 'First Name', 'required|min_length[2]|max_length[16]');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'required|min_length[2]|max_length[16]');
             $this->form_validation->set_rules('gender', 'Gender', 'required');
             $this->form_validation->set_rules('on_behalf', 'On Behalf', 'required');
             $this->form_validation->set_rules('monthob', 'Month of Birth', 'required');
@@ -2891,6 +3422,10 @@ $data['longitude'] = $loc_array['longitude'];
             }
             elseif ($this->session->flashdata('alert') == "stripe_failed") {
                 $page_data['danger_alert'] = translate("your_payment_via_stripe_has_been_failed!");
+            }elseif ($this->session->flashdata('alert') == "paytm_failed") {
+                $page_data['danger_alert'] = translate("your_payment_via_paytm_has_been_failed!");
+            }elseif ($this->session->flashdata('alert') == "ccavenue_failed") {
+                $page_data['danger_alert'] = translate("your_payment_via_ccavenue_has_been_failed!");
             }
             $this->load->view('front/index', $page_data);
         }
@@ -3043,7 +3578,7 @@ $data['longitude'] = $loc_array['longitude'];
                     $new_index = $max_index + 1;
                 }
 
-if(isset($_POST['gallery_profile_image_data'])) {
+/*if(isset($_POST['gallery_profile_image_data'])) {
 //die("jh");
                 $img_data = $_POST['gallery_profile_image_data'];
                 $id = $this->session->userdata('member_id');
@@ -3078,19 +3613,24 @@ if(isset($_POST['gallery_profile_image_data'])) {
                         $result = $this->db->update('member', $data);
                         recache();
             }
-
-                /*if ($_FILES['image']['name'] !== '') {
+*/
+                if ($_FILES['image']['name'] !== '') {
                     $path = $_FILES['image']['name'];
                     $ext = '.' . pathinfo($path, PATHINFO_EXTENSION);
                     if ($ext==".jpg" || $ext==".JPG" || $ext==".jpeg" || $ext==".JPEG" || $ext==".png" || $ext==".PNG") {
+                    
+                    $type = 'gallery';
+                    
                         move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/gallery_image/gallery_'.$member_id.'_'.$new_index.$ext);
-
                         $file_name = 'gallery_'.$member_id.'_'.$new_index.$ext;
                         
+                        $this->Crud_model->img_thumb($type, $member_id . '_thumb_' . $new_index, $ext);
+                        
+                      
                         if (!empty($gallery_data)) {
                             $gallery_data[] = array( 'index'    =>  $new_index,
                                                     'title'     =>  $this->input->post('title'),
-                                                    'image'     =>  $file_name
+                                                    'image'     =>  $file_name,
                                             );
                             // print_r($gallery_data);
                             $data['gallery'] = json_encode($gallery_data);
@@ -3114,7 +3654,7 @@ if(isset($_POST['gallery_profile_image_data'])) {
                     else {
                         $this->session->set_flashdata('alert', 'failed');
                     }
-                }*/
+                }
 
                 if ($result) {
                     $data1['photo_gallery'] = $photo_gallery_amount - 1;
@@ -3128,9 +3668,9 @@ if(isset($_POST['gallery_profile_image_data'])) {
                     $this->session->set_flashdata('alert', 'failed_add');
                 }
                 $this->session->set_flashdata('alert', 'add_gallery');
-                redirect(base_url().'home/profile', 'refresh');
+                redirect(base_url().'home/profile/gallery-list', 'refresh');
             } else {
-                redirect(base_url().'home/profile', 'refresh');
+                redirect(base_url().'home/profile/gallery-list', 'refresh');
             }
         }
     }
@@ -3334,15 +3874,14 @@ if(isset($_POST['gallery_profile_image_data'])) {
     }
 
 
-public function ajax_notifications_list($para1="",$para2="")
-{
-     $this->load->library('Ajax_pagination');
+    public function ajax_notifications_list($para1="",$para2="")
+    {
+        $this->load->library('Ajax_pagination');
 
         $notifications = json_decode($this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'notifications'), true);
-$page_data['notifications'] = $notifications;
-
+        $page_data['notifications'] = $notifications;
         $this->load->view('front/profile/notifications/ajax_interest', $page_data);
-}
+    }
 
     function ajax_received_interest_list($para1="",$para2="")
     {
@@ -3670,7 +4209,7 @@ $page_data['notifications'] = $notifications;
             $safe = 'yes';
             $char = '';
             foreach ($_POST as $row) {
-                if (preg_match('/[\'^":()}{#~><>|=+Â¬]/', $row, $match)) {
+                if (preg_match('/[\'^":()}{#~><>|=+¬]/', $row, $match)) {
                     $safe = 'no';
                     $char = $match[0];
                 }
@@ -3736,7 +4275,194 @@ $page_data['notifications'] = $notifications;
             redirect(base_url().'home/login', 'refresh');
         }
 
-        if ($this->input->post('payment_type') == 'paypal') {
+        if ($this->input->post('payment_type') == 'paytm') {
+            $member_id = $this->session->userdata('member_id');
+            $payment_type = $this->input->post('payment_type');
+            $plan_id = $this->input->post('plan_id');
+            $amount = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->amount;
+            $package_name = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->name;
+
+            $data['plan_id']            = $plan_id;
+            $data['member_id']          = $member_id;
+            $data['payment_type']       = 'Paytm';
+            $data['payment_status']     = 'due';
+            $data['payment_details']    = 'none';
+
+            //$exchange = exchange('usd');
+            //$amount= $amount/$exchange;        
+            
+            $data['amount']             = $amount;
+            $data['purchase_datetime']  = time();
+            
+            $this->db->insert('package_payment', $data);
+            $payment_id = $this->db->insert_id();
+            
+            $data['payment_code'] = date('Ym', $data['purchase_datetime']) . $payment_id;
+
+            $this->session->set_userdata('payment_id', $payment_id);
+
+            //Getting Params for Paytm
+            $paypal_email = $this->Crud_model->get_settings_value('business_settings', 'paypal_email', 'value');
+
+
+            /****TRANSFERRING USER TO PAYPAL TERMINAL****/
+            header("Pragma: no-cache");
+            header("Cache-Control: no-cache");
+            header("Expires: 0");
+
+            // following files need to be included
+            require_once(APPPATH . "/libraries/config_paytm.php");
+            require_once(APPPATH . "/libraries/encdec_paytm.php");
+
+            $checkSum = "";
+            $paramList = array();
+
+            $ORDER_ID = 'Order_'.$payment_id;
+            $CUST_ID = 'Cust_'.$member_id;
+            $INDUSTRY_TYPE_ID = $this->Crud_model->get_settings_value('business_settings', 'paytm_mid', 'value');
+            $CHANNEL_ID = $channel_id;
+            $website = $website;
+            $merchant_id = $this->Crud_model->get_settings_value('business_settings', 'paytm_mid', 'value');
+            $merchant_key = $this->Crud_model->get_settings_value('business_settings', 'paytm_mkey', 'value');
+            $type = $this->Crud_model->get_settings_value('business_settings', 'paytm_account_type', 'value');
+
+            $website = 'WEBSTAGING';
+
+            if ($type == 'prod') {
+                define('PAYTM_ENVIRONMENT', 'PROD');
+                $website = 'DEFAULT';
+            }
+
+            $channel = 'WEB';
+            if ($this->isMobileDevice()) {
+                $channel = 'WAP';
+            }            
+
+            // Create an array having all required parameters for creating checksum.
+            $paramList["MID"] = $merchant_id;
+            $paramList["ORDER_ID"] = $ORDER_ID;
+            $paramList["CUST_ID"] = $CUST_ID;
+            $paramList["INDUSTRY_TYPE_ID"] = 'Retail';
+            $paramList["CHANNEL_ID"] = $channel;
+            $paramList["TXN_AMOUNT"] = $amount;
+            $paramList["WEBSITE"] = $website;
+            $paramList["CALLBACK_URL"] = base_url().'home/paytm_success';
+
+            //Here checksum string will return by getChecksumFromArray() function.
+            $checkSum = getChecksumFromArray($paramList,$merchant_key);
+            echo "<html>
+            <head>
+            <title>Merchant Check Out Page</title>
+            </head>
+            <body>
+                <center><h1>Please do not refresh this page...</h1></center>
+                    <form method='post' action='".PAYTM_TXN_URL."' name='f1'>
+            <table border='1'>
+            <tbody>";
+
+            foreach($paramList as $name => $value) {
+            echo '<input type="hidden" name="' . $name .'" value="' . $value .         '">';
+            }
+
+            echo "<input type='hidden' name='CHECKSUMHASH' value='". $checkSum . "'>
+            </tbody>
+            </table>
+            <script type='text/javascript'>
+            document.f1.submit();
+            </script>
+            </form>
+            </body>
+            </html>";
+        }
+        elseif ($this->input->post('payment_type') == 'ccavenue') {
+            $member_id = $this->session->userdata('member_id');
+            $payment_type = $this->input->post('payment_type');
+            $plan_id = $this->input->post('plan_id');
+            $amount = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->amount;
+            $package_name = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->name;
+
+            $data['plan_id']            = $plan_id;
+            $data['member_id']          = $member_id;
+            $data['payment_type']       = 'ccavenue';
+            $data['payment_status']     = 'due';
+            $data['payment_details']    = 'none';
+
+            //$exchange = exchange('usd');
+            //$amount= $amount/$exchange;        
+            
+            $data['amount']             = $amount;
+            $data['purchase_datetime']  = time();
+            
+            $this->db->insert('package_payment', $data);
+            $payment_id = $this->db->insert_id();
+            
+            $data['payment_code'] = date('Ym', $data['purchase_datetime']) . $payment_id;
+
+            $this->session->set_userdata('payment_id', $payment_id);
+
+            /****TRANSFERRING USER TO CCAVENUE TERMINAL****/
+            header("Pragma: no-cache");
+            header("Cache-Control: no-cache");
+            header("Expires: 0");
+
+            // following files need to be included
+            require_once(APPPATH . "/libraries/Crypto.php");
+
+            $paramList = array();
+
+            $ORDER_ID = 'Order_'.$payment_id;
+            $CUST_ID = 'Cust_'.$member_id;
+            $merchant_id = $this->Crud_model->get_settings_value('business_settings', 'ccavenue_mid', 'value');
+            $workingKey = $this->Crud_model->get_settings_value('business_settings', 'ccavenue_working_key', 'value');
+            $type = $this->Crud_model->get_settings_value('business_settings', 'ccavenue_account_type', 'value');
+            $access_code = $this->Crud_model->get_settings_value('business_settings', 'ccavenue_access_code', 'value');
+            
+            // Create an array having all required parameters for creating checksum.
+            $paramList["merchant_id"] = $merchant_id;
+            $paramList["order_id"] = $ORDER_ID;
+            $paramList["CUST_ID"] = $CUST_ID;
+            $paramList["currency"] = 'INR';
+            $paramList["TxnType"] = 'A';
+            $paramList["ActionID"] = 'TXN';
+            $paramList["amount"] = $amount;
+            $redirect_url = base_url().'home/ccavenue_success';
+            $paramList["redirect_url"] = $redirect_url;
+            $paramList["cancel_url"] = base_url().'home/ccavenue_cancel';
+            
+            //Here checksum string will return by getChecksumFromArray() function.
+            $checkSum = $this->getCheckSumCcavenue($merchant_id,$amount,$ORDER_ID ,$redirect_url,$WorkingKey); 
+
+            $paramList["Checksum"] = $checkSum;
+
+            $merchant_data='';
+            foreach ($paramList as $key => $value)
+            {
+                $merchant_data.=$key.'='.urlencode($value).'&';
+            }
+            $encrypted_data=encrypt($merchant_data,$working_key);
+
+            $url = 'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+            if($type == 'prod') {
+                $url = 'https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+            }
+
+            echo "<html>
+            <head>
+            <title>Merchant Check Out Page</title>
+            </head>
+            <body>
+            <center><h1>Please do not refresh this page...</h1></center>
+                <form method='post' action='".$url."' name='f1'><table border='1'>
+            <tbody>
+            <input type=hidden name=encRequest value=".$encrypted_data.">
+            <input type=hidden name=access_code value=".$access_code."></tbody></table><script type='text/javascript'>
+            document.f1.submit();
+            </script>
+            </form>
+            </body>
+            </html>";
+        }
+        elseif ($this->input->post('payment_type') == 'paypal') {
             $member_id = $this->session->userdata('member_id');
             $payment_type = $this->input->post('payment_type');
             $plan_id = $this->input->post('plan_id');
@@ -3835,17 +4561,26 @@ $page_data['notifications'] = $notifications;
                     $data2['direct_messages'] = $prev_direct_messages + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->direct_messages;
                     $data2['photo_gallery'] = $prev_photo_gallery + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->photo_gallery;
 
-                    $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
+                    /*$package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
                                     'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
                                     'payment_type'      => $data['payment_type'],
                                 );
-                     $data2['package_info'] = json_encode($package_info);
+                     $data2['package_info'] = json_encode($package_info);*/
+
+ $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
+                                    'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
+                                    'payment_type'      => $data['payment_type'],
+                                    'payment_id'      => $payment_id,
+                                    'plan_id'      => $payment->plan_id,
+                                );
+            $data2['package_info'] = json_encode($package_info);       
+            $data2['membership_valid_till'] = date('Y-m-d H:i:s', strtotime('+'.$plan_d.' months')); 
 
                     $this->db->where('member_id', $payment->member_id);
                     $this->db->update('member', $data2);
                     recache();
 
-                    if ($this->Email_model->subscruption_email('member', $payment->member_id, $payment->plan_id)) {
+                    if ($this->Email_model->subscription_email('member', $payment->member_id, $payment->plan_id)) {
                         //$this->session->set_flashdata('alert', 'email_sent');
                     } else {
                         $this->session->set_flashdata('alert', 'not_sent');
@@ -3920,9 +4655,12 @@ $page_data['notifications'] = $notifications;
             $data['payment_type']      = 'Paypal';
             $data['payment_status']    = 'paid';
             $data['expire']            = 'no';
+            $plan_d = $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->duration;
+            $data['expire_timestamp'] = strtotime('+'.$plan_d.' months');
+
             $this->db->where('package_payment_id', $payment_id);
             $this->db->update('package_payment', $data);
-
+            recache();
             $prev_express_interest =  $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->express_interest;
             $prev_direct_messages = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->direct_messages;
             $prev_photo_gallery = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->photo_gallery;
@@ -3935,14 +4673,16 @@ $page_data['notifications'] = $notifications;
             $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
                                     'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
                                     'payment_type'      => $data['payment_type'],
+                                    'payment_id'      => $payment->payment_id,
+                                    'plan_id'      => $payment->plan_id,
                                 );
-            $data1['package_info'] = json_encode($package_info);
-
+            $data1['package_info'] = json_encode($package_info);       
+            $data1['membership_valid_till'] = date('Y-m-d H:i:s', strtotime('+'.$plan_d.' months')); 
             $this->db->where('member_id', $payment->member_id);
             $this->db->update('member', $data1);
             recache();
 
-            if ($this->Email_model->subscruption_email('member', $payment->member_id, $payment->plan_id)) {
+            if ($this->Email_model->subscription_email('member', $payment->member_id, $payment->plan_id)) {
                 //echo 'email_sent';
             } else {
                 //echo 'email_not_sent';
@@ -4011,9 +4751,11 @@ $page_data['notifications'] = $notifications;
             $data['payment_type']      = 'PayUMoney';
             $data['payment_status']    = 'paid';
             $data['expire']            = 'no';
+            $plan_d = $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->duration;
+            $data['expire_timestamp'] = strtotime('+'.$plan_d.' months');
             $this->db->where('package_payment_id', $payment_id);
             $this->db->update('package_payment', $data);
-
+ recache();
             $prev_express_interest =  $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->express_interest;
             $prev_direct_messages = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->direct_messages;
             $prev_photo_gallery = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->photo_gallery;
@@ -4026,14 +4768,16 @@ $page_data['notifications'] = $notifications;
             $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
                                     'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
                                     'payment_type'      => $data['payment_type'],
+                                    'payment_id'      => $payment_id,
+                                    'plan_id'      => $payment->plan_id,
                                 );
             $data1['package_info'] = json_encode($package_info);
-
+            $data1['membership_valid_till'] = date('Y-m-d H:i:s', strtotime('+'.$plan_d.' months')); 
             $this->db->where('member_id', $payment->member_id);
             $this->db->update('member', $data1);
             recache();
 
-            if ($this->Email_model->subscruption_email('member', $payment->member_id, $payment->plan_id)) {
+            if ($this->Email_model->subscription_email('member', $payment->member_id, $payment->plan_id)) {
                 //echo 'email_sent';
             } else {
                 //echo 'email_not_sent';
@@ -4130,7 +4874,7 @@ $page_data['notifications'] = $notifications;
                 $page_data['login_error'] = translate('the_email_you_have_entered_is_invalid');
             }
             elseif ($this->session->flashdata('alert') == "email_sent") {
-                $page_data['sent_email'] = translate('please_check_your_email_for_new_password');
+                $page_data['sent_email'] = translate('please_check_your_email_to_reset_your_password');
             }
             elseif ($this->session->flashdata('alert') == "register_success") {
                 $page_data['register_success'] = translate('you_have_registered_successfully._please_log_in_to_continue');
@@ -4171,14 +4915,15 @@ $page_data['notifications'] = $notifications;
                         $this->session->set_userdata($data);
                     }
 
-                   $profile = $this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->result();
-                   $profile_basic_details = json_decode($profile->basic_details, true);
+                    $ok = $this->Crud_model->isCompleted($this->session->userdata('member_id'));
+                    $this->updatePlan($this->session->userdata('member_id'));
 
-                   if($profile->height > 0 && $profile->introduction != "" && $profile_basic_details['marital_status'] != "" && $profile->belongs_to != "") {
+                   
+                   if($ok == true) {
                       redirect( base_url().'home/', 'refresh' ); 
                     }else{
                        $this->session->set_flashdata('alert','complete_profile');
-                       redirect( base_url().'home/profile', 'refresh' );   
+                       redirect( base_url().'home/profile/complete_profile', 'refresh' );   
                     }
                 }
                 elseif ($result->is_blocked == "yes") {
@@ -4218,12 +4963,23 @@ $page_data['notifications'] = $notifications;
                     ));
                     if ($query->num_rows() > 0) {
                         $member_id = $query->row()->member_id;
-                        $password = substr(hash('sha512', rand()), 0, 12);
-                        $data['password'] = sha1($password);
-                        if ($this->Email_model->password_reset_email('member', $member_id, $password)) {
-                            $this->db->where('member_id', $member_id);
-                            $this->db->update('member', $data);
-                            recache();
+                       //$password = substr(hash('sha512', rand()), 0, 12);
+                       //$data['password'] = sha1($password);
+                        $token = substr(hash('sha512', rand()), 0, 12);
+                        $token = $token.time();
+                        $data['token'] = $token;
+                        $data['email'] = $this->input->post('email');
+                        $data['expire_at'] = strtotime('+2 days');
+                        //$data['created_at'] = time();
+                        $this->db->insert('reset_tokens', $data);       
+                        recache();       
+          
+                        $password_reset_link = base_url().'home/set-password/'.$token;
+
+                        if ($this->Email_model->password_reset_email('member', $member_id, $password_reset_link)) {
+                            //$this->db->where('member_id', $member_id);
+                            //$this->db->update('member', $data);
+                            //recache();
                             $this->session->set_flashdata('alert','email_sent');
                         } else {
                             $this->session->set_flashdata('alert','not_sent');
@@ -4236,6 +4992,57 @@ $page_data['notifications'] = $notifications;
             }
         }
     }
+
+    function set_password($para1 = "")
+    {
+        if(isset($_POST['password'])) {
+
+            $token = $this->db->get_where('reset_tokens', array('token'=> $para1, 'email' => $this->input->post('email')))->row();
+            $member = $this->db->get_where('member', array('email' => $this->input->post('email')))->row();
+           
+            if ($token && $member) {
+                $this->form_validation->set_rules('email', 'Email', 'required');
+                $this->form_validation->set_rules('password', 'Password', 'required|matches[confirm_password]');
+                $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required');
+
+                if ($this->form_validation->run() == FALSE ||  $member == null) {
+                    $this->session->set_flashdata('alert','errors');
+                    redirect(base_url().'home/set-password/'.$para1, 'refresh');
+                }
+                if($token->used == null) {
+                    $time = time();
+                    $expired_at = $token->expire_at;
+                    if ($expired_at >= $time) {
+                        $password = $this->input->post('password');
+                        $data['password'] = sha1($password);
+                        $this->db->where('member_id', $member->member_id);
+                        $this->db->update('member', $data);
+                        recache();
+
+                        $data1['used'] = 1;
+                        $this->db->where('id', $token->id);
+                        $this->db->update('reset_tokens', $data1);
+                        recache();
+
+                        $this->session->set_flashdata('alert','password_changed_successfully');
+                        redirect(base_url().'home/login', 'refresh');
+                    }
+                    $this->session->set_flashdata('alert','expired_token');
+                    redirect(base_url().'home/set-password/'.$para1, 'refresh'); 
+                }
+                $this->session->set_flashdata('alert','used_token');
+                redirect(base_url().'home/set-password/'.$para1, 'refresh');
+            }
+            
+            $this->session->set_flashdata('alert','invalid_token');
+            redirect(base_url().'home/set-password/'.$para1, 'refresh');                         
+        }
+
+        $page_data['page'] = "set_password";
+        $page_data['token'] = $para1;
+        $this->load->view('front/set_password', $page_data);  
+    }
+
 
     function logout()
     {
@@ -4267,7 +5074,7 @@ $page_data['notifications'] = $notifications;
             $safe = 'yes';
             $char = '';
             foreach($_POST as $check=>$row){
-                if (preg_match('/[\'^":()}{#~><>|=Â¬]/', $row,$match))
+                if (preg_match('/[\'^":()}{#~><>|=¬]/', $row,$match))
                 {
                     if($check !== 'password' && $check !== 'confirm_password')
                     {
@@ -4284,9 +5091,9 @@ $page_data['notifications'] = $notifications;
                 $page_data['page'] = "registration";
                 $this->load->view('front/registration', $page_data);
             }
-            elseif ($para1=="add_info") {
-                $this->form_validation->set_rules('first_name', 'First Name', 'required');
-                $this->form_validation->set_rules('last_name', 'Last Name', 'required');
+            elseif ($para1=="add_info") {			
+                $this->form_validation->set_rules('first_name', 'First Name', 'required|min_length[2]|max_length[16]');
+                $this->form_validation->set_rules('last_name', 'Last Name', 'required|min_length[2]|max_length[16]');
                 $this->form_validation->set_rules('gender', 'Gender', 'required');
                 $this->form_validation->set_rules('email', 'Email', 'required|is_unique[member.email]|valid_email',array('required' => 'The %s is required.', 'is_unique' => 'This %s already exists.'));
                 $this->form_validation->set_rules('dateob', 'Date of Birth', 'required');
@@ -4297,7 +5104,7 @@ $page_data['notifications'] = $notifications;
                 $this->form_validation->set_rules('password', 'Password', 'required|matches[confirm_password]');
                 $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required');
 
-                if ($this->form_validation->run() == FALSE) {
+                if ($this->form_validation->run() == FALSE) {				
                     if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                         $page_data['recaptcha_html'] = $this->recaptcha->render();
                     }
@@ -4521,7 +5328,7 @@ $page_data['notifications'] = $notifications;
                                             );
                         $package_info = json_encode($package_info);
                         // --------------------------------- Additional Personal Details--------------------------------- //
-
+//print_r($this->input->post('first_name'));exit;
                         if ($this->Crud_model->get_settings_value('third_party_settings', 'captcha_status', 'value') == 'ok') {
                             $captcha_answer = $this->input->post('g-recaptcha-response');
                             $response = $this->recaptcha->verifyResponse($captcha_answer);
@@ -4581,6 +5388,7 @@ $page_data['notifications'] = $notifications;
                                 $data['is_blocked'] = 'no';
                                 $data['privacy_status'] = $privacy_status;
                                 $data['pic_privacy'] = $data_pic_privacy;
+                                $data['timezone'] = $this->input->post('timezone');
                                 
                                 $this->db->insert('member', $data);
                                 $insert_id = $this->db->insert_id();
@@ -4666,6 +5474,7 @@ $page_data['notifications'] = $notifications;
                             $data['is_blocked'] = 'no';
                             $data['privacy_status'] = $privacy_status;
                             $data['pic_privacy'] = $data_pic_privacy;
+                            $data['timezone'] = $this->input->post('timezone');
                             
                             $this->db->insert('member', $data);
                             $insert_id = $this->db->insert_id();
@@ -4927,4 +5736,273 @@ $address_string = implode(',', array_filter($address_string));
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
    }
+
+    public function isCompleted($id)
+    {
+        $profile= $this->db->get_where("member", array("member_id" => $id))->row();
+        $profile_basic_details = json_decode($profile->basic_info, true);
+
+        $spiritual_and_social_background_data= json_decode($profile->spiritual_and_social_background, true);
+        $present_address_data= json_decode($profile->present_address, true);
+        $education_and_career_data = json_decode($profile->education_and_career, true);
+
+        if($profile->height > 0 && $profile->introduction != "" && $profile_basic_details[0]['marital_status'] != "" && $profile->belongs_to != "" && !empty($spiritual_and_social_background_data[0]['religion']) && !empty($spiritual_and_social_background_data[0]['caste']) && !empty($present_address_data[0]['country']) && !empty($education_and_career_data[0]['highest_education']) && !empty($education_and_career_data[0]['occupation'])) {
+            return true;
+        }elseif($profile->is_completed == 1){
+             $data['is_completed'] = null;
+             $this->db->where('member_id', $id);
+             $result = $this->db->update('member', $data);
+        }
+        return false;
+    }
+
+    public function updatePlan($id) 
+    {
+        $member = $this->db->get_where("member", array("member_id" => $id))->row();
+
+        if ($member->membership_valid_till <= date("Y-m-d H:i:s") && $member->membership_id == 2) {              
+           $package_info = json_decode($member->package_info, true);     
+            $payment = $this->db->get_where("package_payment", array("package_payment_id" => $package_info[0]['payment_id']))->row();
+            $data['expire'] = 'yes';
+            $data['expire_timestamp'] = time();
+            $this->db->where('package_payment_id', $payment->package_payment_id);
+            $this->db->update('package_payment', $data);
+            recache();
+
+            $package_info_old = $package_info[0];
+            
+            $notifications = $this->Crud_model->get_type_name_by_id('member', $member->member_id, 'notifications');
+            $notification = json_decode($notifications, true);
+            $notification[] = array('by'=>$member, 'type'=>'membership_expired', 'package_info'=> $package_info_old, 'time'=>time());
+
+            $data1['membership'] = 1;
+            $data1['express_interest'] = $prev_express_interest + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->express_interest;
+            $data1['direct_messages'] = $prev_direct_messages + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->direct_messages;
+            $data1['photo_gallery'] = $prev_photo_gallery + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->photo_gallery;
+            $data1['notifications'] = json_encode($notification);
+            $package_info[] = array("current_package" => "Default","package_price" =>"0","payment_type" => "None");
+            
+            $data1['package_info'] = json_encode($package_info);
+            $this->db->where('member_id', $member->member_id);
+            $this->db->update('member', $data1);
+            recache();
+            if ($this->Email_model->membership_expired($member->member_id, $package_info_old)) {
+                //$msg = 'done_but_not_sent';
+            } else {
+                //$msg = 'done_and_sent';
+            }
+        }
+    }
+    
+    public function cron() 
+    {       
+      $members  = $this->db->get_where('member', array('membership' => 2, 'membership_valid_till <=' => date("Y-m-d H:i:s")))->result();          
+
+       foreach($members as $member) {  
+
+            $package_info = json_decode($member->package_info, true);     
+            $payment = $this->db->get_where("package_payment", array("package_payment_id" => $package_info[0]['payment_id']))->row();
+            $data['expire'] = 'yes';
+            $data['expire_timestamp'] = time();
+            $this->db->where('package_payment_id', $payment->package_payment_id);
+            $this->db->update('package_payment', $data);
+            recache();
+
+            $package_info_old = $package_info[0];
+            
+            $notifications = $this->Crud_model->get_type_name_by_id('member', $member->member_id, 'notifications');
+            $notification = json_decode($notifications, true);
+            $notification[] = array('by'=>$member, 'type'=>'membership_expired', 'package_info'=> $package_info_old, 'time'=>time());
+
+            $data1['membership'] = 1;
+            $data1['express_interest'] = $prev_express_interest + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->express_interest;
+            $data1['direct_messages'] = $prev_direct_messages + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->direct_messages;
+            $data1['photo_gallery'] = $prev_photo_gallery + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->photo_gallery;
+            $data1['notifications'] = json_encode($notification);
+            $package_info[] = array("current_package" => "Default","package_price" =>"0","payment_type" => "None");
+            
+            $data1['package_info'] = json_encode($package_info);
+            $this->db->where('member_id', $member->member_id);
+            $this->db->update('member', $data1);
+            recache();
+            if ($this->Email_model->membership_expired($member->member_id, $package_info_old)) {
+                //$msg = 'done_but_not_sent';
+            } else {
+                //$msg = 'done_and_sent';
+            }
+ 
+        }         
+    }
+
+    function isMobileDevice() {
+        return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+    }
+
+    //creating a signature using the given details for security reasons
+    function getCheckSumCcavenue($MerchantId,$Amount,$OrderId ,$URL,$WorkingKey)
+    {
+        $str ="$MerchantId|$OrderId|$Amount|$URL|$WorkingKey";
+        $adler = 1;
+        $adler = $this->adler32($adler,$str);
+        return $adler;
+    }
+
+    //functions
+    function adler32($adler , $str)
+    {
+        $BASE = 65521 ;
+        $s1 = $adler & 0xffff ;
+        $s2 = ($adler >> 16) & 0xffff;
+        for($i = 0 ; $i < strlen($str) ; $i++)
+        {
+            $s1 = ($s1 + Ord($str[$i])) % $BASE ;
+            $s2 = ($s2 + $s1) % $BASE ;
+        }
+        return $this->leftshift($s2 , 16) + $s1;
+    }
+        
+    //leftshift function
+    function leftshift($str , $num) 
+    {
+        $str = DecBin($str);
+
+        for($i = 0; $i < (64 - strlen($str)); $i++) {
+            $str = "0".$str ;
+            for($i = 0 ; $i < $num ; $i++)
+            {
+                $str = $str."0";
+                $str = substr($str , 1 ) ;
+            }
+            return $this->cdec($str) ;
+        }
+    }
+    
+    function cdec($num)
+    {
+        $len = strlen($num);
+
+        for($n = 0; $n < $len; $n++)
+        {
+            $temp = $num[$n] ;
+            $l = strlen($num);
+            $le = $l - $n - 1;
+            $dec = $dec + $temp * pow(2 , $le);
+        }
+        return $dec;
+    }
+
+
+    function paytm_success()
+    {
+        $post_data = $_POST;
+        header("Pragma: no-cache");
+        header("Cache-Control: no-cache");
+        header("Expires: 0");
+        // following files need to be included
+        require_once(APPPATH . "/libraries/config_paytm.php");
+        require_once(APPPATH . "/libraries/encdec_paytm.php");
+
+        $paytmChecksum = "";
+        $paramList = array();
+        $isValidChecksum = "FALSE";
+        $paramList = $_POST;
+        $paytmChecksum = isset($_POST["CHECKSUMHASH"]) ? $_POST["CHECKSUMHASH"] : ""; //Sent by Paytm pg
+        //Verify all parameters received from Paytm pg to your application. Like MID received from paytm pg is same as your application’s MID, TXN_AMOUNT and ORDER_ID are same as what was sent by you to Paytm PG for initiating transaction etc.
+        $isValidChecksum = verifychecksum_e($paramList, PAYTM_MERCHANT_KEY, $paytmChecksum); //will return TRUE or FALSE string.
+        if($isValidChecksum == "TRUE") {    
+            if ($_POST['STATUS'] == 'TXN_SUCCESS') {
+                $payment_id = explode('_', $_POST['ORDERID'])[1];
+                $payment                   = $this->db->get_where('package_payment',array('package_payment_id' => $payment_id))->row();
+                $data['payment_details']   = json_encode($_POST);
+                $data['purchase_datetime'] = time();
+                $data['payment_code']      = date('Ym', $data['purchase_datetime']) . $payment_id;
+                $data['payment_timestamp'] = time();
+                $data['payment_type']      = 'Paytm';
+                $data['payment_status']    = 'paid';
+                $data['expire']            = 'no';
+                $plan_d = $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->duration;
+                $data['expire_timestamp'] = strtotime('+'.$plan_d.' months');
+                $this->db->where('package_payment_id', $payment_id);
+                $this->db->update('package_payment', $data);
+                recache();
+                $prev_express_interest =  $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->express_interest;
+                $prev_direct_messages = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->direct_messages;
+                $prev_photo_gallery = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->photo_gallery;
+
+                $data1['membership'] = 2;
+                $data1['express_interest'] = $prev_express_interest + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->express_interest;
+                $data1['direct_messages'] = $prev_direct_messages + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->direct_messages;
+                $data1['photo_gallery'] = $prev_photo_gallery + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->photo_gallery;
+
+                $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
+                                        'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
+                                        'payment_type'      => $data['payment_type'],
+                                        'payment_id'      => $payment_id,
+                                        'plan_id'      => $payment->plan_id,
+                                    );
+                $data1['package_info'] = json_encode($package_info);
+                $data1['membership_valid_till'] = date('Y-m-d H:i:s', strtotime('+'.$plan_d.' months')); 
+                $this->db->where('member_id', $payment->member_id);
+                $this->db->update('member', $data1);
+                recache();
+
+                if ($this->Email_model->subscription_email('member', $payment->member_id, $payment->plan_id)) {
+                    //echo 'email_sent';
+                } else {
+                    //echo 'email_not_sent';
+                    $this->session->set_flashdata('alert', 'not_sent');
+                }
+                $this->session->set_flashdata('alert', 'paytm_success');
+                redirect(base_url() . 'home/invoice/'.$this->session->userdata('payment_id'), 'refresh');
+                $this->session->set_userdata('payment_id', '');
+            }
+        } 
+
+        $payment_id = $this->session->userdata('payment_id');
+        $this->db->where('package_payment_id', $payment_id);
+        $this->db->delete('package_payment');
+        recache();
+        $this->session->set_userdata('payment_id', '');
+        $this->session->set_flashdata('alert', 'paytm_fail');
+        redirect(base_url() . 'home/plans', 'refresh');        
+    }
+    
+    function height_array($id = null)
+    {
+        $list = [
+            '4.10' => "4'10\" feets",
+            '4.11' => "4'11\" feets",
+            '5.00' => "5 feets",
+            '5.01' => "5'1\" feets",
+            '5.02' => "5'2\" feets",
+            '5.03' => "5'3\" feets",
+            '5.04' => "5'4\" feets",
+            '5.05' => "5'5\" feets",
+            '5.06' => "5'6\" feets",
+            '5.07' => "5'7\" feets",
+            '5.08' => "5'8\" feets",
+            '5.09' => "5'9\" feets",            
+            '5.10' => "5'10\" feets",            
+            '5.11' => "5'11\" feets",            
+            '6.00' => "6 feets",
+            '6.01' => "6'1\" feets",
+            '6.02' => "6'2\" feets",
+            '6.03' => "6'3\" feets",
+        ];
+
+        if ($id == null) {
+            return $list;
+        }
+
+        if (isset($list[$id])) {
+            return $list[$id];
+        }
+
+        return $id;
+    }
+	
+	public function forgot_password() {
+		//echo "in maintainance";
+		$this->load->view('front/forget_pass');
+	}
 }

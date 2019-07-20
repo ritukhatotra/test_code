@@ -6,7 +6,7 @@
     <div id="info_present_address">
         <div class="card-inner-title-wrapper pt-0">
             <h3 class="card-inner-title pull-left">
-                <?php echo translate('present_address')?>
+                <?php echo translate('living_in')?>
             </h3>
             <div class="pull-right">
                 <button type="button" id="unhide_present_address" <?php if ($privacy_status_data[0]['present_address'] == 'yes') {?> style="display: none" <?php }?> class="btn btn-base-1 btn-sm btn-icon-only btn-shadow mb-1" onclick="unhide_section('present_address')">
@@ -45,12 +45,13 @@
                             <td>
                                 <?=$this->Crud_model->get_type_name_by_id('city', $present_address_data[0]['city']);?>
                             </td>
+                            <?php /*
                             <td class="td-label">
                                 <span><?php echo translate('postal-Code')?></span>
                             </td>
                             <td>
                                 <?=$present_address_data[0]['postal_code']?>
-                            </td>
+                            </td>*/?>
                         </tr>
                     </tbody>
                 </table>
@@ -120,6 +121,7 @@
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
+                <?php /*
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="postal_code" class="text-uppercase c-gray-light"><?php echo translate('postal-Code')?></label>
@@ -128,6 +130,7 @@
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
+                */?>
             </div>
         </form>
     </div>

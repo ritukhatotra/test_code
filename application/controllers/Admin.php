@@ -370,6 +370,84 @@ class Admin extends CI_Controller {
         	}
     	}
 	}
+	
+	function assign_plan($para1 = "", $para2 = "") {
+	    $member_id = $para1;
+            $payment_type = 'manual';
+            $plan_id = $para2;
+            $amount = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->amount;
+            $package_name = $this->db->get_where('plan', array('plan_id' => $plan_id))->row()->name;
+
+            $data['plan_id']            = $plan_id;
+            $data['member_id']          = $member_id;
+            $data['payment_type']       = 'manual';
+            $data['payment_status']     = 'due';
+            $data['payment_details']    = 'none';
+            
+            $exchange =  $this->db->get_where('currency_settings', array('code' => 'INR'))->row()->exchange_rate_def;;
+          
+            $amount= $amount * $exchange;
+            
+            
+            $data['amount']             = $amount;
+            $data['purchase_datetime']  = time();
+            
+            $merchant_id = $this->Crud_model->get_settings_value('business_settings', 'paytm_mid', 'value');
+            
+            $this->db->insert('package_payment', $data);
+            $payment_id = $this->db->insert_id();
+            
+            $data['payment_code'] = date('Ym', $data['purchase_datetime']) . $payment_id;
+            
+                $payment  = $this->db->get_where('package_payment',array('package_payment_id' => $payment_id))->row();
+                
+                $data['payment_details']   = ['manual'];
+                $data['purchase_datetime'] = time();
+                $data['payment_code']      = date('Ym', $data['purchase_datetime']) . $payment_id;
+                $data['payment_timestamp'] = time();
+                $data['payment_type']      = 'manual';
+                $data['payment_status']    = 'paid';
+                $data['expire']            = 'no';
+                
+                $plan_d = $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->duration;
+                $data['expire_timestamp'] = strtotime('+'.$plan_d.' months');
+                $this->db->where('package_payment_id', $payment_id);
+                $this->db->update('package_payment', $data);
+     recache();
+                $prev_express_interest =  $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->express_interest;
+                $prev_direct_messages = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->direct_messages;
+                $prev_photo_gallery = $this->db->get_where('member', array('member_id' => $payment->member_id))->row()->photo_gallery;
+    
+                $data1['membership'] = 2;
+                $data1['express_interest'] = $prev_express_interest + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->express_interest;
+                $data1['direct_messages'] = $prev_direct_messages + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->direct_messages;
+                $data1['photo_gallery'] = $prev_photo_gallery + $this->db->get_where('plan', array('plan_id' => $payment->plan_id))->row()->photo_gallery;
+    
+                $package_info[] = array('current_package'   => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id),
+                                        'package_price'     => $this->Crud_model->get_type_name_by_id('plan', $payment->plan_id, 'amount'), 
+                                        'payment_type'      => $data['payment_type'],
+                                        'payment_id'      => $payment_id,
+                                        'plan_id'      => $payment->plan_id,
+                                    );
+                $data1['package_info'] = json_encode($package_info);
+                $data1['membership_valid_till'] = date('Y-m-d H:i:s', strtotime('+'.$plan_d.' months')); 
+             
+                $this->db->where('member_id', $payment->member_id);
+                $this->db->update('member', $data1);
+                recache();
+    
+                if ($this->Email_model->subscription_email('member', $payment->member_id, $payment->plan_id)) {
+                    //echo 'email_sent';
+                } else {
+                    //echo 'email_not_sent';
+                    $this->session->set_flashdata('alert', 'not_sent');
+                }
+                $this->session->set_flashdata('alert', 'paytm_success');
+                
+                echo 'Successfully Activated Payments';
+
+	    
+	}
 
 	function members($para1="",$para2="",$para3="",$para4="")
 	{
@@ -1556,9 +1634,84 @@ class Admin extends CI_Controller {
 				$page_data['folder'] = "stories";
 				$page_data['file'] = "view_story.php";
 				$page_data['bottom'] = "stories/stories.php";
+				
 				$page_data['get_story'] = $this->db->get_where("happy_story", array("happy_story_id" => $para2))->result();
 				$page_data['page_name'] = "stories";
 				$this->load->view('back/index', $page_data);
+			}elseif($para1=="add"){
+				$page_data['top'] = "stories/stories.php";
+				$page_data['folder'] = "stories";
+				$page_data['file'] = "add.php";
+				$page_data['bottom'] = "stories/stories.php";
+				$page_data['page_name'] = "stories";
+				$this->load->view('back/index', $page_data);
+			}elseif($para1 == 'do_add') {
+			    $this->form_validation->set_rules('title', 'Title', 'required');
+				$this->form_validation->set_rules('post_time', 'Post Time', 'required');
+				$this->form_validation->set_rules('posted_by', 'Posted By', 'required');
+				$this->form_validation->set_rules('partner_name', 'Partner Name', 'required');
+			//	$this->form_validation->set_rules('image', 'Image', 'required');
+				$this->form_validation->set_rules('description', 'Description', 'required');
+			
+
+				if ($this->form_validation->run() == FALSE) {
+	                $page_data['top'] = "stories/stories.php";
+				    $page_data['folder'] = "stories";
+				    $page_data['file'] = "add.php";
+				    $page_data['bottom'] = "stories/stories.php";
+				    $page_data['page_name'] = "stories";
+				    $page_data['form_contents'] = $this->input->post();
+                    $page_data['danger_alert'] = translate("failed_to_add_the_data!");
+		                
+				    $this->load->view('back/index', $page_data);
+				}else {
+	            	$data['title'] = $this->input->post('title');
+		            $data['description'] = $this->input->post('description');
+		            $data['post_time'] = date("Y-m-d H:i:s", strtotime($this->input->post('post_time')));
+		            $data['posted_by'] = $this->input->post('posted_by');
+		            $data['partner_name'] = $this->input->post('partner_name');
+		            $data['approval_status'] = "1";
+                    $data['image'] = '[]';
+        
+                    $this->db->insert('happy_story', $data);
+                    $id = $this->db->insert_id();     
+        
+        
+                    $images = array();
+                    foreach ($_FILES['image']['name'] as $i => $row) {
+                        if ($_FILES['image']['name'][$i] !== '') {
+                            $ib = $i + 1;
+                            $path = $_FILES['image']['name'][$i];
+                            $ext = pathinfo($path, PATHINFO_EXTENSION);
+                            $img = 'happy_story_' . $id . '_' . $ib . '.jpg';
+                            $img_thumb = 'happy_story_' . $id . '_' . $ib . '_thumb.jpg';
+                            $images[] = array('index' => $i, 'img' => $img, 'thumb' => $img_thumb);
+                        }
+                    }
+        
+                    $this->Crud_model->file_up("image", "happy_story", $id, 'multi');
+                    $data1['image'] = json_encode($images);
+                    $this->db->where('happy_story_id', $id);
+                    $result = $this->db->update('happy_story', $data1);
+                    recache();
+                    
+                    $data_m['is_blocked'] = 1;
+                    $this->db->where('member_id', $this->input->post('posted_by'));
+                    
+                    $result_m = $this->db->update('member', $data_m);
+                    
+                    recache();
+                    
+                    
+					if ($result) {
+						$this->session->set_flashdata('alert', 'add');
+						redirect(base_url().'admin/stories', 'refresh');
+					}
+					else {
+						$this->session->set_flashdata('alert', 'failed_add');
+						redirect(base_url().'admin/stories', 'refresh');
+					}
+				}    	
 			}
 			elseif ($para1=="delete") {
 				$img =  $this->db->get_where("happy_story", array("happy_story_id" => $para2))->row()->image;
@@ -3338,6 +3491,7 @@ class Admin extends CI_Controller {
 				$data['express_interest'] = $this->input->post('express_interest');
 				$data['direct_messages'] = $this->input->post('direct_messages');
 				$data['photo_gallery'] = $this->input->post('photo_gallery');
+				$data['duration'] = $this->input->post('duration');
 
 				$this->db->insert('plan', $data);
 	            $plan_id = $this->db->insert_id();
@@ -3382,6 +3536,7 @@ class Admin extends CI_Controller {
 				$data['express_interest'] = $this->input->post('express_interest');
 				$data['direct_messages'] = $this->input->post('direct_messages');
 				$data['photo_gallery'] = $this->input->post('photo_gallery');
+				$data['duration'] = $this->input->post('duration');
 				if ($_FILES['image']['name'] !== '') {
 	                $id = $plan_id;
 	                $path = $_FILES['image']['name'];
@@ -4581,6 +4736,73 @@ class Admin extends CI_Controller {
 
 			$this->db->where('type','paypal_account_type');
 			$result = $this->db->update('business_settings', $data3);
+			recache();
+
+			if ($result) {
+				$this->session->set_flashdata('alert', 'edit');
+			}
+			else {
+				$this->session->set_flashdata('alert', 'failed_edit');
+			}
+			redirect(base_url().'admin/payments', 'refresh');
+
+		}elseif ($para1=="update_paytm") {
+			$paytm_activation = $this->input->post('paytm_activation');
+			if (isset($paytm_activation)) {
+				$data1['value'] = "ok";
+			} else {
+				$data1['value'] = "no";
+			}
+			$data2['value'] = $this->input->post('paytm_mid');
+			$data3['value'] = $this->input->post('paytm_account_type');
+            $data4['value'] = $this->input->post('paytm_mkey');
+            
+			$this->db->where('type','paytm_set');
+			$result = $this->db->update('business_settings', $data1);
+
+			$this->db->where('type','paytm_mid');
+			$result = $this->db->update('business_settings', $data2);
+
+			$this->db->where('type','paytm_account_type');
+			$result = $this->db->update('business_settings', $data3);
+			
+			$this->db->where('type','paytm_mkey');
+			$result = $this->db->update('business_settings', $data4);
+			recache();
+
+			if ($result) {
+				$this->session->set_flashdata('alert', 'edit');
+			}
+			else {
+				$this->session->set_flashdata('alert', 'failed_edit');
+			}
+			redirect(base_url().'admin/payments', 'refresh');
+
+		}elseif ($para1=="update_ccavenue") {
+			$ccavenue_activation = $this->input->post('ccavenue_activation');
+			if (isset($ccavenue_activation)) {
+				$data1['value'] = "ok";
+			} else {
+				$data1['value'] = "no";
+			}
+			$data2['value'] = $this->input->post('ccavenue_mid');
+			$data3['value'] = $this->input->post('ccavenue_account_type');
+			$data4['value'] = $this->input->post('ccavenue_working_key');
+			$data5['value'] = $this->input->post('ccavenue_access_code');
+            
+			$this->db->where('type','ccavenue_set');
+			$result = $this->db->update('business_settings', $data1);
+
+			$this->db->where('type','ccavenue_mid');
+			$result = $this->db->update('business_settings', $data2);
+
+			$this->db->where('type','ccavenue_account_type');
+			$result = $this->db->update('business_settings', $data3);
+			
+			$this->db->where('type','ccavenue_working_key');
+			$result = $this->db->update('business_settings', $data4);
+			$this->db->where('type','ccavenue_access_code');
+			$result = $this->db->update('business_settings', $data5);
 			recache();
 
 			if ($result) {

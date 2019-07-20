@@ -42,6 +42,27 @@
 	</form>
 </div>
 
+<div class="card-title">
+    <h3 class="heading heading-6 strong-500">
+    <b><?php echo translate('account_settings')?></b></h3>
+</div>
+<div class="card-body">
+
+<div class="text-center pt-3 pb-0">
+                    <?php if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'yes'){?>
+                        <a onclick="profile_load('reopen_account')">
+                        <i class="fa fa-unlock"></i>
+                        <?php echo translate('re-open_account?')?>
+                    </a>
+                    <?php }else{?>
+                        <a onclick="profile_load('close_account')">
+                            <i class="fa fa-lock"></i>
+                            <?php echo translate('close_account')?>
+                        </a>
+                    <?php } ?>
+                </div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		var new_pass = "";

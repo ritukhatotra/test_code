@@ -37,19 +37,19 @@
                                             <?php echo translate('main_menu')?></h4>
                                             <ul class="footer-links">
                                                 <li>
-                                                <a href="<?=base_url()?>home" title="Home">
+                                                <a href="<?=base_url()?>" title="Home">
                                                 <?php echo translate('home')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/plans" title="Premium Plans">
+                                                <a href="<?=base_url()?>plans" title="Premium Plans">
                                                 <?php echo translate('premium_plans')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/stories" title="Happy Stories">
+                                                <a href="<?=base_url()?>stories" title="Happy Stories">
                                                 <?php echo translate('happy_stories')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/contact_us" title="Contact Us">
+                                                <a href="<?=base_url()?>contact-us" title="Contact Us">
                                                 <?php echo translate('contact_us')?></a>
                                                 </li>
                                             </ul>
@@ -61,15 +61,15 @@
                                             <?php echo translate('quick_search')?></h4>
                                             <ul class="footer-links">
                                                 <li>
-                                                <a href="<?=base_url()?>home/listing" title="All Members">
+                                                <a href="<?=base_url()?>listing" title="All Members">
                                                 <?php echo translate('all_members')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/listing/premium_members" title="Premium Members">
+                                                <a href="<?=base_url()?>premium-members" title="Premium Members">
                                                 <?php echo translate('premium_members')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/listing/free_members" title="Free Members">
+                                                <a href="<?=base_url()?>free-members" title="Free Members">
                                                 <?php echo translate('free_members')?></a>
                                                 </li>
                                             </ul>
@@ -81,15 +81,15 @@
                                             <?php echo translate('useful_links')?></h4>
                                             <ul class="footer-links">
                                                 <li>
-                                                <a href="<?=base_url()?>home/faq" title="FAQ">
+                                                <a href="<?=base_url()?>faq" title="FAQ">
                                                 FAQ </a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/terms_and_conditions" title="Terms & Conditions">
+                                                <a href="<?=base_url()?>terms-and-conditions" title="Terms & Conditions">
                                                 <?php echo translate('terms_&_conditions')?></a>
                                                 </li>
                                                 <li>
-                                                <a href="<?=base_url()?>home/privacy_policy" title="Prvacy Policy">
+                                                <a href="<?=base_url()?>privacy-policy" title="Prvacy Policy">
                                                 <?php echo translate('privacy_policy')?></a>
                                                 </li>
                                             </ul>

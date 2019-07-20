@@ -73,6 +73,7 @@
 										<p><?php echo translate('express_interest:')?> <?=$value->express_interest?> <?php echo translate('times')?></p>
 										<p><?php echo translate('direct_messages:')?> <?=$value->direct_messages?> <?php echo translate('times')?></p>
 										<p><?php echo translate('photo_gallery:')?> <?=$value->photo_gallery?> <?php echo translate('images')?></p>
+<p><?php echo translate('duration:')?> <?=$value->duration ?> <?php echo translate('months')?></p>
 									</div>
 									<div class="col-sm-12">
 						            	<a href="<?=base_url()?>admin/packages/edit_package/<?=$value->plan_id?>" id="demo-dt-view-btn" class="btn btn-mint add-tooltip" style="width: 100%" ><i class="fa fa-edit"></i> <?php echo translate('edit')?></a>
@@ -113,6 +114,7 @@
 										<p><?php echo translate('express_interest:')?> <?=$value->express_interest?> <?php echo translate('times')?></p>
 										<p><?php echo translate('direct_messages:')?> <?=$value->direct_messages?> <?php echo translate('times')?></p>
 										<p><?php echo translate('photo_gallery:')?> <?=$value->photo_gallery?> <?php echo translate('images')?></p>
+<p><?php echo translate('duration:')?> <?=$value->duration ?> <?php echo translate('months')?></p>
 					            	</div>
 					            	<div class="col-sm-12">
 						            	<a href="<?=base_url()?>admin/packages/edit_package/<?=$value->plan_id?>" id="demo-dt-view-btn" class="btn btn-primary add-tooltip" style="width: 100%" ><i class="fa fa-edit"></i> <?php echo translate('edit')?></a>

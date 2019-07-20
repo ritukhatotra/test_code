@@ -5,6 +5,26 @@
         <div class="container">
             <?php foreach ($get_member as $member): ?>
                 <div class="row cols-md-space cols-sm-space cols-xs-space">
+<?php if (!empty($success_alert)): ?>
+                        <div class="col-12" id="success_lg_alert">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                                <?=$success_alert?>
+                            </div>
+                        </div>
+                    <?php endif ?>
+                    <?php if (!empty($danger_alert)): ?>
+                        <div class="col-12" id="danger_lg_alert">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                                <?=$danger_alert?>
+                            </div>
+                        </div>
+                    <?php endif ?>
                     <div class="col-lg-4">
                         <?php include_once APPPATH.'views/front/profile/left_panel.php';?>
                     </div>
@@ -111,6 +131,8 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                         
                                         <div class="feature feature--boxed-border feature--bg-1 pt-3 pb-0 pl-3 pr-3 mb-3 border_top2x">
                                             <div id="edit_basic_info">
                                                 <div class="card-inner-title-wrapper  pt-0">
@@ -254,10 +276,10 @@
                                                             <label for="marital_status" class="text-uppercase c-gray-light"><?php echo translate('marital_status')?></label>
                                                             <?php
                                                                 if (!empty($form_contents)) {
-                                                                    echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker', $form_contents['marital_status'], '', '', '');
+                                                                    echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker edit_full_profile_marital_status_select', $form_contents['marital_status'], '', '', '');
                                                                 }
                                                                 else {
-                                                                    echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker', $basic_info_data[0]['marital_status'], '', '', '');
+                                                                    echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker edit_full_profile_marital_status_select', $basic_info_data[0]['marital_status'], '', '', '');
                                                                 }
                                                             ?> 
                                                             <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -266,7 +288,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
+                                                <div class="row edit_full_profile_number_children_select" style="display:<?php echo $basic_info_data[0]['marital_status'] == 1 ? 'none' : ''; ?>">
                                                     <div class="col-md-6">
                                                         <div class="form-group has-feedback">
                                                             <label for="number_of_children" class="text-uppercase c-gray-light"><?php echo translate('number_of_children')?></label>
@@ -276,7 +298,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                   <?php /* <div class="col-md-6">
                                                         <div class="form-group has-feedback">
                                                             <label for="area" class="text-uppercase c-gray-light"><?php echo translate('area')?></label>
                                                             <input type="text" class="form-control no-resize" name="area" value="<?php if(!empty($form_contents)){echo $form_contents['area'];} else{echo $basic_info_data[0]['area'];}?>">
@@ -285,6 +307,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    */?>
 
                                                 </div>
                                                 <div class="row">
@@ -1855,6 +1878,15 @@
 </section>
 <script>
     $(document).ready(function(){
+         $(".edit_full_profile_marital_status_select").on("change", 
+      function(e) {
+            var val = $(this).val();
+                    if (val == '1') {
+                        $(".edit_full_profile_number_children_select").hide();
+                    }else{
+                        $(".edit_full_profile_number_children_select").show();
+                    }
+        });
         $(".height_mask").inputmask({
             mask: "9.99",
             greedy: false,
@@ -1864,6 +1896,7 @@
                 }
             }
         });
+        
     });
 </script>
 <script>
@@ -2068,4 +2101,6 @@
             });
         }
     });
+    
+   
 </script>

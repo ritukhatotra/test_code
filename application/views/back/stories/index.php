@@ -22,6 +22,7 @@
 	<!--Page content-->
 	<!--===================================================-->
 	<div id="page-content">
+	    
 		<!-- Basic Data Tables -->
 		<!--===================================================-->
 		<div class="panel">
@@ -39,6 +40,9 @@
 			<?php endif ?>
 			<div class="panel-heading">
 				<h3 class="panel-title"><?php echo translate('stories_list')?></h3>
+			</div>
+				<div class="text-right" style="margin-right: 30px">
+				<a href="<?=base_url()?>admin/stories/add" id="demo-dt-view-btn" class="btn btn-primary add-tooltip"><i class="fa fa-plus"></i> <?php echo translate('add_new_story')?></a>
 			</div>
 			<div class="panel-body">
 				<table id="stories_table" class="table table-striped table-bordered" cellspacing="0" width="100%">

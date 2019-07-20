@@ -20,70 +20,104 @@
                 </button>  
             </div>
         </div>
-        <div class="table-full-width">
-            <div class="table-full-width">
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-                    <tbody>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('religion')?></span>
-                            </td>
-                            <td>
+			<div class="clearfix"></div><hr>
+			
+			<div class="row list-box-columns">
+	    
+		        <div class="col-md-6">
+		           <div class="row">	
+                            <div class="col-6 p-0">
+                                <b><?php echo translate('religion')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$this->Crud_model->get_type_name_by_id('religion', $spiritual_and_social_background_data[0]['religion']);?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('caste_/_sect')?></span>
-                            </td>
-                            <td>
+                            </div>
+							
+							</div>
+					
+					<div class="row">
+					       <div class="col-6 p-0">
+                                <b><?php echo translate('caste_/_sect')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?php echo $this->db->get_where('caste',array('caste_id'=>$spiritual_and_social_background_data[0]['caste']))->row()->caste_name; ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('sub-Caste')?></span>
-                            </td>
-                            <td>
-                                <?php echo $this->db->get_where('sub_caste',array('sub_caste_id'=>$spiritual_and_social_background_data[0]['sub_caste']))->row()->sub_caste_name;?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('ethnicity')?></span>
-                            </td>
-                            <td>
-                                <?=$spiritual_and_social_background_data[0]['ethnicity']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('personal_value')?></span>
-                            </td>
-                            <td>
+                            </div>
+					
+					
+					       </div>		
+							
+							
+							<div class="row">
+								 <div class="col-6 p-0">
+									<b><?php echo translate('sub-Caste')?>:</b>
+								</div>
+								<div class="col-6 p-0">
+									<?php echo $this->db->get_where('sub_caste',array('sub_caste_id'=>$spiritual_and_social_background_data[0]['sub_caste']))->row()->sub_caste_name;?>
+								</div>
+					
+					
+					       </div>
+							
+							
+							 <div class="row">	
+                          
+								<div class="col-6 p-0">
+									<b><?php echo translate('ethnicity')?>:</b>
+								</div>
+								<div class="col-6 p-0">
+									<?=$spiritual_and_social_background_data[0]['ethnicity']?>
+								</div>
+                       </div>
+					   
+					    <div class="row">	
+                           <div class="col-6 p-0">
+                                <b><?php echo translate('personal_value')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$spiritual_and_social_background_data[0]['personal_value']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('family_value')?></span>
-                            </td>
-                            <td>
+                            </div>
+                       </div>
+					   
+					   
+							
+		
+		
+		           </div>
+				   
+				   
+				   <div class="col-md-6">
+				   
+				       <div class="row">	
+                            <div class="col-6 p-0">
+                                <b><?php echo translate('family_value')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$this->Crud_model->get_type_name_by_id('family_value', $spiritual_and_social_background_data[0]['family_value']);?>
                                 
-                            </td>
-                        </tr>
-                        <tr>                                               
-                            <td class="td-label">
-                                <span><?php echo translate('community_value')?></span>
-                            </td>
-                            <td>
+                            </div>
+                       </div>
+					   
+					   <div class="row">	
+                             <div class="col-6 p-0">
+                                <b><?php echo translate('community_value')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$spiritual_and_social_background_data[0]['community_value']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('family_status')?></span>
-                            </td>
-                            <td>
+                            </div>
+                       </div>
+					   
+					     <div class="row">	
+                              <div class="col-6 p-0">
+                                <b><?php echo translate('family_status')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$this->Crud_model->get_type_name_by_id('family_status', $spiritual_and_social_background_data[0]['family_status']);?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label"><?php echo translate('manglik')?></td>
-                            <td><?php $u_manglik=$spiritual_and_social_background_data[0]['u_manglik'];
+                            </div>
+                       </div>
+					   
+					    <div class="row">	
+                              <div class="col-6 p-0"> <b><?php echo translate('manglik')?>:</b></div>
+                            <div class="col-6 p-0"><?php $u_manglik=$spiritual_and_social_background_data[0]['u_manglik'];
 
                                     if($u_manglik == 1){
                                         echo "Yes";
@@ -96,14 +130,10 @@
                                         echo " ";
                                     }
                                 ?>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            </div>
+                       </div>
+		           </div>
+			</div>
     </div>
 
     <div id="edit_spiritual_and_social_background" style="display: none;">

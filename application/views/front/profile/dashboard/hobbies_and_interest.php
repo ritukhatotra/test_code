@@ -31,67 +31,13 @@
                             <td>
                                 <?=$hobbies_and_interest_data[0]['hobby']?>
                             </td>
+                            </tr>
+                            <tr>
                             <td class="td-label">
                                 <span><?php echo translate('interest')?></span>
                             </td>
                             <td>
                                 <?=$hobbies_and_interest_data[0]['interest']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('music')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['music']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('books')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['books']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('movie')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['movie']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('TV_show')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['tv_show']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('sports_show')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['sports_show']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('fitness_activity')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['fitness_activity']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('cuisine')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['cuisine']?> 
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('dress_style')?></span>
-                            </td>
-                            <td>
-                                <?=$hobbies_and_interest_data[0]['dress_style']?>
                             </td>
                         </tr>
                     </tbody>
@@ -114,90 +60,20 @@
         <div class='clearfix'></div>
         <form id="form_hobbies_and_interest" class="form-default" role="form">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group has-feedback">
-                        <label for="hobby" class="text-uppercase c-gray-light"><?php echo translate('hobby')?></label>
-                        <input type="text" class="form-control no-resize" name="hobby" value="<?=$hobbies_and_interest_data[0]['hobby']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="interest" class="text-uppercase c-gray-light"><?php echo translate('interest')?></label>
-                        <input type="text" class="form-control no-resize" name="interest" value="<?=$hobbies_and_interest_data[0]['interest']?>">
+                        <label for="hobby" class="text-uppercase c-gray-light"><?php echo translate('hobbies')?></label>
+                        <textArea class="form-control no-resize" name="hobby"><?=$hobbies_and_interest_data[0]['hobby']?></textArea>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group has-feedback">
-                        <label for="music" class="text-uppercase c-gray-light"><?php echo translate('music')?></label>
-                        <input type="text" class="form-control no-resize" name="music" value="<?=$hobbies_and_interest_data[0]['music']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="books" class="text-uppercase c-gray-light"><?php echo translate('books')?></label>
-                        <input type="text" class="form-control no-resize" name="books" value="<?=$hobbies_and_interest_data[0]['books']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="movie" class="text-uppercase c-gray-light"><?php echo translate('movie')?></label>
-                        <input type="text" class="form-control no-resize" name="movie" value="<?=$hobbies_and_interest_data[0]['movie']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="tv_show" class="text-uppercase c-gray-light"><?php echo translate('TV_show')?></label>
-                        <input type="text" class="form-control no-resize" name="tv_show" value="<?=$hobbies_and_interest_data[0]['tv_show']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="sports_show" class="text-uppercase c-gray-light"><?php echo translate('sports_show')?></label>
-                        <input type="text" class="form-control no-resize" name="sports_show" value="<?=$hobbies_and_interest_data[0]['sports_show']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="fitness_activity" class="text-uppercase c-gray-light"><?php echo translate('fitness_activity')?></label>
-                        <input type="text" class="form-control no-resize" name="fitness_activity" value="<?=$hobbies_and_interest_data[0]['fitness_activity']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="cuisine" class="text-uppercase c-gray-light"><?php echo translate('cuisine')?></label>
-                        <input type="text" class="form-control no-resize" name="cuisine" value="<?=$hobbies_and_interest_data[0]['cuisine']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="dress_style" class="text-uppercase c-gray-light"><?php echo translate('dress_style')?></label>
-                        <input type="text" class="form-control no-resize" name="dress_style" value="<?=$hobbies_and_interest_data[0]['dress_style']?>">
+                        <label for="interest" class="text-uppercase c-gray-light"><?php echo translate('interests')?></label>
+                        <textArea class="form-control no-resize" name="interest"><?=$hobbies_and_interest_data[0]['interest']?></textArea>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>

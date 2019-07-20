@@ -1,6 +1,3 @@
-<div class="mb-2 pl-3">
-    <b><?=translate('Member ID').' - '?></b><b class="c-base-1"><?=$get_member[0]->member_profile_id?></b>
-</div>
 <div class="feature feature--boxed-border feature--bg-1 pt-3 pb-0 pl-3 pr-3 mb-3 border_top2x">
     <div id="info_introduction">
         <div class="card-inner-title-wrapper pt-0">

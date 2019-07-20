@@ -1509,4 +1509,19 @@ public function get_online_status($id)
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
    }
+
+   public function isCompleted($id)
+    {
+        $profile= $this->db->get_where("member", array("member_id" => $id))->row();
+        $profile_basic_details = json_decode($profile->basic_info, true);
+
+        $spiritual_and_social_background_data= json_decode($profile->spiritual_and_social_background, true);
+        $present_address_data= json_decode($profile->present_address, true);
+        $education_and_career_data = json_decode($profile->education_and_career, true);
+
+        if($profile->height > 0 && $profile->introduction != "" && $profile_basic_details[0]['marital_status'] != "" && $profile->belongs_to != "" && !empty($spiritual_and_social_background_data[0]['religion']) && !empty($spiritual_and_social_background_data[0]['caste']) && !empty($present_address_data[0]['country']) && !empty($education_and_career_data[0]['highest_education']) && !empty($education_and_career_data[0]['occupation']) && $profile->is_completed == 1) {
+            return true;
+        }
+        return false;
+    }
 }

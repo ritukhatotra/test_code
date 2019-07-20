@@ -51,4 +51,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'home';
 $route['404_override'] = '';
-$route['translate_uri_dashes'] = FALSE;
+$route['translate_uri_dashes'] = TRUE;
+
+$route['faq'] = "/home/faq";
+$route['terms-and-conditions'] = "/home/terms-and-conditions";
+$route['privacy-policy'] = "/home/privacy-policy";
+$route['listing'] = "/home/listing";
+$route['premium-members'] = "/home/listing/premium-members";
+$route['free-members'] = "/home/listing/free-members";
+$route['near-me'] = "/home/listing/near-me";
+
+$route['plans'] = "/home/plans";
+$route['stories'] = "/home/stories";
+$route['contact-us'] = "/home/contact-us";
+$route['registration'] = "/home/registration";
+$route['login'] = "/home/login";
+$route['my-matches'] = "/home/matches";
+$route['near-matches'] = "/home/matches/near-matches";
+$route['profile/edit-full-profile'] = "/home/profile/edit-full-profile";
+$route['forget-pass'] = "/home/forgot_password";
+
+
+

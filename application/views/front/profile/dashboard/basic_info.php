@@ -2,6 +2,11 @@
     $basic_info = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'basic_info');
     $basic_info_data = json_decode($basic_info, true);
 ?>
+
+<div class="mb-2 pl-3">
+    <b><?=translate('Member ID').' - '?></b><b class="c-base-1"><?=$get_member[0]->member_profile_id?></b>
+</div>
+
 <div class="feature feature--boxed-border feature--bg-1 pt-3 pb-0 pl-3 pr-3 mb-3 border_top2x">
     <div id="info_basic_info">
         <div class="card-inner-title-wrapper pt-0">
@@ -14,101 +19,155 @@
                 </button>
             </div>
         </div>
-        <div class="table-full-width">
-            <div class="table-full-width">
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-                    <tbody>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('first_name')?></span>
-                            </td>
-                            <td>
+		
+		<div class="clearfix"></div>
+		
+		<div class="row list-box-columns">
+	    
+		<div class="col-md-6">		
+		      <div class="row">				  
+			         <div class="col-6 p-0">
+                                <b><?php echo translate('first_name')?></b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$get_member[0]->first_name?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('last_name')?></span>
-                            </td>
-                            <td>
+                            </div>
+													  
+					</div>
+					
+					<div class="row">	
+                          <div class="col-6 p-0">
+                                <b><?php echo translate('last_name')?></b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$get_member[0]->last_name?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('gender')?></span>
-                            </td>
-                            <td>
-                                <?=$this->Crud_model->get_type_name_by_id('gender', $get_member[0]->gender)?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('email')?></span>
-                            </td>
-                            <td>
-                                <?=$get_member[0]->email?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('age')?></span>
-                            </td>
-                            <td>
+                            </div>				
+												  
+					</div>
+					
+					<div class="row">    
+						
+                            <div class="col-6 p-0">
+                                <b><?php echo translate('age')?></b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?php
                                     $calculated_age = (date('Y') - date('Y', $get_member[0]->date_of_birth));
                                     echo $calculated_age;
                                 ?>
-
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('marital_status')?></span>
-                            </td>
-                            <td>
-                                <?=$this->Crud_model->get_type_name_by_id('marital_status', $basic_info_data[0]['marital_status'])?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('number_of_children')?></span>
-                            </td>
-                            <td>
-                                <?=$basic_info_data[0]['number_of_children']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('area')?></span>
-                            </td>
-                            <td>
-                                <?=$basic_info_data[0]['area']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('mobile')?></span>
-                            </td>
-                            <td><?=$get_member[0]->mobile?></td>
-                            <td class="td-label">
-                                <span><?php echo translate('on_behalf')?></span>
-                            </td>
-                            <td>
-                                 <?=$this->Crud_model->get_type_name_by_id('on_behalf', $basic_info_data[0]['on_behalf']);?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('date_of_birth')?></span>
-                            </td>
-                            <td>
+                            </div> 					   
+					  </div>
+					  
+					  <div class="row">    
+						  <div class="col-6 p-0">
+                                <b><?php echo translate('date_of_birth')?></b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=date('d/m/Y', $get_member[0]->date_of_birth)?>
-                            </td>
-                       
-                             <td class="td-label">
-                             <span><?php echo translate('belongs_to')?></span>
-                            </td>
-                            <td>
-                            <?=$get_member[0]->belongs_to?>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            </div> 
+                           				   
+					  </div>
+					  
+					   <div class="row">  
+					   
+						 <div class="col-6 p-0">
+                                <b><?php echo translate('on_behalf')?></b>
+                            </div>
+                            <div class="col-6 p-0">
+                                 <?=$this->Crud_model->get_type_name_by_id('on_behalf', $basic_info_data[0]['on_behalf']);?>
+                            </div>
+                           				   
+					  </div>
+					  
+					  
+					  
+					  
+					
+
+		     </div>
+			 
+			 
+			  
+		<div class="col-md-6">
+		      <div class="row">	
+                       <div class="col-6 p-0">
+                                <b><?php echo translate('gender')?></b>
+                            </div>
+                            <div class="col-6 p-0">
+                                <?=$this->Crud_model->get_type_name_by_id('gender', $get_member[0]->gender)?>
+                            </div>							  
+					</div>
+					
+					<div class="row">	
+                         <div class="col-6 p-0">
+                                <b><?php echo translate('email')?></b>
+                            </div>
+                            <div class="col-6 p-0">
+                                <?=$get_member[0]->email?>
+                            </div>
+										  
+					</div>
+					
+					<div class="row">	
+                          <div class="col-6 p-0">
+                                <b><?php echo translate('mobile')?></b>
+                            </div>
+                            <div class="col-6 p-0"><?=$get_member[0]->mobile?></div>	  
+					</div>
+					
+					<div class="row">
+                          <div class="col-6 p-0">
+                                <b><?php echo translate('belongs_to')?></b>
+                                </div>
+                                <div class="col-6 p-0">
+                                <?=$get_member[0]->belongs_to?>
+                                </div>
+
+					
+                           
+					</div>
+					
+					 <div class="row">  
+					   
+					       
+                        <?php if($basic_info_data[0]['marital_status'] == 1) {?>
+                               
+                                <div class="col-6 p-0">
+                                    <b><?php echo translate('marital_status')?></b>
+                                </div>
+                                <div class="col-6 p-0">
+                                    <?=$this->Crud_model->get_type_name_by_id('marital_status', $basic_info_data[0]['marital_status'])?>
+                                </div>
+                            
+                        <?php }else{?>
+                            
+                                <div class="col-6 p-0">
+                                    <b><?php echo translate('marital_status')?></b>
+                                </div>
+                                <div class="col-6 p-0">
+                                    <?=$this->Crud_model->get_type_name_by_id('marital_status', $basic_info_data[0]['marital_status'])?>
+                                </div>                            
+                                <div class="col-6 p-0">
+                                    <b><?php echo translate('number_of_children')?></b>
+                                </div>
+                                <div class="col-6 p-0">
+                                    <?=$basic_info_data[0]['number_of_children']?>
+                                </div>
+                        <?php } ?>
+					   
+						 
+                           				   
+					  </div>
+					
+
+		     </div>
+			 
+			 
+			 
+			 
+</div>	
+		
+        
     </div>
 
     <div id="edit_basic_info" style="display: none;">
@@ -245,19 +304,20 @@
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
+                
+            </div>
+            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="marital_status" class="text-uppercase c-gray-light"><?php echo translate('marital_status')?></label>
                         <?php 
-                            echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker', $basic_info_data[0]['marital_status'], '', '', '');
+                            echo $this->Crud_model->select_html('marital_status', 'marital_status', 'name', 'edit', 'form-control form-control-sm selectpicker basic_info_marital_status_select', $basic_info_data[0]['marital_status'], '', '', '');
                         ?>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 basic_info_number_children_select" style="display:<?php echo $basic_info_data[0]['marital_status'] == 1 ? 'none' : ''; ?>">
                     <div class="form-group has-feedback">
                         <label for="number_of_children" class="text-uppercase c-gray-light"><?php echo translate('number_of_children')?></label>
                         <input type="number" class="form-control no-resize" name="number_of_children" value="<?=$basic_info_data[0]['number_of_children']?>" min="0">
@@ -265,6 +325,7 @@
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
+                <?php /*
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="area" class="text-uppercase c-gray-light"><?php echo translate('area')?></label>
@@ -272,7 +333,7 @@
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>
-                </div>
+                </div>*/?>
             </div>
             <div class="row">
                 <div class="col-md-6">

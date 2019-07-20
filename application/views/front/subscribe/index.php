@@ -42,7 +42,11 @@
                             </div>
                             <div class="block-content">
                                 <h3 class="heading heading-5 strong-500"><?=$value->name?></h3>
-                                <h3 class="price-tag"><sup style="font-size: 36px;"></sup><?=currency($value->amount)?></h3>
+                                <h3 class="price-tag"><sup style="font-size: 36px;"></sup>
+                                <?php $exchange =  $this->db->get_where('currency_settings', array('code' => 'INR'))->row()->exchange_rate_def;;
+          
+            $amount= $value->amount * $exchange;?>
+                                    <?php /*<?= currency($value->amount); */?> ₹<?= $amount ?></h3>
                                 <ul class="pl-0 pr-0 mt-0">
                                     <!-- <li class="package_items"><?php if($value->plan_id == 1){echo "Limited Profile Searching";}else{echo "Advanced Profile Searching";}?></li> -->
                                     <li class="<?=$package_class?> package_items"><?php echo translate('express_interest:')?> <?=$value->express_interest?> <?php echo translate('times')?></li>
@@ -86,6 +90,22 @@
                                         font-size: 11px;
                                     }
                                 </style>
+                                <?php //$ccavenue_set = $this->db->get_where('business_settings', array('type' => 'ccavenue'))->row()->value;
+                                //if ($ccavenue_set=="ok"): ?>
+                                    <div class="col-sm-4">
+                                        <div class="card card-ccavenue" style="background: transparent;">
+                                            <a id="select_ccavenue">
+                                                <div class="card-image">
+                                                    <img src="<?=base_url()?>template/front/images/ccavenue.jpg" style="height: 110px">
+                                                    <div class="text-center bg-base-1" style="height: 26px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;">
+                                                        <span class="span-text" id="select_ccavenue_text" style="">Select</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php //endif ?>
+                                
                                 <?php
                                 $paypal_set = $this->db->get_where('business_settings', array('type' => 'paypal_set'))->row()->value;
                                 if ($paypal_set=="ok"): ?>
@@ -96,6 +116,23 @@
                                                     <img src="<?=base_url()?>template/front/images/paypal.jpg" style="height: 110px">
                                                     <div class="text-center bg-base-1" style="height: 26px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;">
                                                         <span class="span-text" id="select_paypal_text" style="">Select</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endif ?>
+                                
+                                 <?php
+                                $paytm_set = $this->db->get_where('business_settings', array('type' => 'paytm_set'))->row()->value;
+                                if ($paytm_set=="ok"): ?>
+                                    <div class="col-sm-4">
+                                        <div class="card card-paytm" style="background: transparent;">
+                                            <a id="select_paytm">
+                                                <div class="card-image">
+                                                    <img src="<?=base_url()?>template/front/images/paytm.png" style="height: 110px">
+                                                    <div class="text-center bg-base-1" style="height: 26px;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;">
+                                                        <span class="span-text" id="select_paytm_text" style="">Select</span>
                                                     </div>
                                                 </div>
                                             </a>
@@ -226,30 +263,63 @@
 </section>
 <script>
     $(document).ready(function(e) {
+        $("#select_paytm").click(function(){
+            $("#select_paytm_text").html("<?php echo translate('selected')?>");
+            $("#select_stripe_text").html("<?php echo translate('select')?>");
+            $("#select_paypal_text").html("<?php echo translate('select')?>");
+            $("#select_pum_text").html("<?php echo translate('select')?>");
+            $(".card-paytm").css("border", "3px solid #24242D");
+            $(".card-ccavenue").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-stripe").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-paypal").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-pum").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $("#payment_type").val('paytm');
+            $("#purchase_button").prop('disabled', false);
+        });
+        
+         $("#select_ccavenue").click(function(){
+            $("#select_ccavenue_text").html("<?php echo translate('selected')?>");
+            $("#select_paytm_text").html("<?php echo translate('select')?>");
+            $("#select_stripe_text").html("<?php echo translate('select')?>");
+            $("#select_paypal_text").html("<?php echo translate('select')?>");
+            $("#select_pum_text").html("<?php echo translate('select')?>");
+            $(".card-ccavenue").css("border", "3px solid #24242D");
+            $(".card-paytm").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-stripe").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-paypal").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-pum").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $("#payment_type").val('ccavenue');
+            $("#purchase_button").prop('disabled', false);
+        });
+        
         $("#select_paypal").click(function(){
             $("#select_paypal_text").html("<?php echo translate('selected')?>");
             $("#select_stripe_text").html("<?php echo translate('select')?>");
+            $("#select_ccavenue_text").html("<?php echo translate('select')?>");
             $("#select_pum_text").html("<?php echo translate('select')?>");
             $(".card-paypal").css("border", "3px solid #24242D");
             $(".card-stripe").css("border", "1px solid rgba(0, 0, 0, 0.05)");
             $(".card-pum").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-ccavenue").css("border", "1px solid rgba(0, 0, 0, 0.05)");
             $("#payment_type").val('paypal');
             $("#purchase_button").prop('disabled', false);
         });
         $("#select_pum").click(function(){
             $("#select_pum_text").html("<?php echo translate('selected')?>");
             $("#select_stripe_text").html("<?php echo translate('select')?>");
+            $("#select_ccavenue_text").html("<?php echo translate('select')?>");
             $("#select_paypal_text").html("<?php echo translate('select')?>");
             $(".card-pum").css("border", "3px solid #24242D");
             $(".card-paypal").css("border", "1px solid rgba(0, 0, 0, 0.05)");
             $(".card-stripe").css("border", "1px solid rgba(0, 0, 0, 0.05)");
+            $(".card-ccavenue").css("border", "1px solid rgba(0, 0, 0, 0.05)");
             $("#payment_type").val('pum');
             $("#purchase_button").prop('disabled', false);
         });
 
         $("#purchase_button").click(function(){
             var type = $("#payment_type").val();
-            if (type == "paypal" || type == "pum") {
+            if (type == "paypal" || type == "pum" || type == 'paytm' || type == 'ccavenue') {
                 $("#payment_form").submit();
             }
         });

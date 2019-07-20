@@ -108,13 +108,13 @@
                                     <button type="submit" class="btn btn-styled btn-sm btn-block btn-base-1 z-depth-2-bottom mt-4"><?php echo translate('submit')?></button>
                                     <div class="row pt-3">
                                         <div class="col-12 text-center" style="font-size: 12px;">
-                                            <a class="c-gray-light" href="<?=base_url()?>home/login">Log In Page</a>
+                                            <a class="c-gray-light" href="<?=base_url()?>login">Log In Page</a>
                                         </div>
                                     </div>
                                 </form>
                                 <div class="row mt-3">
                                     <div class="col-12 text-center" style="font-size: 12px;">
-                                        <span class="c-gray-light"><?php echo translate('new_here?')?></span><a class="c-gray-light" href="<?=base_url()?>home/registration"> <u><?php echo translate('create_an_account_from_here!')?></u></a>
+                                        <span class="c-gray-light"><?php echo translate('new_here?')?></span><a class="c-gray-light" href="<?=base_url()?>registration"> <u><?php echo translate('create_an_account_from_here!')?></u></a>
                                     </div>
                                 </div>
                             </div>

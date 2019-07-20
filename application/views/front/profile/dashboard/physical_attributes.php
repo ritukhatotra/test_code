@@ -41,57 +41,25 @@
                         </tr>
                         <tr>
                             <td class="td-label">
-                                <span><?php echo translate('eye_color')?></span>
-                            </td>
-                            <td>
-                                <?=$physical_attributes_data[0]['eye_color']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('hair_color')?></span>
-                            </td>
-                            <td>
-                                <?=$physical_attributes_data[0]['hair_color']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
                                 <span><?php echo translate('complexion')?></span>
                             </td>
                             <td>
                                 <?=$this->Crud_model->get_type_name_by_id('complexion', $physical_attributes_data[0]['complexion'], 'complexion_name')?>
                             </td>
                             <td class="td-label">
-                                <span><?php echo translate('blood_group')?></span>
-                            </td>
-                            <td>
-                                <?=$this->Crud_model->get_type_name_by_id('blood_group', $physical_attributes_data[0]['blood_group'], 'blood_group_name')?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
                                 <span><?php echo translate('body_type')?></span>
                             </td>
                             <td>
                                 <?=$this->Crud_model->get_type_name_by_id('body_type', $physical_attributes_data[0]['body_type'], 'body_type_name')?>
                             </td>
-                            <td class="td-label">
-                                <span><?php echo translate('body_art')?></span>
-                            </td>
-                            <td>
-                                <?=$physical_attributes_data[0]['body_art']?>
-                            </td>
                         </tr>
-                        <tr>
+                        <tr>                            
                             <td class="td-label">
                                 <span><?php echo translate('any_disability')?></span>
                             </td>
                             <td>
-
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $physical_attributes_data[0]['any_disability'])?>
-
                             </td>
-                            <td></td>
-                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -117,10 +85,13 @@
                     <div class="form-group has-feedback">
                         <label for="height" class="text-uppercase c-gray-light"><?php echo translate('height')?></label>
                         <div class="input-group">
-                            <input type="text" class="form-control no-resize height_mask" aria-describedby="text-feet" name="height" value="<?=$get_member[0]->height?>">
-                            <div class="input-group-append">
-                                <span class="input-group-text small ml-2" id="text-feet"><?=translate('feet')?></span>
-                            </div>
+                            <select name="height"  class="form-control form-control-sm selectpicker">
+                                                                    <option value="">Select Height</option>
+                                                                    <?php  foreach($height_array as $h => $height) {?>
+                                                                    <option value="<?php echo $h; ?>" <?php if(!empty($form_contents)){echo $form_contents['height'] == $h ? 'selected' : '' ;} else{echo $get_member[0]->height == $h ? 'selected' : '';}?>><?php echo $height ?></option>
+                                                                    <?php } ?>
+                                                                </select>
+                           
                         </div>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
@@ -138,24 +109,6 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
-                        <label for="eye_color" class="text-uppercase c-gray-light"><?php echo translate('eye_color')?></label>
-                        <input type="text" class="form-control no-resize" name="eye_color" value="<?=$physical_attributes_data[0]['eye_color']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="hair_color" class="text-uppercase c-gray-light"><?php echo translate('hair_color')?></label>
-                        <input type="text" class="form-control no-resize" name="hair_color" value="<?=$physical_attributes_data[0]['hair_color']?>">
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
                         <label for="complexion" class="text-uppercase c-gray-light"><?php echo translate('complexion')?></label>
 
                         <?php 
@@ -163,29 +116,10 @@
                         echo $this->Crud_model->select_html('complexion', 'complexion', 'complexion_name', 'edit', 'form-control form-control-sm selectpicker', $physical_attributes_data[0]['complexion'], '', '', '');
 
                         ?>
-                        <?php /* <input type="text" class="form-control no-resize" name="complexion" value="<?=$physical_attributes_data[0]['complexion']?>"> */ ?>
-
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="blood_group" class="text-uppercase c-gray-light"><?php echo translate('blood_group')?></label>
-
- <?php 
-
-echo $this->Crud_model->select_html('blood_group', 'blood_group', 'blood_group_name', 'edit', 'form-control form-control-sm selectpicker', $physical_attributes_data[0]['blood_group'], '', '', '');
-
-?>
-                        <?php /*<input type="text" class="form-control no-resize" name="blood_group" value="<?=$physical_attributes_data[0]['blood_group']?>">*/?>
-
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="body_type" class="text-uppercase c-gray-light"><?php echo translate('body_type')?></label>
@@ -195,22 +129,12 @@ echo $this->Crud_model->select_html('blood_group', 'blood_group', 'blood_group_n
                         echo $this->Crud_model->select_html('body_type', 'body_type', 'body_type_name', 'edit', 'form-control form-control-sm selectpicker', $physical_attributes_data[0]['body_type'], '', '', '');
 
                         ?>
-                        <?php /* <input type="text" class="form-control no-resize" name="body_type" value="<?=$physical_attributes_data[0]['body_type']?>"> */?>
-
-                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                        <div class="help-block with-errors"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group has-feedback">
-                        <label for="body_art" class="text-uppercase c-gray-light"><?php echo translate('body_art')?></label>
-                        <input type="text" class="form-control no-resize" name="body_art" value="<?=$physical_attributes_data[0]['body_art']?>">
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row">                
                 <div class="col-md-6">
                     <div class="form-group has-feedback">
                         <label for="any_disability" class="text-uppercase c-gray-light"><?php echo translate('any_disability')?></label>

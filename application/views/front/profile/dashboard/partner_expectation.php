@@ -41,257 +41,303 @@
             </div>
 
         </div>
-
-        <div class="table-full-width">
-
-            <div class="table-full-width">
-
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-
-                    <tbody>
-
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('general_requirement')?></span>
-                            </td>
-                            <td>
+		
+		
+		
+		<div class="clearfix"></div><hr>
+	
+	<div class="row list-box-columns">
+	    
+		<div class="col-md-6">
+		          <div class="row">
+							<div class="col-6 p-0">
+                                <b><?php echo translate('general_requirement')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
                                 <?=$partner_expectation_data[0]['general_requirement']?>
-                            </td>
-                        </tr>
+                            </div>                       
                         
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('minimum_age')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_min_age']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('maximum_age')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_max_age']?>
-                            </td>
-                        </tr>
+						
+                        </div>
+						
 
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('minimum_height')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_min_height']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('maximum_height')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_max_height']?>
-                            </td>
-                        </tr>
+						<div class="row">
+						     <div class="col-6 p-0">
+                                <b><?php echo translate('age')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
+                                <?=$partner_expectation_data[0]['partner_min_age']?>- <?=$partner_expectation_data[0]['partner_max_age']?>
+                            </div>
+						
+							
+                            </div>
+                    
+                      
+						
+						<div class="row">
+						<div class="col-6 p-0">
+                                <b><?php echo translate('height')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
+                                <?=$partner_expectation_data[0]['partner_min_height']?>-<?=$partner_expectation_data[0]['partner_max_height']?> Feet
+                            </div>
+						
+							
+                            </div>
+                    
+                    
+						
+						
+						
+						<div class="row">						
+							<div class="col-6 p-0">
+                                <b><?php echo translate('weight')?>:</b>
+                            </div>
+                            <div class="col-6 p-0">
+                                <?=$partner_expectation_data[0]['partner_min_weight']?>- <?=$partner_expectation_data[0]['partner_max_weight']?>KG
+                            </div>
+						
+                        </div>
+                    
+                   
+						
+					   <div class="row">
 
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('minimum_weight')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_min_weight']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('maximum_weight')?></span>
-                            </td>
-                            <td>
-                                <?=$partner_expectation_data[0]['partner_max_weight']?>
-                            </td>
-                        </tr>
-                        <tr>
+                            <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('marital_status')?>:</b>
 
-                                <span><?php echo translate('marital_status')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('marital_status', $partner_expectation_data[0]['partner_marital_status'])?>
 
-                            </td>
+                            </div>
+					   
+							
+                        </div>
+                    
+                    <div class="row">					
+					    <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('with_children_acceptables')?>:</b>
 
-                                <span><?php echo translate('with_children_acceptables')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $partner_expectation_data[0]['with_children_acceptables'])?>
 
-                            </td>
+                            </div>
+													
+                        </div>
+						
+						<div class="row">
+						    <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('country_of_residence')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('country_of_residence')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('country', $partner_expectation_data[0]['partner_country_of_residence'])?>
 
-                            </td>
+                            </div>
+						
+							
+                        </div>
+                    
+                      <div class="row">
+					     <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('religion')?>:</b>
 
-                                <span><?php echo translate('religion')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('religion', $partner_expectation_data[0]['partner_religion'])?>
 
-                            </td>
+                            </div>
 
-                        </tr>
+                        </div>
+						
+						<div class="row">
+						
+						  <div class="col-6 p-0">
 
-                        <tr>
+                                <b><?php echo translate('caste_/_sect')?>:</b>
 
-                            <td class="td-label">
+                            </div>
 
-                                <span><?php echo translate('caste_/_sect')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->db->get_where('caste', array('caste_id'=>$partner_expectation_data[0]['partner_caste']))->row()->caste_name;?>
 
-                            </td>
+                            </div>
 
-                            <td class="td-label">
+						
+							
+                           </div>
+						   
+						   
+						    <div class="row">
+			      
+                            <div class="col-6 p-0">
 
-                                <span><?php echo translate('sub_caste')?></span>
+                                <b><?php echo translate('sub_caste')?>:</b>
 
-                            </td>
+                            </div>
 
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->db->get_where('sub_caste', array('sub_caste_id'=>$partner_expectation_data[0]['partner_sub_caste']))->row()->sub_caste_name;?>
 
-                            </td>
+                            </div>
+			  
+							
+                        </div>
+						
+						<div class="row">
+						    <div class="col-6 p-0">
 
-                            
+                                <b><?php echo translate('education')?>:</b>
 
-                        </tr>
+                            </div>
 
-                        <tr>
-
-                            <td class="td-label">
-
-                                <span><?php echo translate('education')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
                                 <?=$this->Crud_model->get_type_name_by_id('education_level', $partner_expectation_data[0]['partner_education'], 'education_level_name')?>                                
-                            </td>
+                            </div>
+						
+						
+						
+							
+                        </div>
+                    
+                    <div class="row">
+					    <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('profession')?>:</b>
 
-                                <span><?php echo translate('profession')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$partner_expectation_data[0]['partner_profession']?>
 
-                            </td>
+                            </div>
+					
+					
+							
+                        </div>
+		      
+					
 
-                        </tr>
+		     </div>
+	
+	  
+	  <div class="col-md-6">
+		      
+			 
+						
+						
+						
+						<div class="row">
+						    <div class="col-6 p-0">
 
-                        <tr>
+                                <b><?php echo translate('drinking_habits')?>:</b>
 
-                            <td class="td-label">
+                            </div>
 
-                                <span><?php echo translate('drinking_habits')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $partner_expectation_data[0]['partner_drinking_habits'])?>
 
-                            </td>
+                            </div>
+						
+						
+						
+							
+                        </div>
+                    
+                      <div class="row">
+					  
+					       <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('smoking_habits')?>:</b>
 
-                                <span><?php echo translate('smoking_habits')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $partner_expectation_data[0]['partner_smoking_habits'])?>
 
-                            </td>
+                            </div>
+					  
+							
+                        </div>
+						
+						<div class="row">
+						  <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('diet')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('diet')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('diet', $partner_expectation_data[0]['partner_diet'], 'diet_name')?>
 
-                            </td>
+                            </div>
+						
+						
+							
+                        </div>
+                    
+                      <div class="row">
+					     <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('body_type')?>:</b>
 
-                                <span><?php echo translate('body_type')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('body_type', $partner_expectation_data[0]['partner_body_type'], 'body_type_name')?>
 
-                            </td>
+                            </div>
+					  
+					  
+					  
+							
+                        </div>
+						
+						<div class="row">
+						     <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('partner_family_status')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('partner_family_status')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('family_status', $partner_expectation_data[0]['partner_family_status'], 'name')?>                                
 
-                            </td>
+                            </div>
+						
+							
+                        </div>
+                    
+                    <div class="row">
+					     <div class="col-6 p-0">
 
-                            <td class="td-label">
+                                <b><?php echo translate('manglik')?>:</b>
 
-                                <span><?php echo translate('manglik')?></span>
+                            </div>
 
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('decision', $partner_expectation_data[0]['manglik'])?>
 
@@ -321,104 +367,118 @@
 
                                 ?> -->
 
-                            </td>
+                            </div>
+					
+					
+					
+							
+                        </div>
+						
+					<div class="row">
+                         <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('any_disability_accepted')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('any_disability_accepted')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
                             <?=$this->Crud_model->get_type_name_by_id('decision', $partner_expectation_data[0]['partner_any_disability'])?>
-                            </td>
+                            </div>
 
-                            <td class="td-label">
+					
+													
+                        </div>
+                    
+                    <div class="row">
+					    
+                            <div class="col-6 p-0">
 
-                                <span><?php echo translate('mother_tongue')?></span>
+                                <b><?php echo translate('mother_tongue')?>:</b>
 
-                            </td>
+                            </div>
 
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('language', $partner_expectation_data[0]['partner_mother_tongue'])?>
 
-                            </td>
+                            </div>
+					
+					
+														
+                        </div>
+						
+					<div class="row">
+                        <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('family_value')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('family_value')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
                                 <?=$this->Crud_model->get_type_name_by_id('family_value', $partner_expectation_data[0]['partner_family_value'], 'name')?>    
-                            </td>
+                            </div>
 
-                            <td class="td-label">
 
-                                <span><?php echo translate('prefered_country')?></span>
+					
+						
+                        </div>
+                    
+                      <div class="row">
+					  
+					     <div class="col-6 p-0">
 
-                            </td>
+                                <b><?php echo translate('prefered_country')?>:</b>
 
-                            <td>
+                            </div>
+
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('country', $partner_expectation_data[0]['prefered_country'])?>
 
-                            </td>
+                            </div>
 
-                        </tr>
+						
+                        </div>
+						
+						
+						  <div class="row">
+						      <div class="col-6 p-0">
 
-                        <tr>
+                                <b><?php echo translate('prefered_state')?>:</b>
 
-                            <td class="td-label">
+                            </div>
 
-                                <span><?php echo translate('prefered_state')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
 
                                 <?=$this->Crud_model->get_type_name_by_id('state', $partner_expectation_data[0]['prefered_state'])?>
 
-                            </td>
+                            </div>
+						  
+						  </div>
+						  
+						  
+						  <div class="row">
+						     <div class="col-6 p-0">
 
-                        </tr>
+                                <b><?php echo translate('complexion')?>:</b>
 
-                        <tr>
+                            </div>
 
-                            <td class="td-label">
-
-                                <span><?php echo translate('complexion')?></span>
-
-                            </td>
-
-                            <td>
+                            <div class="col-6 p-0">
                             <?=$this->Crud_model->get_type_name_by_id('complexion', $partner_expectation_data[0]['partner_complexion'], 'complexion_name')?>
                                 
-                            </td>
+                            </div>
+						  
+						  </div>
+						
+					
+						
 
-                            <td></td>
-
-                            <td></td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
+		     </div>
+	
+	    </div><!----- Main-Row End--->
+                        
+         
 
     </div>
 

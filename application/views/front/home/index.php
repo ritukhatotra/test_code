@@ -34,6 +34,10 @@ if(!empty($this->session->userdata['member_id'])) {
     if($home_members_status=='yes'){
         include_once'premium_members.php';
     }
+     if($home_parallax_status=='yes'){
+        include_once'recently-joined.php';
+    }
+    
     if($home_parallax_status=='yes'){
         include_once'parallax.php';
     }

@@ -1,8 +1,13 @@
-<div class="direct-chat-contacts">
-    <ul class="contacts-list">
-        <div class="pt-3 pb-2 text-center" style="border-bottom: 1px solid rgba(0, 0, 0, .15); margin: 0; width: 90% !important; margin-left: 5%;">
+<div class="direct-chat-contacts-desktop">
+
+ <div class="pt-3 pb-2 text-center" style="border-bottom: 1px solid rgba(0, 0, 0, .15); margin: 0; width: 90% !important; margin-left: 5%;">
             <h4 class="card-inner-title c-base-1"><i class="fa fa-users"></i> <?php echo translate('contact_list')?></h4>
         </div>
+		
+
+  
+    <ul class="contacts-list">
+       
         <?php foreach ($listed_messaging_members as $listed_member): ?>
             <?php if ($this->db->get_where('member', array('member_id' => $listed_member['member_id']))->row()->member_id):
                    
@@ -26,7 +31,7 @@
                         ?>
                         <div class="contacts-list-info">
                             <span class="contacts-list-name" data-member="<?=$member_info->member_id?>">
-                                <?=$member_info->first_name.' '.$member_info->last_name?>
+                                <?=$member_info->first_name.' '//.$member_info->last_name?>
                             </span>
                         </div>
                     </a>
@@ -35,4 +40,5 @@
             <?php endif ?>
         <?php endforeach ?>
     </ul>
+
 </div>

@@ -35,8 +35,40 @@
                         <td>
                             <?=$calculated_age = (date('Y') - date('Y', $get_member[0]->date_of_birth));?>
                         </td>
-                    </tr>
+                    </tr>                    
+                    <?php /*<tr>
+                        <td class="td-label">
+                            <span><?php echo translate('area')?></span>
+                        </td>
+                        <td>
+                            <?=$basic_info_data[0]['area']?>
+                        </td>
+                        <td class="td-label">
+                            <span><?php echo translate('date_of_birth')?></span>
+                        </td>
+                        <td>
+                            <?=date('d/m/Y', $get_member[0]->date_of_birth)?>
+                        </td>
+                    </tr>*/?>
                     <tr>
+                        <td class="td-label">
+                            <span><?php echo translate('on_behalf')?></span>
+                        </td>
+                        <td colspan="3">
+                            <?=$this->Crud_model->get_type_name_by_id('on_behalf', $basic_info_data[0]['on_behalf']);?>
+                        </td>
+                    </tr>
+<?php if($basic_info_data[0]['marital_status'] == '1') { ?> 
+                     <tr> 
+                        <td class="td-label">
+                            <span><?php echo translate('marital_status')?></span>
+                        </td>
+                        <td>
+                            <?=$this->Crud_model->get_type_name_by_id('marital_status', $basic_info_data[0]['marital_status'])?>
+                        </td>
+                    </tr>
+                    <?php }else{?>
+                     <tr> 
                         <td class="td-label">
                             <span><?php echo translate('marital_status')?></span>
                         </td>
@@ -50,28 +82,7 @@
                             <?=$basic_info_data[0]['number_of_children']?>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="td-label">
-                            <span><?php echo translate('area')?></span>
-                        </td>
-                        <td>
-                            <?=$basic_info_data[0]['area']?>
-                        </td>
-                        <td class="td-label">
-                            <span><?php echo translate('date_of_birth')?></span>
-                        </td>
-                        <td>
-                            <?=date('d/m/Y', $get_member[0]->date_of_birth)?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="td-label">
-                            <span><?php echo translate('on_behalf')?></span>
-                        </td>
-                        <td colspan="3">
-                            <?=$this->Crud_model->get_type_name_by_id('on_behalf', $basic_info_data[0]['on_behalf']);?>
-                        </td>
-                    </tr>
+                     <?php }?>
                 </tbody>
             </table>
         </div>

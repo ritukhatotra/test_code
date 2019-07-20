@@ -12,5 +12,6 @@
 <!--=================================================-->
 <!--Demo script [ DEMONSTRATION ]-->
 <script src="<?=base_url()?>template/back/js/demo/nifty-demo.min.js"></script>
+<script src="<?=base_url()?>template/back/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"type="text/javascript"></script>
 <!--Dropzone [ OPTIONAL ]-->
 <!-- <script src="<?=base_url()?>template/back/plugins/dropzone/dropzone.min.js"></script> -->

@@ -23,7 +23,7 @@
                 <ul class="navbar-nav " data-hover="dropdown" data-animations="zoomIn zoomIn zoomIn zoomIn">
                     <li class="nav-item">
                         <a href="<?=base_url()?>home/profile" class="nav-link p_nav active">
-                            <i class="fa fa-user"></i> <?php echo translate('profile')?>
+                            <i class="fa fa-user"></i> <?php echo translate('my_profile')?>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -41,11 +41,11 @@
                             <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!---li class="nav-item">
                         <a class="nav-link followed_users p_nav" onclick="profile_load('followed_users')">
-                            <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
+                            <i class="fa fa-star"></i> <?php //echo translate('followed_users')?>
                         </a>
-                    </li>
+                    </li-->
                     <li class="nav-item">
                         <a class="nav-link messaging p_nav" onclick="profile_load('messaging')">
                             <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
@@ -79,7 +79,9 @@
             $.ajax({
                 url: "<?=base_url()?>home/profile/"+page,
                 success: function(response) {
+                    $(".edit_profile_pic_btn").hide();
                     $("#profile_load").html(response);
+                   
                     var url_in =  "my-interests";
                     if (page == "my_interests") {
                     	url_in =  "my-interests";
@@ -99,9 +101,24 @@
         	     if (page == "ignored_list") {
                     	url_in =  "ignored-list";
         	    }
-if (page == "notifications") {
+                    if (page == "notifications") {
                     	url_in =  "notifications-list";
         	    }
+                    if (page == "picture_privacy") {
+                    	url_in =  "settings";
+        	    }
+                    if (page == "gallery") {
+                    	url_in =  "gallery-list";
+        	    }
+                    if(page == '') {
+                    if($(".sidebar-outer").hasClass("hidden-onmobile")){
+                         $('.sidebar-outer').removeClass('hidden-onmobile');
+                     }
+                    }else{
+                      if(!$(".sidebar-outer").hasClass("hidden-onmobile")){
+                         $('.sidebar-outer').addClass('hidden-onmobile');
+                     }
+                      }
                         var url = window.location.href;
 			url = url.split('/');
 			var var_url = url;

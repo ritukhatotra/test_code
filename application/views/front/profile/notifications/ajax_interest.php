@@ -1,14 +1,8 @@
-  <table class="table table-sm table-striped table-hover table-bordered table-responsive">
+  <table class="table table-sm table-striped table-hover table-responsive" id="notification-table">
         <thead>
         <tr>
             <th>
-                <?php echo translate('Image') ?>
-            </th>
-            <th>
                 <?php echo translate('message') ?>
-            </th>
-            <th>
-                <?php echo translate('received_on') ?>
             </th>
             <th>
                 <?php echo translate('actions') ?>
@@ -18,8 +12,9 @@
         <tbody>
        <?php 
 		foreach ($notifications as $row) {
+		   if($this->db->get_where("member", array("member_id" => $row['by']))) {
             if($this->db->get_where("member", array("member_id" => $row['by']))->row()->is_closed == 'no'){
-                if ($this->db->get_where('member', array('member_id' => $row['by']))->row()->member_id){
+                if (!empty($this->db->get_where('member', array('member_id' => $row['by']))->row()->member_id)){
                     if ($row['is_seen'] == 'no') {
                         $noti_counter++;
                     }?>
@@ -42,15 +37,18 @@
                             <?php
                             }
                             ?></a>
-                        </td>
-                        <td>
+                        
                             <a class="c-base-1" href="<?=base_url()?>home/member_profile/<?= $row['by']; ?>">
                                     <?= $this->Crud_model->get_type_name_by_id('member', $row['by'], 'first_name'); ?>
                                 </a> 
-                                <?php echo translate('has_expressed_an_interest_on_you')?>
-                        </td>
-                        <td>
-                            <?=date('d M,y - h:i A', $row['time'])?>
+                                <?php echo translate('has_expressed_an_interest')?>
+                        <p>
+                            	<?php
+                                        $date = new DateTime( date('Y-m-d H:i:s', $row['time']), new DateTimeZone('UTC'));
+                                        $date->setTimezone(new DateTimeZone( $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone')));
+echo $date->format('d M,y - h:i A') ;?>
+                                        </p>
+                                        <?php /*=date('d M,y - h:i A', $row['time'])*/?>
                         </td>
                         <td>
                             <?php 
@@ -101,15 +99,18 @@
                             <?php
                             }
                             ?></a>
-                        </td>
-                        <td>
+                       
                         <a class="c-base-1" href="<?=base_url()?>home/member_profile/<?= $row['by']; ?>">
                                     <?= $this->Crud_model->get_type_name_by_id('member', $row['by'], 'first_name'); ?>
                                 </a> 
                                 <span class="text-success"><i class="fa fa-check-circle"></i><?php echo translate('accepted_your_interest')?></span>
-                        </td>
-                        <td>
-                        <?=date('d M,y - h:i A', $row['time'])?>
+                        <p>
+                      	<?php
+                                        $date = new DateTime( date('Y-m-d H:i:s', $row['time']), new DateTimeZone('UTC'));
+                                        $date->setTimezone(new DateTimeZone( $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone')));
+echo $date->format('d M,y - h:i A') ;?></p>
+                                        
+                                        <?php /*=date('d M,y - h:i A', $row['time'])*/?>
                         </td>
                         <td></td>
                         <?php
@@ -133,24 +134,29 @@
                             <?php
                             }
                             ?></a>
-                        </td>
-                        <td>
+                       
                         <a class="c-base-1" href="<?=base_url()?>home/member_profile/<?= $row['by']; ?>">
                                     <?= $this->Crud_model->get_type_name_by_id('member', $row['by'], 'first_name'); ?>
                                 </a> 
-                                <span class="text-danger"><i class="fa fa-times-circle"></i><?php echo translate('rejected_your_interest')?></span>
-                                </td>
-                              <td>
-                        <?=date('d M,y - h:i A', $row['time'])?>
+                                <span><?php echo translate('rejected_your_interest')?></span>
+                              <p>
+                       	<?php
+                                        $date = new DateTime( date('Y-m-d H:i:s', $row['time']), new DateTimeZone('UTC'));
+                                        $date->setTimezone(new DateTimeZone( $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone')));
+echo $date->format('d M,y - h:i A') ;?>
+                                        </p>
+                                        <?php /*=date('d M,y - h:i A', $row['time'])*/?>
                         </td>
                         <td></td>
                         <?php
                     }?>
                 </tr>
-                <?php }
+                <?php } }
             }
-		}
-		if (count($notification) <= 0) {
+		    }
+		    
+		
+		if (count($notifications) <= 0) {
 		?>
     		<div class="text-center">
     			<small class="sml_txt">
@@ -162,3 +168,18 @@
 	?>
         </tbody>
     </table>
+    
+    <script>
+          $('#notification-table').dataTable({
+            "paging": true,
+            'searching':false,
+            'lengthChange':false,
+            'ordering':false,
+            'info': false,
+            "fnDrawCallback": function(oSettings) {
+        if ($('#notification-table tr').length < 11) {
+            $('.dataTables_paginate').hide();
+        }
+    }
+        });
+    </script>
