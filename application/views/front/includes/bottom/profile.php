@@ -34,3 +34,7 @@
 <!-- App JS -->
 <script src="<?=base_url()?>template/front/js/wpx.app.js"></script>
 <script src="<?=base_url()?>template/front/js/croppie.min.js"></script>
+
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
+
+<!-- Cropper.js is required -->

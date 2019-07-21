@@ -2,7 +2,7 @@
 <div class="sidebar sidebar-inverse sidebar--style-1 bg-base-1 z-depth-2-top">
     <div class="sidebar-object mb-0">
         <!-- Profile picture -->
-        <div class="profile-picture profile-picture--style-2">
+        <div class="profile-picture text-center">
             <?php
                 $profile_image = $get_member[0]->profile_image;
                 $images = json_decode($profile_image, true);
@@ -12,48 +12,158 @@
                     $is_premium = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'membership');
                     if($pic_privacy_data[0]['profile_pic_show']=='only_me'){
                 ?>
-                 <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/default.jpg)"></div>
-                    </div>
+               
+                        <div class="profile_img" id="show_img">
+						<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Profile Picture"></div>
+                  
                 <?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='premium' and $is_premium==2) {
                 ?>
-                    <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>)"></div>
-                    </div>
+                    
+                        <div class="profile_img" id="show_img">
+						<img src="<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>" alt="Profile Picture">
+						
+						</div>
+                  
                 <?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='premium' and $is_premium==1) {
                 ?>
-                    <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/default.jpg)"></div>
-                    </div>
+                   
+                        <div class="profile_img" id="show_img">
+						
+						<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Profile Picture">
+						</div>
+                   
                 <?php }elseif ($pic_privacy_data[0]['profile_pic_show']=='all') {
                 ?>
-                <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                    <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>)"></div>
-                </div>
+               
+					
+					<div class="profile_img" id="show_img">
+						
+						<img src="<?=base_url()?>uploads/profile_image/<?=$images[0]['thumb']?>" alt="Profile Picture">
+						</div>
+					
+               
                 <?php }else{
                     ?>
-                    <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/default.jpg)"></div>
-                    </div>
+                    
+
+						<div class="profile_img" id="show_img">
+						
+						<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Profile Picture">
+						</div>
+                  
                     <?php }
                 } else {
                 ?>
-                    <div style="border: 10px solid rgba(255, 255, 255, 0.1);width: 200px;border-radius: 50%;margin-top: 30px;">
-                        <div class="profile_img" id="show_img" style="background-image: url(<?=base_url()?>uploads/profile_image/default_image.png)"></div>
-                    </div>
+
+						<div class="profile_img" id="show_img">
+						
+						<img src="<?=base_url()?>uploads/profile_image/default.jpg" alt="Profile Picture">
+						</div>
+                  
                 <?php
                 }
             ?>
+			
+			
+		     <!-----   user Mobile  Buttons---->
+
+                    <ul class="nav nav-inline right-user-buttons ">
+                       
+                        <?php if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'yes'){ echo " "; }else{?>
+                            <li class="listing-hover">
+                                <?php
+                                    $interests = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata('member_id'), 'interest');
+                                    $interest = json_decode($interests, true);
+                                    if (!empty($this->session->userdata('member_id'))) {
+                                        
+                                        if (in_assoc_array($get_member[0]->member_id, 'id', $interest)) {
+                                            $interest_onclick = 0;
+                                            $interest_text = translate('interest_expressed');
+                                            $interest_class = "interest_expressed";
+                                            $interest_style = "";
+                                        }
+                                        else {
+                                            $interest_onclick = 1;
+                                            $interest_text = translate('express_interest');
+                                            $interest_class = "";
+                                            $interest_style = "";
+                                        }   
+                                    }
+                                    else {
+                                        $interest_onclick = 1;
+                                        $interest_text = translate('express_interest');
+                                        $interest_class = "";
+                                        $interest_style = "";
+                                    }
+                                ?>
+                                <a id="interest_a_<?=$get_member[0]->member_id?>" <?php if ($interest_onclick == 1){?>onclick="return confirm_interest(<?=$get_member[0]->member_id?>)"<?php }?> style="<?=$interest_style?>" class="<?php echo $interest_class ?>">
+                                    <span id="interest_<?=$get_member[0]->member_id?>">
+                                       <i class="ion-ios-heart"></i> 
+                                    </span>
+									<span><?=$interest_text?></span>
+                                </a>
+                            </li>                            
+                            
+<li class="listing-hover">
+
+ <?php
+                        $if_message = $this->db->get_where('message_thread', array('message_thread_from' => $get_member[0]->member_id, 'message_thread_to' => $this->session->userdata('member_id')))->row();
+                        if (!$if_message) {
+                            $if_message = $this->db->get_where('message_thread', array('message_thread_from' => $this->session->userdata('member_id'), 'message_thread_to' => $get_member[0]->member_id))->row();
+                        }
+
+                        if ($if_message) {
+                            $message_onclick = 0;
+                            $message_text = translate('write_message');
+                            $message_class = "";//"btn btn-styled btn-block btn-sm btn-white z-depth-2-bottom li_active";
+                        }
+                        else {
+                            $message_onclick = 1;
+                            $message_text = translate('write_message');
+                            $message_class = "";//"btn btn-styled btn-block btn-sm btn-white z-depth-2-bottom";
+                        }
+                    ?>
+   
+                 <a <?php if ($message_onclick == 1){?>onclick="return confirm_message(<?=$get_member[0]->member_id?>)"<?php }?> href="<?=base_url()?>home/profile/messaging-list" id="message_a_<?=$get_member[0]->member_id?>">
+
+ <span>
+                                         <i class="ion-chatbubbles"></i>
+                                    </span>
+									<span><?=$message_text?></span>
+                    </a>
+                                 <!--<a onclick="return confirm_ignore(<?=$member->member_id?>)">
+                                     <i class="ion-chatbubbles"></i><?=$message_text?>
+                                </a>-->
+                            </li>
+							<li class="listing-hover">
+                                <a onclick="return view_contact(<?=$get_member[0]->member_id?>)">
+                                    <i class="ion-android-call"></i><span>View Contact</span>
+                                </a>
+                            </li>
+                        <?php } ?>
+                    </ul>
+
+           
+			<!-----   user Mobile Buttons END ---->			
+			
+			
+			
+			
+			
         </div>
         <!-- Profile details -->
 		
-        <div class="profile-details">
-            <h2 class="heading heading-3 strong-500 profile-name"><?=$get_member[0]->first_name." ".$get_member[0]->last_name?></h2>
-            <h3 class="heading heading-6 strong-400 profile-occupation mt-3"><?=$education_and_career_data[0]['occupation']?></h3>
-        </div>
+		 <h2 class="heading heading-4 strong-500 profile-name text-center pt-2 pb-2"><?=$get_member[0]->first_name." ".$get_member[0]->last_name?></h2>
+        <!---div class="profile-details">
+           
+            <h3 class="heading heading-6 strong-400 profile-occupation mt-3">
+			<?=$education_and_career_data[0]['occupation']?></h3>
+			
+           </div-->
+
         <!-- Profile connect -->
 		
-        <?php if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'no'){ ?>
+        <?php /* if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'no'){ ?>
         <div class="profile-connect mt-2">
             <div class="row">
                 <div class="col-sm-12 size-sm">
@@ -85,6 +195,8 @@
                     </a>
                 </div>
             </div>
+			
+			
             <div class="row">
                 <div class="col-sm-6 pr-1 size-smtr">
                     <?php
@@ -177,35 +289,20 @@
                 </div>
             </div>
         </div>
-    <?php } ?>
-        <div class="profile-stats clearfix mt-2">
-            <div class="stats-entry" style="width: 100%">
-                <span class="stats-count" id="follower"><?=$get_member[0]->follower?></span>
-                <span class="stats-label text-uppercase"><?php echo translate('followers');?></span>
-            </div>
-        </div>
-        <!-- Profile stats -->
-        <div class="profile-stats clearfix mt-2">
-            <div class="stats-entry">
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('age');?></span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('mother_tongue');?></span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('religion');?></span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('caste_/_sect');?></span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('height');?></span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php echo translate('location');?></span>
-            </div>
-            
-            <div class="stats-entry">
-                <span class="stats-label text-uppercase text-left pl-2"> <?=$calculated_age = (date('Y') - date('Y', $get_member[0]->date_of_birth));?>&nbsp</span>
-                <span class="stats-label text-uppercase text-left pl-2"><?=$this->Crud_model->get_type_name_by_id('language', $language_data[0]['mother_tongue']);?>&nbsp</span>
-                <span class="stats-label text-uppercase text-left pl-2"><?=$this->Crud_model->get_type_name_by_id('religion', $spiritual_and_social_background_data[0]['religion']);?>&nbsp</span>
-                <span class="stats-label text-uppercase text-left pl-2"><?=$this->db->get_where('caste', array('caste_id'=>$spiritual_and_social_background_data[0]['caste']))->row()->caste_name?>&nbsp</span>
-                <span class="stats-label text-uppercase text-left pl-2"><?=$get_member[0]->height." ".translate('feet')?>&nbsp</span>
-                <span class="stats-label text-uppercase text-left pl-2"><?php if($present_address_data[0]['country']){echo $this->Crud_model->get_type_name_by_id('state', $present_address_data[0]['state']).', '.$this->Crud_model->get_type_name_by_id('country', $present_address_data[0]['country']);}?>&nbsp</span>
-            </div>
-        </div>
-        <!-- Profile connected accounts -->
-        <div class="profile-useful-links clearfix mb-5">
+    <?php } */?>
+    
+        
+
+        
+
+		
+        
+    </div>
+</div>
+
+        <!-- Gallery Starts-->
+		
+<div class="clearfix Gallery">
             <?php 
                 $get_gallery = $this->db->get_where("member", array("member_id" => $get_member[0]->member_id))->row()->gallery;
                 $gallery_data = json_decode($get_gallery, true);
@@ -231,9 +328,9 @@
                 <?php }elseif ($pic_privacy_data[0]['gallery_show']=='premium' and $is_premium==2) {
                 ?>
                     <div class="container">
-                        <div class="profile-details">
+                        <!--div class="profile-details">
                             <h3 class="heading heading-6 strong-400 profile-occupation mt-3"><?=translate('gallery')?></h3>
-                        </div>
+                        </div-->
                         <div class="row">   
                             <div class="col-12">
                                 <div class="light-gallery">
@@ -242,17 +339,17 @@
                                             foreach ($gallery_data as $value) {
                                                 if (file_exists('uploads/gallery_image/'.$value['image'])) {
                                                 ?> 
-                                                    <div class="col-sm-4 mt-4">
+                                                    <div class="col-4 mt-2 p-2">
                                                         <a target="_blank" href="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>" class="item">
-                                                            <img src="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>" class="img-fluid rounded" style="height: 68px;">
+                                                            <img src="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>" class="img-fluid rounded">
                                                         </a>
                                                     </div>
                                                 <?php
                                                 } else {
                                                 ?>
-                                                    <div class="col-sm-4 mt-4">
+                                                    <div class="col-4 mt-2 p-2">
                                                         <a target="_blank" href="<?=base_url()?>uploads/gallery_image/default_image.png" class="item">
-                                                            <img src="<?=base_url()?>uploads/gallery_image/default_image.png" class="img-fluid rounded" style="height: 68px;">
+                                                            <img src="<?=base_url()?>uploads/gallery_image/default_image.png" class="img-fluid rounded">
                                                         </a>
                                                     </div>
                                                 <?php
@@ -293,7 +390,7 @@
                                                 foreach ($gallery_data as $value) {
                                                     if (file_exists('uploads/gallery_image/'.$value['image'])) {
                                                     ?> 
-                                                        <div class="col-sm-4 mt-4">
+                                                        <div class="col-4 mt-2 p-2">
                                                             <a target="_blank" href="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>" class="item">
                                                                 <img src="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>" class="img-fluid rounded" style="height: 68px;">
                                                             </a>
@@ -301,7 +398,7 @@
                                                     <?php
                                                     } else {
                                                     ?>
-                                                        <div class="col-sm-4 mt-4">
+                                                        <div class="col-4 mt-2 p-2">
                                                             <a target="_blank" href="<?=base_url()?>uploads/gallery_image/default_image.png" class="item">
                                                                 <img src="<?=base_url()?>uploads/gallery_image/default_image.png" class="img-fluid rounded" style="height: 68px;">
                                                             </a>
@@ -321,8 +418,6 @@
                 }
             ?>
         </div>
-    </div>
-</div>
 
 <script>
     var isloggedin = "<?=$this->session->userdata('member_id')?>";
@@ -377,6 +472,7 @@
                         $("#interest_text").html("<i class='fa fa-heart'></i> <?php echo translate('interest_expressed');?>");
                         $("#interest_a_"+id).css("cssText", "");
                         $("#success_alert").show();
+                        $("#interest_"+id).addClass('c-base-1');
                         $(".alert-success").html("<?php echo translate('you_have_expressed_an_interest_on_this_member!');?>");
                         $('#danger_alert').fadeOut('fast');
                         setTimeout(function() {
@@ -392,7 +488,7 @@
         return false;
     }
 
-    function confirm_message(id) {
+    /*function confirm_message(id) {
         // alert(id);
         if (isloggedin == "") {
             $("#active_modal").modal("toggle");
@@ -452,7 +548,7 @@
             }, 500); // <-- time in milliseconds
         }    
         return false;
-    }
+    }*/
 
     function do_shortlist(id) {
         // alert(id);
@@ -649,6 +745,33 @@
                     }
                 });
             }, 500); // <-- time in milliseconds
+        }    
+        return false;
+    }
+ function view_contact(id) {
+        // alert(id);
+        if (isloggedin == "") {
+            $("#active_modal").modal("toggle");
+            $("#modal_header").html("<?php echo translate('please_log_in')?>");
+            $("#modal_body").html("<p class='text-center'><?php echo translate('please_log_in_to_ignore_this_member')?></p>");
+            $("#modal_buttons").html("<button type='button' class='btn btn-danger btn-sm btn-shadow' data-dismiss='modal' style='width:25%'><?php echo translate('close')?></button> <a href='<?=base_url()?>home/login' class='btn btn-sm btn-base-1 btn-shadow' style='width:25%'><?php echo translate('log_in')?></a>");
+        }
+        else {
+             $.ajax({
+                    type: "POST",
+                    url: "<?=base_url()?>home/member-profile/"+id+"/contact",
+                    cache: false,
+                    success: function(response) {
+                       $("#active_modal").modal("toggle");
+                       $("#modal_header").html("<?php echo translate('view_contact')?>");            
+                       $("#modal_body").html(response);
+                       $("#modal_buttons").html("<button type='button' class='btn btn-danger btn-sm btn-shadow' data-dismiss='modal' style='width:25%'><?php echo translate('close')?></button>");
+                    },
+                    fail: function (error) {
+                        alert(error);
+                    }
+                });          
+           
         }    
         return false;
     }

@@ -53,7 +53,7 @@
 							                    </li>*/?>
 												<li class="dropdown dropdown--style-2 dropdown--animated float-left">
 											
-											        <a class="dropdown-toggle has-badge c-base-1" data-toggle="dropdown">
+											        <a class="dropdown-toggle has-badge c-base-1" data-toggle="dropdown" href="#">
 								                    	<?php
 								                    		$profile_image = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'profile_image');
 											                $images = json_decode($profile_image, true);
@@ -72,7 +72,8 @@
 								                    </a>
 
 													 <ul class="dropdown-menu">
-    <a class="dropdown-item" href="<?=base_url()?>home/profile">My Profile</a>
+     <li class="nav-item"> <a class="dropdown-item" href="<?=base_url()?>home/profile"><i class="ion-android-person"></i>My Profile</a></li>
+  
     <li class="nav-item">
                         <a class="nav-link my_interests p_nav" href="<?=base_url()?>home/profile/my-interests">
                             <i class="fa fa-heart"></i> <?php echo translate('sent_interests')?>
@@ -88,11 +89,11 @@
                             <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!---li class="nav-item">
                         <a class="nav-link followed_users p_nav" href="<?=base_url()?>home/profile/followed-users">
-                            <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
+                            <i class="fa fa-star"></i> <?php //echo translate('followed_users')?>
                         </a>
-                    </li>
+                    </li-->
                     <li class="nav-item">
                         <a class="nav-link messaging p_nav" href="<?=base_url()?>home/profile/messaging-list">
                             <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
@@ -103,12 +104,24 @@
                             <i class="fa fa-ban"></i> <?php echo translate('ignored_list')?>
                         </a>
                     </li>
-					<li class="nav-item">
+ <li class="nav-item">
+                        <a class="nav-link ignored_list p_nav" href="<?=base_url()?>home/profile/gallery-list">
+                            <i class="ion-images"></i> <?php echo translate('gallery')?>
+                        </a>
+                    </li>
+ <li class="nav-item">
+                        <a class="nav-link ignored_list p_nav" href="<?=base_url()?>home/profile/settings">
+                            <i class="ion-settings"></i> <?php echo translate('settings')?>
+                        </a>
+                    </li>
+					<li class="nav-item devider"><hr></li>
+				
+					<li class="nav-item text-center">
 
                        <?php
 												if (!empty($this->session->userdata['member_id'])) {
 												?>
-							                    	<a href="<?=base_url()?>home/logout" class="btn btn-styled btn-xs btn-base-1 btn-shadow"><i class="fa fa-power-off"></i> <?php echo translate('log_out')?></a>
+							                    	<a href="<?=base_url()?>home/logout" class="nav-link"><i class="fa fa-power-off"></i> <?php echo translate('log_out')?></a>
 												<?php	
 												}?>
                     </li>
@@ -121,19 +134,25 @@
 													
 											<?php
 											}
-											?>						                    
-							                    <li class="float-left pb-1">
-												<?php
+											?>
+											
+											<?php
 												if (empty($this->session->userdata['member_id'])) {												
 												?>	
-		                                            <a href="<?=base_url()?>home/login" class="btn btn-styled btn-base-1 btn-rouded"><i class="ion-android-person"></i> <?php echo translate('log_in')?></a>
+
+                                               <li class="float-left pt-2"><a href="<?=base_url()?>registration"><i class="ion-android-person-add"></i> <?php echo translate('Register')?></a></li>						                    
+							                    <li class="float-left pb-1">
+												
+		                                            <a href="<?=base_url()?>login" class="btn btn-login btn-base-1 btn-rouded"><i class="ion-android-person"></i> <?php echo translate('log_in')?></a>
 		                                            <!---a href="<?=base_url()?>home/registration" class="btn btn-styled btn-xs btn-base-1 btn-shadow"><i class="fa fa-user"></i> <?php //echo translate('register')?></a-->
+												
+		                                        </li>
 												<?php
 												}
 												?>
-		                                        </li>
 
 						                    <script>
+						                    var isloggedin = '<?php echo $this->session->userdata['member_id'] ?>'
 											    $(document).ready(function(){
 											        if (isloggedin != "") {
 											            var noti_count = "<?php if (!empty($noti_counter)){echo $noti_counter;}?>";
@@ -162,5 +181,10 @@
 											                });
 											            }
 											        });
+													
+													$(".custom-nav ").hover(function(){
+													$(".dropdown-menu").removeClass('show');
+													});
+													
 											    });
 											</script>

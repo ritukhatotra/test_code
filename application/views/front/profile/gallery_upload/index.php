@@ -1,30 +1,32 @@
+
 <div class="card-title">
     <h3 class="heading heading-6 strong-500">
     <b><?php echo translate('upload_your_image')?></b></h3>
 </div>
 <div class="card-body">
-    <form class="form-default col-12" id="gallery_upload_form" method="post" action="<?=base_url()?>home/gallery_upload/add" role="form" enctype="multipart/form-data">
-        <div class="form-group has-feedback col-10 ml-auto mr-auto">
+  
+    <form class="form-default" id="gallery_upload_form" method="post" action="<?=base_url()?>home/gallery_upload/add" role="form" enctype="multipart/form-data">
+        <!--div class="form-group has-feedback">
             <label class="control-label"><?php echo translate('image_title')?></label>
+            
+            <input type="hidden" id="photo_upload_title" name="title" class="form-control" value="Gallery Image">
             <input type="text" id="photo_upload_title" name="title" class="form-control" required>
-        </div>
-        <div class="form-group has-feedback col-10 ml-auto mr-auto select_div" id="img_main">
-            <label class="control-label"><?php echo translate('upload_image')?></label>
-            <div class="col-sm-12" style="margin:2px; padding:2px;" id="galery_image_div">
+        </div-->
+        <input type="hidden" id="photo_upload_title" name="title" class="form-control" value="Gallery Image">
+        <div class="form-group has-feedback select_div" id="img_main">
+            <!--label class="control-label"><?php //echo translate('upload_image')?></label-->
+            <div class="col-sm-12 galery_image_div" style="margin:2px; padding:2px;" id="galery_image_div">
+			     <label for="image_main" class="control-label select_a_photo">
+                <a class="btn btn-styled  btn-base-2 btn-shadow ml-1" style="color: #FFF"><?php echo translate('select_a_photo')?></a>
+            </label>
+			
                 <img class="img-responsive img-border blah z-depth-1-bottom" style="width: 100%;border: 1px solid #e6e6e6;" src="<?=base_url()?>uploads/happy_story_image/default_image.jpg" class="img-sm">
             </div>
              <div class="gallery_upload-demo-wrap" id="gallery_upload-demo-wrap" style="display:none;margin:2px; padding:2px; width: 100%;">
                  <div id="gallery_upload-demo"></div>
              </div>
-<style>
-.croppie-container .cr-boundary img {
-width:100%;
-}
-</style>
 
-            <label for="image_main" class="control-label">
-                <a class="btn btn-styled btn-xs btn-base-2 btn-shadow ml-1" style="color: #FFF"><?php echo translate('select_a_photo')?></a>
-            </label>
+            
 <input type="hidden" id="gallery_profile_image_data" name="gallery_profile_image_data" />
             <input type="file" id="image_main" name="image" class="form-control imgInp" style="display: none" required>
         </div>
@@ -34,11 +36,12 @@ width:100%;
                 </small>
             </div>
         </div> -->
-        <div class="form-group has-feedback col-10 ml-auto mr-auto text-center mt-5">
-            <a href="#" class="btn btn-sm btn-danger btn-shadow" data-filter="*" onclick="profile_load('gallery')"><?php echo translate('go_back')?></a>
-            <button type="submit" id="btn_gallery_upload" class="btn btn-sm btn-base-1 btn-shadow" data-filter="*" style="display: none;"><?php echo translate('upload')?></button>
-               <a id="gallery_save_image" class="btn btn-sm btn-base-1 btn-shadow" style="color: white"><?php echo translate('upload')?></a>
-            <!--<a id="submit_gallery" class="btn btn-sm btn-base-1 btn-shadow" onclick="return confirm_gallery_upload(<?=$this->session->userdata('member_id')?>)" style="color: white"><?php echo translate('upload')?></a>-->
+        <div class="form-group has-feedback text-center mt-5">
+            <a href="#" class="btn btn-shadow" data-filter="*" onclick="profile_load('gallery')"><i class="ion-arrow-left-c"></i> <?php echo translate('go_back')?></a>
+            <button type="submit" id="btn_gallery_upload" class="btn btn-shadow" data-filter="*" style="display: none;">
+			<i class="ion-upload"></i><?php echo translate('upload')?></button>
+               <!--a id="gallery_save_image_" class="btn btn-sm btn-base-1 btn-shadow" style="color: white"><?php echo translate('upload')?></a-->
+            <a id="submit_gallery" class="btn btn-base-1 btn-shadow" onclick="return confirm_gallery_upload(<?=$this->session->userdata('member_id')?>)" style="color: white"><i class="ion-upload"></i> <?php echo translate('upload')?></a>
         </div>
     </form>  
 </div>
@@ -55,8 +58,8 @@ width:100%;
         }
     }
     $("#img_main").on('change', '.imgInp', function () {
-        //readURL_all(this);
-        galleryReadFile(this);
+        readURL_all(this);
+        //galleryReadFile(this);
     });
 
  $(document).ready(function(){
@@ -78,13 +81,13 @@ width:100%;
       $gallery_uploadCrop = $('#gallery_upload-demo').croppie({
         enableExif: true,
         viewport: {
-         width: 311,
-         height: 302,
+         width: 320,
+         height: 320,
          type: 'square'
        },
        boundary: {
-         width: 510,
-         height: 390
+         width: 322,
+         height: 322
        }
     });
 });

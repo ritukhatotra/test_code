@@ -153,7 +153,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6 text-right" style="font-size: 12px;">
-                                            <a href="<?=base_url()?>home/forget_pass" class="c-gray-light"><?php echo translate('recover_password')?></a>
+                                            <a href="<?=base_url()?>forget-pass" class="c-gray-light"><?php echo translate('recover_password')?></a>
                                         </div>
                                     </div>
                                 </form>
@@ -165,9 +165,9 @@
 						 <div class="clearfix"></div><br>
 					
                                     <div class="col-12 text-center">
-                                        <span class="text-white"><?php echo translate('new_here?')?></span>
+                                        <span class="text-white">Don't have an account yet?</span>
 										   <div class="clearfix"></div>
-										<a class="text-white" href="<?=base_url()?>home/registration"> <u><?php echo translate('create_an_account_from_here!')?></u></a>
+										<a href="<?=base_url()?>registration"> <u><?php echo translate('Register Now')?></u></a>
                                     </div>
                                
                     </div>

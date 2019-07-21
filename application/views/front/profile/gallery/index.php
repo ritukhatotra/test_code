@@ -4,7 +4,7 @@
 </div>
 <div class="card-body masonry-container">
     <div class="masonry-filter-menu text-center mb-4">
-        <a href="#" class="btn btn-styled btn-xs btn-base-1 btn-shadow" data-filter="*" onclick="gallery_load('gallery_upload')"><?php echo translate('upload_image')?></a>
+        <a href="#" class="btn btn-styled btn-base-1 btn-shadow" data-filter="*" onclick="gallery_load('gallery_upload')"><i class="ion-android-add-circle"></i> <?php echo translate('add_image')?></a>
     </div>
     <section class="slice sct-color-1">
         <div class="container">
@@ -45,11 +45,11 @@
                                         ?>
                                         </div>
                                     </div>
-                                    <div class="pt-1 text-center">
+                                    <!---div class="pt-1 text-center">
                                         <h4 class="heading heading-6 strong-500 mb-0">
                                             <a target="_blank" href="<?=base_url()?>uploads/gallery_image/<?=$value['image']?>"><?=$value['title']?></a>
                                         </h4>
-                                    </div>
+                                    </div-->
                                 </div>
                             </div>
                         <?php

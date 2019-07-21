@@ -56,7 +56,14 @@
             <div class="direct-chat-msg ">
                 <div class="direct-chat-info clearfix">
                     <span class="direct-chat-name pull-left"><?=$to_info->first_name." ".$to_info->last_name?></span>
-                    <span class="direct-chat-timestamp pull-right"><?=date('d M,y - h:i A', $message->message_time)?></span>
+                    <span class="direct-chat-timestamp pull-right">
+                        	<?php
+                                        $date = new DateTime( date('Y-m-d H:i:s',$message->message_time), new DateTimeZone('UTC'));
+                                        $date->setTimezone(new DateTimeZone( $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone')));
+echo $date->format('d M,y - h:i A') ;?>
+                                        
+                                        <?php /*=date('d M,y - h:i A', $row['time'])*/?>
+                        </span>
                 </div>
                 <!-- /.direct-chat-info -->
                 <a target="_blank" href="<?=base_url()?>home/member_profile/<?=$to_info->member_id?>">

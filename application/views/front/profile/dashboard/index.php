@@ -1,7 +1,9 @@
-<?php include_once APPPATH.'views/front/profile/profile_nav.php';?>
+<?php //include_once APPPATH.'views/front/profile/profile_nav.php';?>
+<?php include_once APPPATH.'views/front/profile_nav.php';?>
 <section class="slice sct-color-2">
     <div class="profile">
         <div class="container">
+            
             <?php //foreach ($get_member as $member): ?>
                 <div class="row cols-md-space cols-sm-space cols-xs-space">
                     <?php if (!empty($success_alert)): ?>
@@ -50,71 +52,55 @@
                             <!-- Success Alert Content -->
                         </div>
                     </div>
-                    <!-- Alerts for Member actions -->
-                    <div class="col-lg-4 sidebar-outer">
-                        <?php include_once APPPATH.'views/front/profile/left_panel.php';?>
-                    </div>
 
-                    <div class="visible_xs align-items-center">
-                        <div class="container mb-4 text-center">
-                            <ul class="inline-links inline-links--style-3">
-                                <li>
-                                    <a href="<?=base_url()?>home/profile" class="c-base-1 xs_nav_item m_profile m_nav m_nav_active">
-                                        <i class="fa fa-user"></i> <?php echo translate('profile')?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="c-base-1 xs_nav_item m_my_interests m_nav" onclick="profile_load('my_interests', 'no')">
-                                        <i class="fa fa-heart"></i> <?php echo translate('my_interests')?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="c-base-1 xs_nav_item m_short_list m_nav" onclick="profile_load('short_list', 'no')">
-                                        <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="c-base-1 xs_nav_item m_followed_users m_nav" onclick="profile_load('followed_users', 'no')">
-                                        <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="c-base-1 xs_nav_item m_messaging m_nav" onclick="profile_load('messaging', 'no')">
-                                        <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="c-base-1 xs_nav_item m_ignored_list m_nav" onclick="profile_load('ignored_list', 'no')">
-                                        <i class="fa fa-ban"></i> <?php echo translate('ignored_list')?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="col-lg-4 sidebar-outer 
+          <?php echo !empty($current_tab) ? $current_tab_title != "" ? 'hidden-onmobile' : '' : ''; ?>" style="display:<?php echo $current_tab_title == "Messaging" ? 'none' : '' ?>;">
+                                <?php include_once APPPATH.'views/front/profile/left_panel.php'; ?>
+                                </div>
+                    
 
                     <div class="col-lg-8">
                         <div class="widget">
+						    
                             <div class="card z-depth-2-top" id="profile_load">
-                                <div class="card-title">
+                            <?php if(!empty($current_tab)) { ?>    
+<div class="card-title">
+    <h3 class="heading heading-6 strong-500">
+    <b><?php echo $current_tab_title; ?></b></h3>
+</div>
+
+<div class="card-body">                        
+                             <div class='text-center pt-5 pb-5' id='payment_loader'><i class='fa fa-refresh fa-5x fa-spin'></i><p>Please Wait...</p></div>
+</div>
+                               <?php }else{ ?> 
+                              <div class="card-title">
+
                                     <h3 class="heading heading-6 strong-500 pull-left">
                                         <b><?php echo translate('profile_information')?></b>
                                     </h3>
                                     <div class="pull-right">
-                                        <a href="<?=base_url()?>home/profile/edit_full_profile" class="btn btn-base-1 btn-sm btn-shadow"><i class="ion-edit"></i> <?php echo translate('edit_all')?></a>
+                                        <a href="<?=base_url()?>home/profile/edit-full-profile" class="btn btn-base-1 btn-sm btn-shadow"><i class="ion-edit"></i> <?php echo translate('edit_all')?></a>
+                                        <?php /*
+                                        <a target="_blank" href="<?=base_url()?>home/member-profile/<?php echo $this->session->userdata['member_id'];?>" class="btn btn-base-1 btn-sm btn-shadow"><i class="ion-eye"></i> <?php echo translate('view_profile_as_other_members')?></a>
+                                        <?php */ ?>
                                     </div>
                                 </div>
+                              
                                 <?php 
                                     $privacy_status = $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'privacy_status');
                                     $privacy_status_data = json_decode($privacy_status, true);
                                 ?>
                                 <div class="card-body pt-2" style="padding: 1rem 0.5rem;">
                                     <!-- Contact information -->
+									
+									 <div id="section_basic_info">
+                                        <?php include_once 'basic_info.php'; ?>
+                                    </div>
+									
                                     <div id="section_introduction">
                                         <?php include_once 'introduction.php'; ?>
                                     </div>
-                                    <div id="section_basic_info">
-                                        <?php include_once 'basic_info.php'; ?>
-                                    </div>
+                                   
                                     <?php
                                         if ($this->db->get_where('frontend_settings', array('type' => 'present_address'))->row()->value == "yes") {
                                     ?>
@@ -241,17 +227,78 @@
                                     <?php
                                         }
                                     ?>
-                                </div>
+                                </div> 
+                                <?php } ?>
                             </div>
+                           
                         </div>
                     </div>
+					
+					
+					
+					
+					
                 </div>
             <?php //endforeach ?>
+			
+			
+			<div class="visible_xs align-items-center mobile-bottom-links">
+                        <div class="container text-center">
+                            <ul class="inline-links">
+                                <li>
+                                    <a href="<?=base_url()?>home/profile" class="c-base-1 xs_nav_item m_profile m_nav m_nav_active">
+                                        <i class="fa fa-user"></i> <?php echo translate('profile')?>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="c-base-1 xs_nav_item m_my_interests m_nav" onclick="profile_load('my_interests', 'no')">
+                                        <i class="fa fa-heart"></i> <?php echo translate('my_interests')?>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="c-base-1 xs_nav_item m_short_list m_nav" onclick="profile_load('short_list', 'no')">
+                                        <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
+                                    </a>
+                                </li>
+                               
+                                <li>
+                                    <a class="c-base-1 xs_nav_item m_messaging m_nav" onclick="profile_load('messaging', 'no')">
+                                        <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
+                                    </a>
+                                </li>
+								 <!---li>
+                                    <a class="c-base-1 xs_nav_item m_followed_users m_nav" onclick="profile_load('followed_users', 'no')">
+                                        <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
+                                    </a>
+                                </li-->
+                                <!---li>
+                                    <a class="c-base-1 xs_nav_item m_ignored_list m_nav" onclick="profile_load('ignored_list', 'no')">
+                                        <i class="fa fa-ban"></i> <?php echo translate('ignored_list')?>
+                                    </a>
+                                </li--->
+                            </ul>
+                        </div>
+                    </div>
+			
+			
         </div>
     </div>
 </section>
 <script>
     $(document).ready(function(){
+         $(".basic_info_marital_status_select").on("change", 
+      function(e) {
+            var val = $(this).val();
+                    if (val == 1) {
+                        $(".basic_info_number_children_select").hide;
+                    }else{
+                        $(".basic_info_number_children_select").show();
+                    }
+        });
+        
+        
+         
+        
         $(".height_mask").inputmask({
 
 mask: "9.99",
@@ -273,6 +320,11 @@ definitions: {
             $('#success_lg_alert').fadeOut('fast');
             $('#danger_lg_alert').fadeOut('fast');
         }, 5000); // <-- time in milliseconds
+       
+           
+        
+       
+        
     });
 </script>
 <script>
@@ -286,7 +338,7 @@ definitions: {
 
     function load_section(section)
     {
-	$('#info_'+section).show();
+	   $('#info_'+section).show();
         $('#edit_'+section).hide();
     }
 
@@ -471,6 +523,8 @@ definitions: {
             });
         }
     }
+    
+    
 </script>
 <style type="text/css">
     .xs_nav_item {

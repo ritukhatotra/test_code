@@ -1,8 +1,20 @@
-<div class="card-title">
+<div class="card-title pricing-page-title">
     <h3 class="heading heading-6 strong-500">
         <b><?php echo translate('messaging')?></b>
     </h3>
 </div>
+<!---TEmp css -->
+<style> 
+.sidebar-outer{display:none;}
+.footer{display:none;}	
+@media(max-width:767px)
+{
+.mobile-bottom-links{display:none;}	
+#profile_load{background:none;box-shadow:none;}
+}
+
+</style>
+<!---TEmp css -->
 <div class="card-body">
     <div class="row">
         <?php if($this->db->get_where("member", array("member_id" => $this->session->userdata('member_id')))->row()->is_closed == 'yes'){?>
@@ -14,7 +26,24 @@
                 </div>
             </div>
         <?php }else{?>
-        <div class="col-md-8 mb-2">
+		
+		
+		
+		 <div class="col-md-4 mb-2 messaging-member-list-outer-desktop">
+		    <div id="messaging_member_list">
+                <?php include 'member_list.php'; ?>
+            </div>
+			
+		   </div>
+		
+        <div class="col-md-8 col-sm-12 mb-2 message-box-outer">
+		
+		
+		<div id="messaging_member_list" class="member-list-mobile">
+                <?php include 'member_list_mobile.php'; ?>
+            </div>
+			
+		
             <!-- DIRECT CHAT -->
             <div id="profile_message_box">
                 <?php include 'message_box.php'; ?>
@@ -22,11 +51,9 @@
             <!--/.direct-chat -->
         </div>
         <!-- /.col -->
-        <div class="col-md-4">
-            <div id="messaging_member_list">
-                <?php include 'member_list.php'; ?>
-            </div>
-        </div>
+		
+		
+       
     <?php } ?>
     </div>
 </div>

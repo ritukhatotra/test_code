@@ -7,33 +7,33 @@
     }
 </style>
 <div class="hidden_xs">
-    <nav class="navbar navbar-expand-lg  navbar--style-1 navbar-light bg-default navbar--shadow navbar--uppercase profile-nav">
+    <nav class="navbar profile-nav">
         <div class="container navbar-container">
-            <!-- Brand/Logo -->
             
-            <div class="d-inline-block">
-                <!-- Navbar toggler  -->
+            
+            <!---div class="d-inline-block">
+               
                 <button class="navbar-toggler hamburger hamburger-js hamburger--spring" type="button" data-toggle="collapse" data-target="#navbar_main" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="hamburger-box">
                     <span class="hamburger-inner"></span>
                 </span>
                 </button>
-            </div>
-            <div class="collapse navbar-collapse justify-content-between align-items-center" id="navbar_main">
-                <ul class="navbar-nav " data-hover="dropdown" data-animations="zoomIn zoomIn zoomIn zoomIn">
+            </div--->
+            
+                <ul id="navbar_main" class="nav navbar-nav  justify-content-center" data-hover="dropdown" data-animations="zoomIn zoomIn zoomIn zoomIn">
                     <li class="nav-item">
-                        <a href="<?=base_url()?>home/profile" class="nav-link p_nav">
-                            <i class="fa fa-user"></i> <?php echo translate('profile')?>
+                        <a href="<?=base_url()?>home/profile" class="nav-link p_nav <?php echo $_SERVER['REQUEST_URI'] == base_url().'home/profile' ? 'active' : ''?>">
+                            <i class="ion-android-person"></i> <?php echo translate('my_profile')?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link my_interests p_nav" href="<?=base_url()?>home/profile/my-interests">
-                            <i class="fa fa-heart"></i> <?php echo translate('sent_interests')?>
+                            <i class="ion-ios-heart-outline"></i> <?php echo translate('sent_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link received_interests p_nav" href="<?=base_url()?>home/profile/received-interests">
-                            <i class="fa fa-heart"></i> <?php echo translate('received_interests')?>
+                            <i class="ion-ios-heart"></i> <?php echo translate('received_interests')?>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -41,11 +41,11 @@
                             <i class="fa fa-list-ul"></i> <?php echo translate('shortlist')?>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!---li class="nav-item">
                         <a class="nav-link followed_users p_nav"  href="<?=base_url()?>home/profile/followed-users">
-                            <i class="fa fa-star"></i> <?php echo translate('followed_users')?>
+                            <i class="fa fa-star"></i> <?php //echo translate('followed_users')?>
                         </a>
-                    </li>
+                    </li-->
                     <li class="nav-item">
                         <a class="nav-link messaging p_nav" href="<?=base_url()?>home/profile/messaging-list">
                             <i class="fa fa-comments-o"></i> <?php echo translate('messaging')?>
@@ -62,7 +62,7 @@
                     </li>*/?>
                 </a>
                 </ul>
-            </div>
+           
         </div>
     </nav>
 </div>

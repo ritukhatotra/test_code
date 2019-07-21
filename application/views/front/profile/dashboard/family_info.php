@@ -20,38 +20,39 @@
                 </button> 
             </div>
         </div>
-        <div class="table-full-width">
-            <div class="table-full-width">
-                <table class="table table-profile table-responsive table-striped table-bordered table-slick">
-                    <tbody>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('father')?></span>
-                            </td>
-                            <td>
-                                <?=$family_info_data[0]['father']?>
-                            </td>
-                            <td class="td-label">
-                                <span><?php echo translate('mother')?></span>
-                            </td>
-                            <td>
-                                <?=$family_info_data[0]['mother']?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-label">
-                                <span><?php echo translate('brother_/_sister')?></span>
-                            </td>
-                            <td>
-                                <?=$family_info_data[0]['brother_sister']?>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+		
+		<div class="clearfix"></div><hr>
+		
+		
+		
+		
+		<div class="row list-box-columns">
+	    
+		<div class="col-md-6">
+		      <div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('father')?>:</b></div>
+					<div class="col-6 p-0"><?=$family_info_data[0]['father']?></div>								  
+					</div>
+					
+					<div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('mother')?>:</b></div>
+					<div class="col-6 p-0"><?=$family_info_data[0]['mother']?></div>								  
+					</div>
+					
+
+		     </div>
+	
+	  
+	  <div class="col-md-6">
+		     <div class="row">								  
+					<div class="col-6 p-0"><b><?php echo translate('brother_/_sister')?>:</b></div>
+					<div class="col-6 p-0"><?=$family_info_data[0]['brother_sister']?></div>								  
+					</div>			
+
+		     </div>
+	
+	    </div>
+
     </div>
 
     <div id="edit_family_info" style="display: none;">

@@ -171,7 +171,119 @@
 								
 						    </div>
 						</div>
-					</div>			
+					</div>
+					<div class="col-md-6">
+						<div class="panel panel-dark">
+						    <div class="panel-heading">
+						        <h3 class="panel-title"><?= translate('paytm_settings')?></h3>
+						    </div>
+						    <div class="panel-body">
+
+					    		<form class="form-horizontal" id="paytm_settings_form" method="POST" action="<?=base_url()?>admin/update_payments/update_paytm">
+					    			<div class="form-group">
+										<label class="col-sm-3 control-label" for="paytm_activation"><b><?= translate('activation')?></b></label>
+										<div class="col-sm-8">
+											<div class="checkbox">
+								                <input id="paytm_activation" name="paytm_activation" class="magic-checkbox" type="checkbox" <?php if($this->db->get_where('business_settings', array('type' => 'paytm_set'))->row()->value == "ok"){ ?>checked<?php } ?>>
+								                <label for="paytm_activation"></label>
+								            </div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="email"><b><?= translate('paytm_mid')?> <span class="text-danger">*</span></b></label>
+										<div class="col-sm-8">
+											<input type="text" class="form-control" name="paytm_mid" value="<?=$this->db->get_where('business_settings', array('type' => 'paytm_mid'))->row()->value;?>" placeholder="<?php echo translate('your_merchant_id')?>">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="paytm_mkey"><b><?= translate('paytm_mkey')?> <span class="text-danger">*</span></b></label>
+										<div class="col-sm-8">
+											<input type="text" class="form-control" name="paytm_mkey" value="<?=$this->db->get_where('business_settings', array('type' => 'paytm_mkey'))->row()->value;?>" placeholder="<?php echo translate('your_merchant_key')?>">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="phone"><b><?= translate('account_type')?></b></label>
+										<div class="col-sm-8">
+											<select class="form-control" name="paytm_account_type">
+												<?php
+													$paytm_account_type = $this->db->get_where('business_settings', array('type' => 'paytm_account_type'))->row()->value;
+												?>
+									            <option value="sandbox" <?php if ($paytm_account_type == "sandbox"){?> selected<?php } ?>> <?= translate('sandbox')?></option>
+									            <option value="prod" <?php if ($paytm_account_type == "prod"){?> selected<?php } ?>> <?= translate('production')?></option>
+									        </select>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-offset-3 col-sm-8 text-right">
+											<button type="submit" class="btn btn-primary btn-sm btn-labeled fa fa-save"><?php echo translate('save')?></button>
+										</div>
+									</div>
+								</form>
+								
+						    </div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="panel panel-dark">
+						    <div class="panel-heading">
+						        <h3 class="panel-title"><?= translate('ccavenue_settings')?></h3>
+						    </div>
+						    <div class="panel-body">
+
+					    		<form class="form-horizontal" id="ccavenue_settings_form" method="POST" action="<?=base_url()?>admin/update_payments/update_ccavenue">
+					    			<div class="form-group">
+										<label class="col-sm-3 control-label" for="ccavenue_activation"><b><?= translate('activation')?></b></label>
+										<div class="col-sm-8">
+											<div class="checkbox">
+								                <input id="ccavenue_activation" name="ccavenue_activation" class="magic-checkbox" type="checkbox" <?php if($this->db->get_where('business_settings', array('type' => 'ccavenue_set'))->row()->value == "ok"){ ?>checked<?php } ?>>
+								                <label for="ccavenue_activation"></label>
+								            </div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="ccavenue_mid"><b><?= translate('ccavenue_mid')?> <span class="text-danger">*</span></b></label>
+										<div class="col-sm-8">
+											<input type="text" class="form-control" name="ccavenue_mid" value="<?=$this->db->get_where('business_settings', array('type' => 'ccavenue_mid'))->row()->value;?>" placeholder="<?php echo translate('your_merchant_id')?>">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="ccavenue_working_key"><b><?= translate('ccavenue_working_key')?> <span class="text-danger">*</span></b></label>
+										<div class="col-sm-8">
+											<input type="text" class="form-control" name="ccavenue_working_key" value="<?=$this->db->get_where('business_settings', array('type' => 'ccavenue_working_key'))->row()->value;?>" placeholder="<?php echo translate('your_working_key')?>">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="ccavenue_access_code"><b><?= translate('ccavenue_access_code')?> <span class="text-danger">*</span></b></label>
+										<div class="col-sm-8">
+											<input type="text" class="form-control" name="ccavenue_access_code" value="<?=$this->db->get_where('business_settings', array('type' => 'ccavenue_access_code'))->row()->value;?>" placeholder="<?php echo translate('your_access_code')?>">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label" for="phone"><b><?= translate('ccavenue_account_type')?></b></label>
+										<div class="col-sm-8">
+											<select class="form-control" name="ccavenue_account_type">
+												<?php
+													$ccavenue_account_type = $this->db->get_where('business_settings', array('type' => 'ccavenue_account_type'))->row()->value;
+												?>
+									            <option value="sandbox" <?php if ($ccavenue_account_type == "sandbox"){?> selected<?php } ?>> <?= translate('sandbox')?></option>
+									            <option value="prod" <?php if ($ccavenue_account_type == "prod"){?> selected<?php } ?>> <?= translate('production')?></option>
+									        </select>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-offset-3 col-sm-8 text-right">
+											<button type="submit" class="btn btn-primary btn-sm btn-labeled fa fa-save"><?php echo translate('save')?></button>
+										</div>
+									</div>
+								</form>
+								
+						    </div>
+						</div>
+					</div>
+					
 				</div>				
 			</div>
 		</div>

@@ -32,6 +32,27 @@ ALTER TABLE `member` ADD `belongs_to` VARCHAR(255) NULL AFTER `pic_privacy`;
 ALTER TABLE `member` ADD `latitude` VARCHAR(255) NULL AFTER `belongs_to`;
 ALTER TABLE `member` ADD `longitude` VARCHAR(255) NULL AFTER `belongs_to`;
 ALTER TABLE `member` ADD `last_visit` datetime NULL AFTER `belongs_to`;
+ALTER TABLE `member` ADD `is_completed` int(11) NULL AFTER `belongs_to`;
+ALTER TABLE `plan` ADD `duration_type` int(11) NULL AFTER `image`;
+ALTER TABLE `plan` ADD `duration` int(11) NULL AFTER `image`;
+ALTER TABLE `member` ADD `membership_valid_till` datetime NULL AFTER `belongs_to`;
+ALTER TABLE `member` ADD `timezone` varchar(191) NULL AFTER `belongs_to`;
+
+
+
+INSERT INTO `business_settings` (`type`, `value`) VALUES
+('paytm_set', 'ok'),
+('paytm_mid', ''),
+('paytm_mkey', ''),
+('paytm_account_type', 'sandbox');
+
+
+INSERT INTO `business_settings` (`type`, `value`) VALUES
+('ccavenue_mid', 'ok'),
+('ccavenue_working_key', ''),
+('ccavenue_account_type', 'sandbox'),
+('ccavenue_access_code', '');
+
 
 DROP TABLE IF EXISTS `partner_personal_preferances`;
 CREATE TABLE `partner_personal_preferances` (
@@ -97,6 +118,24 @@ ALTER TABLE `partner_personal_preferances`
 
 ALTER TABLE `partner_personal_preferances`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
+DROP TABLE IF EXISTS `reset_tokens`;
+CREATE TABLE `reset_tokens` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) DEFAULT NULL, 
+  `token` varchar(100) DEFAULT NULL,
+  `expire_at` varchar(25) NOT NULL DEFAULT NULL,
+  `used` int(11) NOT NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+ALTER TABLE `reset_tokens`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `reset_tokens`
+  MODIFY `id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

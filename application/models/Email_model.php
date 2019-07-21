@@ -14,12 +14,13 @@
             parent::__construct();
         }
 
-        function password_reset_email($account_type = '', $id = '', $pass = '') {
+        function password_reset_email($account_type = '', $id = '', $password_reset_link= '') {
             $this->load->database();
             $from_name = $this->db->get_where('general_settings', array('type' => 'system_name'))->row()->value;
             $protocol = $this->db->get_where('general_settings', array('type' => 'mail_status'))->row()->value;
             if ($protocol == 'smtp') {
                 $from = $this->db->get_where('general_settings', array('type' => 'smtp_user'))->row()->value;
+
             } else if ($protocol == 'mail') {
                 $from = $this->db->get_where('general_settings', array('type' => 'system_email'))->row()->value;
             }
@@ -38,8 +39,9 @@
                 $email_body = $this->db->get_where('email_template', array('email_template_id' => 1))->row()->body;
                 $email_body = str_replace('[[to]]', $to_name, $email_body);
                 $email_body = str_replace('[[account_type]]', $account_type, $email_body);
-                $email_body = str_replace('[[password]]', $pass, $email_body);
+              //  $email_body = str_replace('[[password]]', $pass, $email_body);
                 $email_body = str_replace('[[from]]', $from_name, $email_body);
+                $email_body = str_replace('[[password_reset_link]]', $password_reset_link, $email_body);
                 
                 $send_mail = $this->do_email($from, $from_name, $to, $sub, $email_body);
                 return $send_mail;
@@ -175,7 +177,7 @@
             }
         }
 
-        function subscruption_email($account_type = '', $member_id = '', $plan_id = '') {
+        function subscription_email($account_type = '', $member_id = '', $plan_id = '') {
             $this->load->database();
             $from_name = $this->db->get_where('general_settings', array('type' => 'system_name'))->row()->value;
             $protocol = $this->db->get_where('general_settings', array('type' => 'mail_status'))->row()->value;
@@ -221,6 +223,7 @@
 
         function do_email($from = '', $from_name = '', $to = '', $sub = '', $msg = '') {
             $this->load->library('email');
+            $this->email->set_mailtype("html");
             $this->email->set_newline("\r\n");
             $this->email->from($from, $from_name);
             $this->email->to($to);
@@ -234,6 +237,51 @@
                 return false;
             }
             //echo $this->email->print_debugger();
+        }
+
+        function membership_expired($member_id, $package_info) {
+
+            $this->load->database();
+            $from_name = $this->db->get_where('general_settings', array('type' => 'system_name'))->row()->value;
+            $protocol = $this->db->get_where('general_settings', array('type' => 'mail_status'))->row()->value;
+            if ($protocol == 'smtp') {
+                $from = $this->db->get_where('general_settings', array('type' => 'smtp_user'))->row()->value;
+            } else if ($protocol == 'mail') {
+                $from = $this->db->get_where('general_settings', array('type' => 'system_email'))->row()->value;
+            }
+
+            $to = $this->db->get_where('member', array('member_id' => $member_id))->row()->email;
+//print_r($member_id);exit;
+           // $package_info = json_decode($package_info, true);
+ 
+            $package = $this->db->get_where('plan', array('plan_id' => $package_info['plan_id']))->row()->name;
+            $query = $this->db->get_where('member', array('email' => $to));
+//print_R($to);exit;
+
+            if ($query->num_rows() > 0) {
+
+                $sub = $this->db->get_where('email_template', array('email_template_id' => 6))->row()->subject;
+
+                
+                    $to_name = $query->row()->first_name . ' ' . $query->row()->last_name;
+                    $package_name = $package_info['current_package'];
+                    $expiration_date = $member->membership_valid_till;
+ 
+                    $email_body = $this->db->get_where('email_template', array('email_template_id' => 6))->row()->body;
+                    $email_body = str_replace('[[to]]', $to_name, $email_body);
+                    $url = base_url()."home/plans";
+                    $upgrade_now_button = '<a href="'.$url.'">Upgrade Now</a>';
+                    $email_body = str_replace('[[subcription_name]]', $package_name, $email_body);
+                    $email_body = str_replace('[[expiration_date]]', $expiration_date, $email_body);
+                    $email_body = str_replace('[[upgrade_now_button]]', $upgrade_now_button, $email_body);
+                    $email_body = str_replace('[[from]]', $from_name, $email_body);
+              
+                $send_mail = $this->do_email($from, $from_name, $to, $sub, $email_body);
+
+                return $send_mail;
+            } else {
+                return false;
+            }
         }
 
     }

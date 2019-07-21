@@ -19,7 +19,13 @@
                     <div class="col-sm-6">
                         <div class="form-group has-feedback">
                             <label for="" class="text-uppercase"><?php echo translate('aged_from')?></label>
-                            <input type="number" class="form-control form-control-sm" name="aged_from" id="aged_from" value="">
+                            <select class="form-control form-control-sm selectpicker" name="aged_from" id="aged_from" >
+                            <option value="">Aged From</option>
+                            <?php for($i = 18; $i<=70; $i++) { ?>
+                              <option value="<?= $i ?>"><?= $i ?></option>
+                            <?php } ?>
+                            </select>
+                           
                             <div class="help-block with-errors">
                             </div>
                         </div>
@@ -27,7 +33,12 @@
                     <div class="col-sm-6">
                         <div class="form-group has-feedback">
                             <label for="" class="text-uppercase"><?php echo translate('to')?></label>
-                            <input type="number" class="form-control form-control-sm" name="aged_to" id="aged_to" value="">
+                             <select class="form-control form-control-sm selectpicker" name="aged_to" id="aged_to" >
+                            <option value="">Aged To</option>
+                            <?php for($j = 18; $j<=70; $j++) { ?>
+                              <option value="<?= $j ?>"> <?= $j ?></option>
+                            <?php } ?>
+                            </select>                            
                         </div>
                         <div class="help-block with-errors">
                         </div>

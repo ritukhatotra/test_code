@@ -15,7 +15,7 @@ if(!empty($this->session->userdata['member_id'])) {
 <section class="slice--offset sct-color-1">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <div class="block block-post">
 					<?php 
                         include_once'story_detail.php';

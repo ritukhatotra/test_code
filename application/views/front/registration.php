@@ -99,6 +99,8 @@
                                     <h4 class="heading heading-3"><?=translate('create_your_account')?></h4>
                                 </div>
                                 <form class="form-default mt-4" id="register_form" method="post" action="<?=base_url()?>home/registration/add_info">
+                                    
+ <input type="hidden" name="timezone" class="reg-time-zone-hidden" value="">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -159,7 +161,7 @@
                                                 $current_year = date("Y");
                                                 ?>
                                                 <div class="row">
-                                                    <div class="col-4">
+                                                    <div class="col-4 pr-0">
                                                         <select name="monthob" id="mobrth" class="form-control form-control-lg">
                                                         <option value="">MM</option>
                                                         <?php foreach ($month as $key => $value) : ?>
@@ -169,12 +171,12 @@
                                                         <?php endforeach; ?>
                                                         </select>
                                                     </div>
-                                                    <div class="col-4">
+                                                    <div class="col-4 pr-0">
                                                         <select name="dateob" id="dobrth" class="form-control form-control-lg">
                                                         <option value="">DD</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-4">
+                                                    <div class="col-4 pr-0">
                                                         <select name="yearob" id="yobrth" class="form-control form-control-lg">
                                                         <option value="">YYYY</option>
                                                         <?php for( $y = 1970; $y <= $current_year; $y++ ) { ?>
@@ -219,7 +221,7 @@
                                             </script>
 									
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="control-label "><?php echo translate('on_behalf')?></label>
                                                 <?php 
@@ -233,7 +235,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="control-label "><?php echo translate('mobile')?></label>
                                                 <input type="text" class="form-control form-control-lg" name="mobile" value="<?php if(!empty($form_contents)){echo $form_contents['mobile'];}?>">
@@ -295,7 +297,7 @@
                                         </button>
                                         <div class="row pt-3">
                                             <div class="col-12 text-center" style="font-size: 12px;">
-                                                <a class="c-gray-light" href="<?=base_url()?>home/login" class=""><?php echo translate('log_in_page')?></a>
+                                                <a class="c-gray-light" href="<?=base_url()?>login" class=""><?php echo translate('log_in_page')?></a>
                                             </div>
                                         </div>
                                     </div>
@@ -346,10 +348,16 @@
         <script src="<?=base_url()?>template/front/vendor/lightgallery/js/lg-video.js"></script>
         <!-- App JS -->
         <script src="<?=base_url()?>template/front/js/wpx.app.js"></script>
-
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js">
+    </script>
         <script type="text/javascript">
             $(document).ready(function(){
                 $('.top_bar_right').load('<?php echo base_url(); ?>home/top_bar_right');
+                
+                var tz = jstz.determine(); // Determines the time zone of the browser client
+            var timezone = tz.name(); //'Asia/Kolhata' for Indian Time.
+           // console.log('sd'+timezone);
+            var val = $(".reg-time-zone-hidden").val(timezone);
             });	    
 	    
         </script>

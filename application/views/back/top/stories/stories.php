@@ -20,5 +20,6 @@
 <link href="<?=base_url()?>template/back/premium/icon-sets/icons/solid-icons/premium-solid-icons.css" rel="stylesheet">
 <!--Magic Checkbox [ OPTIONAL ]-->
 <link href="<?=base_url()?>template/back/plugins/magic-check/css/magic-check.min.css" rel="stylesheet">
+<link href="<?=base_url()?>template/back/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
 <!--Dropzone [ OPTIONAL ]-->
 <!-- <link href="<?=base_url()?>template/back/plugins/dropzone/dropzone.min.css" rel="stylesheet"> -->

@@ -54,7 +54,13 @@
 						<!---a href="" class="rIcon"><i class="fa fa-dot-circle-o"></i></a-->
 						
 					 
-						<p class="time"><i class="c-base-1 fa fa-clock-o"></i> <?=date('d M,y - h:i A', $messaging_member['message_thread_time'])?></p>
+						<p class="time"><i class="c-base-1 fa fa-clock-o"></i> 
+						<?php
+                                        $date = new DateTime( date('Y-m-d H:i:s', $messaging_member['message_thread_time']), new DateTimeZone('UTC'));
+                                        $date->setTimezone(new DateTimeZone( $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone') ? $this->Crud_model->get_type_name_by_id('member', $this->session->userdata['member_id'], 'timezone') : 'UTC'));
+echo $date->format('d M,y - h:i A') ;?>
+                                        
+                                        <?php /*=date('d M,y - h:i A', $row['time'])*/?></p>
 						
             		</div>
 					</div>

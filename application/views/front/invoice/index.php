@@ -101,11 +101,15 @@ foreach ($get_payment as $value) {
                     							<!-- foreach ($order->lineItems as $line) or some such thing here -->
                     							<tr>
                     								<td><?=translate('pachakge_type:').' '.$this->db->get_where('plan', array('plan_id' => $value->plan_id))->row()->name?></td>
-                    								<td class="text-center"><?=currency($this->db->get_where('plan', array('plan_id' => $value->plan_id))->row()->amount)?></td>
+                    								<td class="text-center">
+                    								    <?php $exchange =  $this->db->get_where('currency_settings', array('code' => 'INR'))->row()->exchange_rate_def;
+                    								    $value_amount = $this->db->get_where('plan', array('plan_id' => $value->plan_id))->row()->amount;
+                    								    $amount= $value_amount * $exchange;?>
+                                    <?php /*<?= currency($value->amount); */?> ₹<?= $amount ?></td>
                     							</tr>
                                                 <tr>
                                                     <td class="thick-line text-right"><strong><?=translate('total')?></strong></td>
-                                                    <td class="thick-line text-center"><?=currency($this->db->get_where('plan', array('plan_id' => $value->plan_id))->row()->amount)?></td>
+                                                    <td class="thick-line text-center">₹<?= $amount ?></td>
                                                 </tr>
 
                     						</tbody>

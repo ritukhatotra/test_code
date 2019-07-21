@@ -69,6 +69,12 @@
 							<input type="number" class="form-control" name="photo_gallery" value="" required="">
 						</div>
 					</div>
+<div class="form-group">
+						<label class="col-sm-2 control-label" for="duration"><b><?php echo translate('duration')?></b></label>
+						<div class="col-sm-9">
+							<input type="number" class="form-control" name="duration" value="<?=$value->duration?>" required="">
+						</div>
+					</div>
 					<div class="form-group">
 						<label class="col-sm-2 control-label" for="image"><b><?php echo translate('package_image')?></b></label>
 	                    <div class="col-sm-10">
